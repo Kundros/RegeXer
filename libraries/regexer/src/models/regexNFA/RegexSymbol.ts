@@ -1,8 +1,8 @@
 import { RegexElement } from "RegexElement";
 
-export class Symbol extends RegexElement
+export class RegexSymbol extends RegexElement
 {
-    constructor(symbol: string & { length : 1})
+    constructor(symbol: string)
     {
         super();
 
@@ -14,5 +14,5 @@ export class Symbol extends RegexElement
         return this.symbol_;
     }
 
-    private symbol_: string & { length: 1};
+    private symbol_: string;
 }

@@ -1,4 +1,4 @@
-class StringReader implements Iterable<string> {
+export class StringReader implements Iterable<string> {
     constructor(string: string)
     {
         this.string_ = string;
