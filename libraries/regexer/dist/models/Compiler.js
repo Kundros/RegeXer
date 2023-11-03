@@ -1,31 +1,62 @@
 import { Stack } from "../structures/Stack.js";
 import { StringReader } from "../helpers/StringReader.js";
+import { stateType } from "../structures/stateType.js";
 import { RegexElement } from "../models/regexNFA/RegexElement.js";
 import { RegexCharacter } from "../models/regexNFA/RegexCharacter.js";
 /**
  * Compiles string to executable regex NFA
  */
 export class Compiler {
-    static compile(regexString) {
-        let states = new Stack();
-        let rootElement = new RegexElement();
-        let stackElements = new Stack();
+    compile(regexString) {
         const stringReader = new StringReader(regexString);
-        stackElements.push(rootElement);
+        this.stackElements.push(this.rootElement);
         /* Main loop compiling to executable regex NFA */
         let character;
         while ((character = stringReader.next()) != null) {
-            if (this.isRegexCharacter(character, states.top())) {
-                const characterNode = new RegexCharacter(character);
-                stackElements.top().addNeighbour(characterNode);
-                stackElements.push(characterNode);
-            }
+            if (this.handleSpecialCharacter(character))
+                continue;
+            if (this.handleEscapedCharacter(character))
+                continue;
+            if (this.handleCharacter(character))
+                continue;
         }
-        return rootElement;
+        return this.rootElement;
     }
-    static isRegexCharacter(character, state) {
+    handleSpecialCharacter(character) {
+        if (this.states.top() != stateType.ESCAPED)
+            return false;
+        if (Compiler.specialCharacters_.includes(character)) {
+            this.states.pop();
+            return true;
+        }
+        return false;
+    }
+    handleCharacter(character) {
         const characterCode = character.charCodeAt(0);
-        return (characterCode >= 65 && characterCode <= 90) ||
-            (characterCode >= 97 && characterCode <= 122);
+        if ((characterCode >= 65 && characterCode <= 90) ||
+            (characterCode >= 97 && characterCode <= 122)) {
+            this.addCharacter(character);
+            return true;
+        }
+        return false;
     }
+    handleEscapedCharacter(character) {
+        if (this.states.top() == stateType.ESCAPED) {
+            this.addCharacter(character);
+            this.states.pop();
+            return true;
+        }
+        if (character === '\\')
+            this.states.push(stateType.ESCAPED);
+        return false;
+    }
+    addCharacter(character) {
+        const characterNode = new RegexCharacter(character);
+        this.stackElements.top().addNeighbour(characterNode);
+        this.stackElements.push(characterNode);
+    }
+    states = new Stack();
+    rootElement = new RegexElement();
+    stackElements = new Stack();
+    static specialCharacters_ = ['s', 'S', 'd', 'D', 'w', 'W'];
 }

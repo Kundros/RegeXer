@@ -3,14 +3,14 @@ export class StringReader {
         this.string_ = string;
     }
     next() {
-        if (this.internal_pointer_ + 1 > this.string_.length)
+        if (this.internal_pointer_ + 1 >= this.string_.length)
             return null;
-        return this.string_[this.internal_pointer_++];
+        return this.string_[++this.internal_pointer_];
     }
     before() {
         if (this.internal_pointer_ <= 0)
             return null;
-        return this.string_[this.internal_pointer_--];
+        return this.string_[--this.internal_pointer_];
     }
     current() {
         return this.string_[this.internal_pointer_];
@@ -32,7 +32,7 @@ export class StringReader {
         return this.internal_pointer_;
     }
     reset_pointer() {
-        this.internal_pointer_ = 0;
+        this.internal_pointer_ = -1;
     }
     [Symbol.iterator]() {
         return {
@@ -45,5 +45,5 @@ export class StringReader {
         };
     }
     string_;
-    internal_pointer_ = 0;
+    internal_pointer_ = -1;
 }

@@ -7,7 +7,8 @@ import { Compiler } from "@regexer/models/Compiler";
 export class Regexer{
     constructor(regexString : string)
     {
-        this.root = Compiler.compile(regexString);
+        this.compiler = new Compiler();
+        this.root = this.compiler.compile(regexString);
     }
 
     public match(matchString: string) : RegexMatch
@@ -25,5 +26,6 @@ export class Regexer{
         return new RegexMatch();
     }
 
+    private compiler : Compiler;
     private root : RegexElement;
 }
