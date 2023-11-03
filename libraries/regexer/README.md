@@ -35,3 +35,7 @@ regex notation.**
     /\(\#\\/
     ```
     *Note: escaped character that would be otherwise evaluated as part of regex special character.*
+
+### TODO:
+
+*when compiling and state stack isn't empty at the end of compilation, then the regex input was invalid.*

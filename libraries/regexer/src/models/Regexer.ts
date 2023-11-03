@@ -8,7 +8,7 @@ export class Regexer{
     constructor(regexString : string)
     {
         this.compiler = new Compiler();
-        this.root = this.compiler.compile(regexString);
+        this.regexRoot = this.compiler.compile(regexString);
     }
 
     public match(matchString: string) : RegexMatch
@@ -20,12 +20,12 @@ export class Regexer{
         let character : string | null;
         while((character = stringReader.next()) != null)
         {
-
+            
         }
 
         return new RegexMatch();
     }
 
     private compiler : Compiler;
-    private root : RegexElement;
+    private regexRoot : RegexElement;
 }

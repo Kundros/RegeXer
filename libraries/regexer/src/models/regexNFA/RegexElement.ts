@@ -1,24 +1,22 @@
 export class RegexElement
 {
     constructor()
+    {}
+
+    public isNext(element: RegexElement) : boolean
     {
-        this.neighbouringElements_ = new Set<RegexElement>;
+        return this.next_ === element;
     }
 
-    public neighbours() : Set<RegexElement>
+    public setNext(element: RegexElement)
     {
-        return this.neighbouringElements_;
+        this.next_ = element;
     }
 
-    public isNeighbouring(element: RegexElement) : boolean
+    public getNext()
     {
-        return this.neighbouringElements_.has(element);
+        return this.next_;
     }
 
-    public addNeighbour(element: RegexElement)
-    {
-        this.neighbouringElements_.add(element);
-    }
-
-    protected neighbouringElements_ : Set<RegexElement>;
+    protected next_ : RegexElement;
 }

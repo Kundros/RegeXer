@@ -4,7 +4,7 @@ import { Compiler } from "../models/Compiler.js";
 export class Regexer {
     constructor(regexString) {
         this.compiler = new Compiler();
-        this.root = this.compiler.compile(regexString);
+        this.regexRoot = this.compiler.compile(regexString);
     }
     match(matchString) {
         const stringReader = new StringReader(matchString);
@@ -15,5 +15,5 @@ export class Regexer {
         return new RegexMatch();
     }
     compiler;
-    root;
+    regexRoot;
 }

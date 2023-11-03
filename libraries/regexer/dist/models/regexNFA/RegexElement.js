@@ -1,15 +1,13 @@
 export class RegexElement {
-    constructor() {
-        this.neighbouringElements_ = new Set;
+    constructor() { }
+    isNext(element) {
+        return this.next_ === element;
     }
-    neighbours() {
-        return this.neighbouringElements_;
+    setNext(element) {
+        this.next_ = element;
     }
-    isNeighbouring(element) {
-        return this.neighbouringElements_.has(element);
+    getNext() {
+        return this.next_;
     }
-    addNeighbour(element) {
-        this.neighbouringElements_.add(element);
-    }
-    neighbouringElements_;
+    next_;
 }

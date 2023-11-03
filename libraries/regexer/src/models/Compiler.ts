@@ -2,8 +2,9 @@ import { Stack } from "@regexer/structures/Stack"
 import { StringReader } from "@regexer/helpers/StringReader"
 import { stateType } from "@regexer/structures/stateType";
 import { RegexElement } from "@regexer/models/regexNFA/RegexElement";
-import { RegexCharacter } from "@regexer/models/regexNFA/RegexCharacter";
+import { RegexString } from "@regexer/models/regexNFA/RegexString";
 import { Regexer } from "@regexer/models/Regexer";
+import { RegexOption } from "./regexNFA/RegexOption";
 
 /**
  * Compiles string to executable regex NFA
@@ -20,9 +21,12 @@ export class Compiler
         let character: string | null;
         while((character = stringReader.next()) != null)
         {
+            /* Special and escaped characters must be handeled first */
             if(this.handleSpecialCharacter(character))
                 continue;
             if(this.handleEscapedCharacter(character))
+                continue;
+            if(this.handleOption(character))
                 continue;
             if(this.handleCharacter(character))
                 continue;
@@ -39,7 +43,6 @@ export class Compiler
         if(Compiler.specialCharacters_.includes(character))
         {
             this.states.pop();
-
             return true;
         }
 
@@ -64,7 +67,7 @@ export class Compiler
     {
         if(this.states.top() == stateType.ESCAPED)
         {
-            this.addCharacter(character);
+            this.addCharacter("\\" + character);
             this.states.pop();
             return true;
         }
@@ -75,11 +78,31 @@ export class Compiler
         return false;
     }
 
+    private handleOption(character: string)
+    {
+        if(character === '|')
+        {
+            this.states.push(stateType.OPTION);
+            const optionElement = new RegexOption([this.stackElements.pop()]);
+            this.stackElements.top().setNext(optionElement);
+            this.stackElements.push(optionElement);
+            return true;
+        }
+
+        return false;
+    }
+
     private addCharacter(character: string) : void
     {
-        const characterNode = new RegexCharacter(character);
+        if(this.stackElements.top() instanceof RegexString)
+        {
+            (<RegexString>this.stackElements.top()).append(character);
+            return;
+        }
 
-        this.stackElements.top().addNeighbour(characterNode);
+        const characterNode = new RegexString(character);
+
+        this.stackElements.top().setNext(characterNode);
         this.stackElements.push(characterNode);
     }
 

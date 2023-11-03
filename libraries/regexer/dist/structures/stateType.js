@@ -1,3 +1,5 @@
 export const stateType = {
-    ESCAPED: "ESCAPED"
+    ESCAPED: "ESCAPED",
+    OPTION: "OPTION",
+    OPTION_LIST: "OPTION_LIST"
 };
