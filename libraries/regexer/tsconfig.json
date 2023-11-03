@@ -27,8 +27,8 @@
     /* Modules */
     "module": "ESNext",                                  /* Specify what module code is generated. */
     "rootDir": "./src",                                  /* Specify the root folder within your source files. */
-    // "moduleResolution": "node",                       /* Specify how TypeScript looks up a file from a given module specifier. */
-    // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
+    "moduleResolution": "Classic",                       /* Specify how TypeScript looks up a file from a given module specifier. */
+    "baseUrl": ".",                                      /* Specify the base directory to resolve non-relative module names. */
     // "paths": {},                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
@@ -98,10 +98,16 @@
 
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
-    "skipLibCheck": true,                                /* Skip type checking all .d.ts files. */
+    // "skipLibCheck": true,                                /* Skip type checking all .d.ts files. */
     "paths": {
       "@regexer/*": ["./src/*"]
     },
+    "plugins": [
+      { "transform": "typescript-transform-paths" }
+    ]
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true,
   },
   "include": ["src/**/*.ts", "dist/index.d.ts"],
   "exclude": ["node_modules"]

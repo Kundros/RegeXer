@@ -1,6 +1,6 @@
-import { RegexElement } from "RegexElement";
+import { RegexElement } from "./RegexElement";
 
-export class RegexSymbol extends RegexElement
+export class RegexCharacter extends RegexElement
 {
     constructor(symbol: string)
     {

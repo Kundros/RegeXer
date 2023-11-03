@@ -9,7 +9,7 @@ export class StringReader implements Iterable<string> {
         if(this.internal_pointer_ + 1 >= this.string_.length)
             return null;
 
-        return this.string_[this.internal_pointer_++];
+        return this.string_[++this.internal_pointer_];
     }
 
     public before() : string | null
@@ -17,7 +17,7 @@ export class StringReader implements Iterable<string> {
         if(this.internal_pointer_ <= 0)
             return null;
 
-        return this.string_[this.internal_pointer_--];
+        return this.string_[--this.internal_pointer_];
     }
 
     public current() : string
@@ -53,7 +53,7 @@ export class StringReader implements Iterable<string> {
 
     public reset_pointer() : void
     {
-        this.internal_pointer_ = 0;
+        this.internal_pointer_ = -1;
     }
 
     [Symbol.iterator](): Iterator<string> 
@@ -69,5 +69,5 @@ export class StringReader implements Iterable<string> {
     }
 
     private readonly string_ : string;
-    private internal_pointer_ : number = 0;
+    private internal_pointer_ : number = -1;
 }

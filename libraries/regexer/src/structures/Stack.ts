@@ -9,7 +9,7 @@ export class Stack<T> {
         return this.data_.pop();
     }
 
-    public peek() : T
+    public top() : T
     {
         return this.data_[this.data_.length - 1]
     }

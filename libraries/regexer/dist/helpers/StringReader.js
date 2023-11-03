@@ -1,10 +1,9 @@
-"use strict";
-class StringReader {
+export class StringReader {
     constructor(string) {
         this.string_ = string;
     }
     next() {
-        if (this.internal_pointer_ + 1 >= this.string_.length)
+        if (this.internal_pointer_ + 1 > this.string_.length)
             return null;
         return this.string_[this.internal_pointer_++];
     }

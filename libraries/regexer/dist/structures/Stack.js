@@ -5,7 +5,7 @@ export class Stack {
     pop() {
         return this.data_.pop();
     }
-    peek() {
+    top() {
         return this.data_[this.data_.length - 1];
     }
     size() {

@@ -2,23 +2,23 @@ export class RegexElement
 {
     constructor()
     {
-        this.followingElements_ = new Set<RegexElement>;
+        this.neighbouringElements_ = new Set<RegexElement>;
     }
 
-    public folowing() : Set<RegexElement>
+    public neighbours() : Set<RegexElement>
     {
-        return this.followingElements_;
+        return this.neighbouringElements_;
     }
 
-    public isFolowing(element: RegexElement) : boolean
+    public isNeighbouring(element: RegexElement) : boolean
     {
-        return this.followingElements_.has(element);
+        return this.neighbouringElements_.has(element);
     }
 
-    public addFolowingElement(element: RegexElement)
+    public addNeighbour(element: RegexElement)
     {
-        this.followingElements_.add(element);
+        this.neighbouringElements_.add(element);
     }
 
-    protected followingElements_ : Set<RegexElement>;
+    protected neighbouringElements_ : Set<RegexElement>;
 }
