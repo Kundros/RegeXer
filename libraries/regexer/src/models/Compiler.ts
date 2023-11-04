@@ -3,7 +3,6 @@ import { StringReader } from "@regexer/helpers/StringReader"
 import { stateType } from "@regexer/structures/stateType";
 import { RegexElement } from "@regexer/models/regexNFA/RegexElement";
 import { RegexString } from "@regexer/models/regexNFA/RegexString";
-import { Regexer } from "@regexer/models/Regexer";
 import { RegexOption } from "./regexNFA/RegexOption";
 
 /**
@@ -22,14 +21,11 @@ export class Compiler
         while((character = stringReader.next()) != null)
         {
             /* Special and escaped characters must be handeled first */
-            if(this.handleSpecialCharacter(character))
-                continue;
-            if(this.handleEscapedCharacter(character))
-                continue;
-            if(this.handleOption(character))
-                continue;
-            if(this.handleCharacter(character))
-                continue;
+            if(this.handleSpecialCharacter(character)) continue;
+            if(this.handleEscapedCharacter(character)) continue;
+            
+            if(this.handleOption(character)) continue;
+            if(this.handleCharacter(character)) continue;
         }
 
         return this.rootElement;
@@ -141,6 +137,7 @@ export class Compiler
             return;
         }
 
+        /* if element is being added but option possible state is hanging we need to remove it */
         if(this.states.top() === stateType.OPTION_POSSIBLE)
             this.states.pop();
 

@@ -14,5 +14,10 @@ export class RegexOption extends RegexElement
         this.options.push(option);
     }
 
+    public getOptions() : RegexElement[]
+    {
+        return this.options;
+    }
+
     private options: RegexElement[];
 }

@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",                                 
-    "rootDir": "./src",          
-    "outDir": "./dist",                        
-    "moduleResolution": "Node",                       
-    "baseUrl": ".",                              
+    "module": "ESNext",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "moduleResolution": "Node",
+    "baseUrl": ".",
     "paths": {
       "@regexer/*": ["./src/*"]
     }
   },
   "tsc-alias": {
-    "resolveFullPaths": true,
+    "resolveFullPaths": true
   },
   "include": ["src/**/*.ts", "dist/index.d.ts"],
   "exclude": ["node_modules"]

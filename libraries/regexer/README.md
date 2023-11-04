@@ -9,7 +9,7 @@ Main goal of this library is to implement executable regex with integrated compi
 
 ## Setup
 
-If you're building this library for your own, you'll need to have installed npm along with node.js.
+If you're building this library on your own, you'll need to have installed npm along with node.js.
 
 To build project simply use command below in library root:
 ```bash
