@@ -4,6 +4,8 @@ import { stateType } from "@regexer/structures/stateType";
 import { RegexElement } from "@regexer/models/regexNFA/RegexElement";
 import { RegexString } from "@regexer/models/regexNFA/RegexString";
 import { RegexOption } from "./regexNFA/RegexOption";
+import { RegexCapturing } from "./regexNFA/RegexCapturing";
+import { RegCompileException } from "@regexer/exceptions/RegCompileException";
 
 /**
  * Compiles string to executable regex NFA
@@ -14,7 +16,7 @@ export class Compiler
     {
         const stringReader = new StringReader(regexString);
 
-        this.stackElements.push(this.rootElement);
+        this.stackElements_.push(this.rootElement_);
         
         /* Main loop compiling to executable regex NFA */
         let character: string | null;
@@ -24,21 +26,24 @@ export class Compiler
             if(this.handleSpecialCharacter(character)) continue;
             if(this.handleEscapedCharacter(character)) continue;
             
+            if(this.handleCapturing(character)) continue;
             if(this.handleOption(character)) continue;
+            if(this.handleCapturingEnd(character)) continue;
+
             if(this.handleCharacter(character)) continue;
         }
 
-        return this.rootElement;
+        return this.rootElement_;
     }
 
     private handleSpecialCharacter(character: string) : boolean
     {
-        if(this.states.top() != stateType.ESCAPED)
+        if(this.states_.top() !== stateType.ESCAPED)
             return false;
 
         if(Compiler.specialCharacters_.includes(character))
         {
-            this.states.pop();
+            this.states_.pop();
             return true;
         }
 
@@ -61,15 +66,15 @@ export class Compiler
 
     private handleEscapedCharacter(character: string) : boolean
     {
-        if(this.states.top() == stateType.ESCAPED)
+        if(this.states_.top() === stateType.ESCAPED)
         {
             this.addCharacter("\\" + character);
-            this.states.pop();
+            this.states_.pop();
             return true;
         }
         
         if(character === '\\')
-            this.states.push(stateType.ESCAPED);
+            this.states_.push(stateType.ESCAPED);
 
         return false;
     }
@@ -77,47 +82,90 @@ export class Compiler
     private handleOption(character: string)
     {
         /* check if is option character */
-        if(character != '|')
+        if(character !== '|')
+        {
+            /* we must remove option possible if exists */
+            if(this.states_.top() === stateType.OPTION_POSSIBLE)
+                this.states_.pop();
+
             return false;
+        }
 
         let addElement : RegexElement;
 
         /* handle already existing option (option possible) */
-        if(this.states.top() === stateType.OPTION_POSSIBLE)
+        if(this.states_.top() === stateType.OPTION_POSSIBLE)
         {
-            this.states.pop();
-            this.states.push(stateType.OPTION);
+            this.states_.pop();
+            this.states_.push(stateType.OPTION);
 
             return true;
         }
 
         /* handle string */
-        if(this.stackElements.top() instanceof RegexString)
+        if(this.stackElements_.top() instanceof RegexString)
         {
-            const stringElement = <RegexString>this.stackElements.top();
+            const stringElement = <RegexString>this.stackElements_.top();
             const lastCharacter = stringElement.pop();
 
             if(stringElement.length == 0)
-                this.stackElements.pop();
+                this.stackElements_.pop();
 
             addElement = new RegexString(lastCharacter);
         }
         else
         {
-            addElement = this.stackElements.pop();
+            addElement = this.stackElements_.pop();
         }
 
         this.handleAddElement(new RegexOption([addElement]));
-        this.states.push(stateType.OPTION);
+        this.states_.push(stateType.OPTION);
+
+        return true;
+    }
+
+    private handleCapturing(character: string)
+    {
+        if(character !== '(')
+            return false;
+
+        this.states_.push(stateType.CAPTURING);
+        this.handleAddElement(new RegexCapturing());
+
+        return true;
+    }
+
+    private handleCapturingEnd(character: string)
+    {
+        if(character !== ')')
+            return false;
+
+        if(this.states_.top() !== stateType.CAPTURING)
+            throw new RegCompileException("Brackets are not matching.");
+
+        /* note: if RegexCapturing element was found we need to skip it if was finalized */
+        while(!(this.stackElements_.top() instanceof RegexCapturing) || (<RegexCapturing>this.stackElements_.top()).isFinalized())
+            this.stackElements_.pop();
+
+        const captureElement = (<RegexCapturing>this.stackElements_.top());
+
+        captureElement.finalize();
+
+        this.states_.pop();
+
+        console.log(this.states_.top());
+        /* handle option if is in stack */
+        if(this.states_.top() === stateType.OPTION)
+            this.handleAddElement(this.stackElements_.pop());
 
         return true;
     }
 
     private addCharacter(character: string) : void
     {
-        if(this.stackElements.top() instanceof RegexString)
+        if(this.stackElements_.top() instanceof RegexString)
         {
-            (<RegexString>this.stackElements.top()).append(character);
+            (<RegexString>this.stackElements_.top()).append(character);
             return;
         }
 
@@ -127,28 +175,24 @@ export class Compiler
     private handleAddElement(element: RegexElement)
     {
         /* if last element was an option then there is possibility to contain another option */
-        if(this.states.top() === stateType.OPTION && this.stackElements.top() instanceof RegexOption)
+        if(this.states_.top() === stateType.OPTION && this.stackElements_.top() instanceof RegexOption)
         {
-            (<RegexOption>this.stackElements.top()).addOption(element);
+            (<RegexOption>this.stackElements_.top()).addOption(element);
 
-            this.states.pop();
-            this.states.push(stateType.OPTION_POSSIBLE); 
+            this.states_.pop();
+            this.states_.push(stateType.OPTION_POSSIBLE); 
 
             return;
         }
 
-        /* if element is being added but option possible state is hanging we need to remove it */
-        if(this.states.top() === stateType.OPTION_POSSIBLE)
-            this.states.pop();
-
-        this.stackElements.top().setNext(element);
-        this.stackElements.push(element);
+        this.stackElements_.top().setNext(element);
+        this.stackElements_.push(element);
     }
 
 
-    private states = new Stack<stateType>();
-    private rootElement = new RegexElement();
-    private stackElements = new Stack<RegexElement>();
+    private states_ = new Stack<stateType>();
+    private rootElement_ = new RegexElement();
+    private stackElements_ = new Stack<RegexElement>();
 
     private static readonly specialCharacters_ = ['s', 'S', 'd', 'D', 'w', 'W'];
 }

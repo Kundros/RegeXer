@@ -6,18 +6,18 @@ export class RegexOption extends RegexElement
     {
         super();
 
-        this.options = options ?? [];
+        this.options_ = options ?? [];
     }
 
     public addOption(option: RegexElement)
     {
-        this.options.push(option);
+        this.options_.push(option);
     }
 
-    public getOptions() : RegexElement[]
+    public get options() : RegexElement[]
     {
-        return this.options;
+        return this.options_;
     }
 
-    private options: RegexElement[];
+    private options_: RegexElement[];
 }

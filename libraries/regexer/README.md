@@ -42,6 +42,12 @@ regex notation.**
     ```
     *Note: an option in this case between 3 characters **a** or **b** or **c***
 
+* Capturing group
+    ```js
+    /(a)/
+    ```
+    *Note: anything between 2 brackets enclosed will be as part of group (string: "a")*
+
 ### TODO:
 
 *when compiling and state stack isn't empty at the end of compilation, then the regex input was invalid.*

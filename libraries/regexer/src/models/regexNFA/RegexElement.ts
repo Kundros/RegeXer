@@ -5,18 +5,13 @@ export class RegexElement
 
     public isNext(element: RegexElement) : boolean
     {
-        return this.next_ === element;
+        return this.next === element;
     }
 
     public setNext(element: RegexElement)
     {
-        this.next_ = element;
+        this.next = element;
     }
 
-    public getNext()
-    {
-        return this.next_;
-    }
-
-    protected next_ : RegexElement;
+    public next: RegexElement;
 }
