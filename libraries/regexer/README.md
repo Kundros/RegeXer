@@ -36,6 +36,15 @@ regex notation.**
     ```
     *Note: escaped character that would be otherwise evaluated as part of regex special character.*
 
+* Option
+    ```js
+    /a|b|c/
+    ```
+    *Note: an option in this case between 3 characters **a** or **b** or **c***
+
 ### TODO:
 
 *when compiling and state stack isn't empty at the end of compilation, then the regex input was invalid.*
+
+### IDEAS:
+*Make language interface and as optional parameter push it to Regexer default ts/js regex syntax will be used.*

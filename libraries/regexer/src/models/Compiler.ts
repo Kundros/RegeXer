@@ -80,16 +80,41 @@ export class Compiler
 
     private handleOption(character: string)
     {
-        if(character === '|')
+        /* check if is option character */
+        if(character != '|')
+            return false;
+
+        let addElement : RegexElement;
+
+        /* handle already existing option (option possible) */
+        if(this.states.top() === stateType.OPTION_POSSIBLE)
         {
+            this.states.pop();
             this.states.push(stateType.OPTION);
-            const optionElement = new RegexOption([this.stackElements.pop()]);
-            this.stackElements.top().setNext(optionElement);
-            this.stackElements.push(optionElement);
+
             return true;
         }
 
-        return false;
+        /* handle string */
+        if(this.stackElements.top() instanceof RegexString)
+        {
+            const stringElement = <RegexString>this.stackElements.top();
+            const lastCharacter = stringElement.pop();
+
+            if(stringElement.length == 0)
+                this.stackElements.pop();
+
+            addElement = new RegexString(lastCharacter);
+        }
+        else
+        {
+            addElement = this.stackElements.pop();
+        }
+
+        this.handleAddElement(new RegexOption([addElement]));
+        this.states.push(stateType.OPTION);
+
+        return true;
     }
 
     private addCharacter(character: string) : void
@@ -100,10 +125,27 @@ export class Compiler
             return;
         }
 
-        const characterNode = new RegexString(character);
+        this.handleAddElement(new RegexString(character));
+    }
 
-        this.stackElements.top().setNext(characterNode);
-        this.stackElements.push(characterNode);
+    private handleAddElement(element: RegexElement)
+    {
+        /* if last element was an option then there is possibility to contain another option */
+        if(this.states.top() === stateType.OPTION && this.stackElements.top() instanceof RegexOption)
+        {
+            (<RegexOption>this.stackElements.top()).addOption(element);
+
+            this.states.pop();
+            this.states.push(stateType.OPTION_POSSIBLE); 
+
+            return;
+        }
+
+        if(this.states.top() === stateType.OPTION_POSSIBLE)
+            this.states.pop();
+
+        this.stackElements.top().setNext(element);
+        this.stackElements.push(element);
     }
 
 

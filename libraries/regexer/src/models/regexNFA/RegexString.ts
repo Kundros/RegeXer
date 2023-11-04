@@ -14,6 +14,13 @@ export class RegexString extends RegexElement
         this.string_ += str;
     }
 
+    public pop()
+    {
+        const saveLast = this.string_[this.string_.length - 1];
+        this.string_ = this.string_.slice(0, -1);
+        return saveLast;
+    }
+
     public get string() : string
     {
         return this.string_;
