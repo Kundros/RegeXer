@@ -29,14 +29,9 @@
                   data.push({type: "primitive", transitions: []});
                  
                   if((flags & ProcessType.DEFAULT) != 0)
-                  {
                     pointer++;
-                    data[pointer].transitions.push({input: element, move_by: offset});
-                  }
-                  else
-                  {
-                  	data[data.length-1].transitions.push({input: element, move_by: 0});
-                  }
+                    
+                  data[data.length-1].transitions.push({input: element, move_by: 1});
             }
             else
             {
