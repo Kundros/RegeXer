@@ -1,1 +1,1 @@
-export { Regexer } from "@regexer/models/Regexer";
+export { Regexer } from "@models/Regexer";

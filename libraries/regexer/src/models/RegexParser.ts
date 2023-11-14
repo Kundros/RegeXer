@@ -1,22 +1,41 @@
-import { Stack } from "@regexer/structures/Stack"
-import { StringReader } from "@regexer/helpers/StringReader"
-import { stateType } from "@regexer/structures/stateType";
-import { RegexElement } from "@regexer/models/regexNFA/RegexElement";
-import { RegexString } from "@regexer/models/regexNFA/RegexString";
-import { RegexOption } from "./regexNFA/RegexOption";
-import { RegexCapturing } from "./regexNFA/RegexCapturing";
-import { RegCompileException } from "@regexer/exceptions/RegCompileException";
+import { Stack } from "@structures/Stack"
+import { StringReader } from "@helpers/StringReader"
+import { stateType } from "@structures/stateType";
+import { RegexElement } from "@regexNFA/RegexElement";
+import { RegexString } from "@regexNFA/RegexString";
+import { RegexOption } from "@regexNFA/RegexOption";
+import { RegexCapturing } from "@regexNFA/RegexCapturing";
+import { RegCompileException } from "@exceptions/RegCompileException";
 
 /**
  * Compiles string to executable regex NFA
  */
-export class Compiler
+export class RegexParser
 {
+    constructor()
+    {
+        this.states_ = new Stack<stateType>();
+        this.rootElement_ = new RegexElement();
+        this.stackElements_ = new Stack<RegexElement>();
+    }
+
+    /**
+     * Tries to compile string to Regex NFA for further execution.
+     * [Throws exception on invalid string]
+     * @param regexString Regex string to be compiled
+     * @returns Reference to first element of parsed/compiled string.
+     */
     public compile(regexString: string) : RegexElement
     {
-        const stringReader = new StringReader(regexString);
-
+        /* reset all internal variables */
+        this.states_.clear();
+        this.rootElement_ = new RegexElement();
+        this.stackElements_.clear();
+        /* push root to elements (for further calls) */
         this.stackElements_.push(this.rootElement_);
+
+        /* init reader */
+        const stringReader = new StringReader(regexString);
         
         /* Main loop compiling to executable regex NFA */
         let character: string | null;
@@ -26,8 +45,9 @@ export class Compiler
             if(this.handleSpecialCharacter(character)) continue;
             if(this.handleEscapedCharacter(character)) continue;
             
-            if(this.handleCapturing(character)) continue;
             if(this.handleOption(character)) continue;
+
+            if(this.handleCapturing(character)) continue;
             if(this.handleCapturingEnd(character)) continue;
 
             if(this.handleCharacter(character)) continue;
@@ -41,7 +61,7 @@ export class Compiler
         if(this.states_.top() !== stateType.ESCAPED)
             return false;
 
-        if(Compiler.specialCharacters_.includes(character))
+        if(RegexParser.specialCharacters_.includes(character))
         {
             this.states_.pop();
             return true;
@@ -147,14 +167,13 @@ export class Compiler
         while(!(this.stackElements_.top() instanceof RegexCapturing) || (<RegexCapturing>this.stackElements_.top()).isFinalized())
             this.stackElements_.pop();
 
-        const captureElement = (<RegexCapturing>this.stackElements_.top());
+        /* finalize the current capturing group */
+        (<RegexCapturing>this.stackElements_.top()).finalize();
 
-        captureElement.finalize();
-
+        /* Remove capturing state */
         this.states_.pop();
 
-        console.log(this.states_.top());
-        /* handle option if is in stack */
+        /* handle option if is at the top of stack */
         if(this.states_.top() === stateType.OPTION)
             this.handleAddElement(this.stackElements_.pop());
 
@@ -190,9 +209,9 @@ export class Compiler
     }
 
 
-    private states_ = new Stack<stateType>();
-    private rootElement_ = new RegexElement();
-    private stackElements_ = new Stack<RegexElement>();
+    private states_ : Stack<stateType>;
+    private rootElement_ : RegexElement;
+    private stackElements_ : Stack<RegexElement>;
 
     private static readonly specialCharacters_ = ['s', 'S', 'd', 'D', 'w', 'W'];
 }

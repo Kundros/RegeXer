@@ -1,5 +1,11 @@
-export class Stack<T> {
-    public push(item: T)
+export class Stack<T> 
+{
+    constructor(data: T[] = [])
+    {
+        this.data_ = data;
+    }
+
+    public push(item: T) : undefined
     {
         this.data_.push(item);
     }
@@ -19,5 +25,10 @@ export class Stack<T> {
         return this.data_.length;
     }
 
-    private data_: T[] = [];
+    public clear() : undefined
+    {
+        this.data_ = [];
+    }
+
+    private data_: T[];
 }

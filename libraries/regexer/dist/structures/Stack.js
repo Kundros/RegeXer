@@ -1,4 +1,7 @@
 export class Stack {
+    constructor(data = []) {
+        this.data_ = data;
+    }
     push(item) {
         this.data_.push(item);
     }
@@ -11,5 +14,8 @@ export class Stack {
     size() {
         return this.data_.length;
     }
-    data_ = [];
+    clear() {
+        this.data_ = [];
+    }
+    data_;
 }

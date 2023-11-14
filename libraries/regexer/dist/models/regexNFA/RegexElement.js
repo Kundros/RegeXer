@@ -1,13 +1,10 @@
 export class RegexElement {
     constructor() { }
     isNext(element) {
-        return this.next_ === element;
+        return this.next === element;
     }
     setNext(element) {
-        this.next_ = element;
+        this.next = element;
     }
-    getNext() {
-        return this.next_;
-    }
-    next_;
+    next;
 }

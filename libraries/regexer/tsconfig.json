@@ -7,7 +7,12 @@
     "moduleResolution": "Node",
     "baseUrl": ".",
     "paths": {
-      "@regexer/*": ["./src/*"]
+      "@regexer/*": ["./src/*"],
+      "@models/*": ["./src/models/*"],
+      "@exceptions/*": ["./src/exceptions/*"],
+      "@structures/*": ["./src/structures/*"],
+      "@helpers/*": ["./src/helpers/*"],
+      "@regexNFA/*": ["./src/models/regexNFA/*"]
     }
   },
   "tsc-alias": {

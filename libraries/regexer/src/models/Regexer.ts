@@ -1,13 +1,13 @@
-import { RegexElement } from "@regexer/models/regexNFA/RegexElement";
-import { StringReader } from "@regexer/helpers/StringReader"
-import { RegexMatch } from "@regexer/models/RegexMatch";
-import { actionType } from "@regexer/structures/actionType";
-import { Compiler } from "@regexer/models/Compiler";
+import { RegexElement } from "@models/regexNFA/RegexElement";
+import { StringReader } from "@helpers/StringReader"
+import { RegexMatch } from "@models/RegexMatch";
+import { actionType } from "@structures/actionType";
+import { RegexParser } from "@regexer/models/RegexParser";
 
 export class Regexer{
     constructor(regexString : string)
     {
-        this.compiler = new Compiler();
+        this.compiler = new RegexParser();
         this.regexRoot = this.compiler.compile(regexString);
     }
 
@@ -26,6 +26,6 @@ export class Regexer{
         return new RegexMatch();
     }
 
-    private compiler : Compiler;
+    private compiler : RegexParser;
     private regexRoot : RegexElement;
 }

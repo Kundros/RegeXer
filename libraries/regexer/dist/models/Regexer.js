@@ -1,9 +1,9 @@
 import { StringReader } from "../helpers/StringReader.js";
-import { RegexMatch } from "../models/RegexMatch.js";
-import { Compiler } from "../models/Compiler.js";
+import { RegexMatch } from "./RegexMatch.js";
+import { RegexParser } from "../models/RegexParser.js";
 export class Regexer {
     constructor(regexString) {
-        this.compiler = new Compiler();
+        this.compiler = new RegexParser();
         this.regexRoot = this.compiler.compile(regexString);
     }
     match(matchString) {

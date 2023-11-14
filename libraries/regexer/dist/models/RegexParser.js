@@ -9,7 +9,7 @@ import { RegCompileException } from "../exceptions/RegCompileException.js";
 /**
  * Compiles string to executable regex NFA
  */
-export class Compiler {
+export class RegexParser {
     constructor() {
         this.states_ = new Stack();
         this.rootElement_ = new RegexElement();
@@ -52,7 +52,7 @@ export class Compiler {
     handleSpecialCharacter(character) {
         if (this.states_.top() !== stateType.ESCAPED)
             return false;
-        if (Compiler.specialCharacters_.includes(character)) {
+        if (RegexParser.specialCharacters_.includes(character)) {
             this.states_.pop();
             return true;
         }

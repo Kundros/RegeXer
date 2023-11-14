@@ -114,7 +114,7 @@ test('capturing group 3', () => {
     expect((<RegexCapturing>element2_2).rootCapture.next).toBeInstanceOf(RegexCapturing);
 });
 
-test('capturing group with option', () => {
+test('capturing group combined with option', () => {
     const compiler = new Compiler();
     const compiledRegex = compiler.compile("()|(b())|a");
 
