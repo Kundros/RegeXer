@@ -1,76 +1,145 @@
-/* -------------------------------- */
-/* ---- functions & structures ---- */
-/* -------------------------------- */
+/* ----------------------------------------- */
+/* ---- functions, classes & structures ---- */
+/* ----------------------------------------- */
 
 {{
     const ProcessType = {
-      DEFAULT: 0x1,
-      OPTION: 0x2,
-      ITERATION_ZERO: 0x4,
-      ITERATION_ONE: 0x8
+   	  NONE: 0x0,
+      ROOT: 0x1,
+      DEFAULT: 0x2,
+      OPTION: 0x4,
+      ITERATION_ZERO: 0x8,
+      ITERATION_ONE: 0x10,
+      GROUP: 0x20
     };
+
+	const MapType = new Map(
+    	[
+        	[ProcessType.ROOT, 'root'],
+            [ProcessType.OPTION, 'option'],
+            [ProcessType.ITERATION_ZERO, 'iteration'],
+            [ProcessType.ITERATION_ONE, 'iteration'],
+            [ProcessType.GROUP, 'group']
+        ]
+    );
     
-	function processElements(data, elements, flags = ProcessType.DEFAULT) {
-    	let offset = 1;
-        let pointer = 0;
-        const numberOfElements = elements;
-        
-        if((flags & ProcessType.DEFAULT) != 0)
-        	data[0].transitions.push({input: null, move_by: 1});
-    
-		elements.forEach((element, id) => {
-        	if(Array.isArray(element))
-            {
-            	offset += element.length;
-                Object.assign(data, data.concat(element));
-            }
-            else if(typeof element === "string")
-          	{
-                  data.push({type: "primitive", transitions: []});
-                 
-                  if((flags & ProcessType.DEFAULT) != 0)
-                    pointer++;
-                    
-                  data[data.length-1].transitions.push({input: element, move_by: 1});
-            }
-            else
-            {
-            	offset++;
-                data.push(element);
-                data[pointer].transitions.push({input: null, move_by: offset});
-            }
-        });
-        
-        const dataLength = data.length;
-        
-        if((flags & ProcessType.OPTION) != 0)
+    class ParserHandler {
+        handle(data, elements, flags=ProcessType.DEFAULT) 
         {
-        	data.forEach((element, id) => {
-            	if(element?.type === "primitive")
+        	let pointer = 0;
+            let offset = 0;
+        	let outputElements = [this.buildElement(MapType.get(flags & (~ProcessType.DEFAULT)), data)];
+            
+            if(flags & ProcessType.DEFAULT)
+            	this.addTransitionToElement(outputElements[pointer++], null, pointer);
+            
+            if(flags & ProcessType.OPTION)
+            	this.handleOptionBefore(outputElements, elements);
+    
+            elements.forEach((element, id) => {
+                if(Array.isArray(element))
                 {
-                	element.transitions[0].move_by = dataLength - id;
-                    data[0].transitions.push({input: null, move_by: id});
+                    offset += element.length;
+                    outputElements.push(...element);
+                    return;
                 }
+                
+                if(element?.type === 'primitive')
+                {
+                	outputElements.push(element);
+                	return;
+                }
+                
+                offset++;
+                outputElements.push(this.addTransitionToElement(element, null, offset));
+            });
+            
+            if(flags & ProcessType.ROOT)
+            	this.handleRootAfter(outputElements);
+
+			if(flags & ProcessType.GROUP)
+                this.handleGroupAfter(outputElements);
+
+            if(flags & (ProcessType.ITERATION_ZERO | ProcessType.ITERATION_ONE))
+                this.handleIterationAfter(outputElements, flags);
+                
+            return outputElements;
+        }
+        
+        handleRootAfter(outputElements){
+        	outputElements.push({type: 'end'});
+        }
+        
+        handleOptionBefore(outputElements, elements)
+        {
+        	let offset = 1;
+            let sumLength = elements.reduce((x, y) => x + (Array.isArray(y) ? y.length : 1), 0);
+            
+        	elements.forEach((element, id) => {
+            	if(Array.isArray(element))
+                {
+                	let input = null;
+                	if(element[element.length-1]?.type === "primitive") {
+                		input = element[element.length-1]?.data?.character;
+                        
+                        element[element.length-1].transitions.get(input).pop();
+                    }
+                    else if(element[element.length-1].transitions.has(null))
+                    	element[element.length-1].transitions.get(null).pop()
+                    	
+                	this.addTransitionToElement(element[element.length-1], input, sumLength - (offset + element.length) + 2);
+                }
+                else if(element?.type === "primitive")
+                {
+                	let input = element?.data?.character;
+                	element.transitions.get(input).pop();
+                	this.addTransitionToElement(element, element?.data?.character, sumLength - offset + 1);
+                }
+                
+                this.addTransitionToElement(outputElements[0], null, offset);
+                offset += Array.isArray(element) ? element.length : 1;
             });
         }
         
-        if((flags & (ProcessType.ITERATION_ZERO | ProcessType.ITERATION_ONE)) != 0)
+        handleIterationAfter(outputElements, flags)
         {
-        	data.push({
-            	type: "iteration_repeat",
-                data: {},
-            	transitions: [
-                	{input: null, move_by: -dataLength + 1},
-                    {input: null, move_by: 1}
-               	]
-            });
+        	const dataLength = outputElements.length;
+        
+        	outputElements.push(
+              this.buildElement("iteration_end", {}, new Map([
+                [null, [-dataLength + 1, 1]]
+              ]))
+            );
+
+            if(flags & ProcessType.ITERATION_ZERO)
+            	this.addTransitionToElement(outputElements[0], null, outputElements.length);
         }
         
-        if((flags & ProcessType.ITERATION_ZERO) != 0)
+        handleGroupAfter(outputElements)
         {
-        	data[0].transitions.push({input: null, move_by: data.length});
+        	outputElements[0].data.end = outputElements.length - 1;
         }
-	}
+        
+        buildElement(type, data={}, transitions = new Map()) {
+        	return {
+            	type,
+                data,
+                transitions
+            };
+        }
+        
+        addTransitionToElement(element, input, by){
+        	if(element.transitions === undefined) 
+            	element.transitions = new Map();
+            if(!element.transitions.has(input))
+            	element.transitions.set(input, []);
+            
+        	element.transitions.get(input).push(by);
+            return element;
+        }
+    }
+    
+    const handler = new ParserHandler();
 }}
 
 
@@ -79,30 +148,17 @@
 /* ------------------------------------ */
 
 start 
-    = whichStart:(moded_start / general_start)
+    = 
+    type:(moded_start / general_start)
     {
-    	let data = [
-        	{
-            	type: whichStart?.type,
-                data: {
-                	modes: whichStart?.modes
-                },
-                transitions: []
-            }
-        ];
-        
-        processElements(data, whichStart?.elements);
-        
-        data.push({type: "end"});
-        
-        return data;
+    	const data = { modes: type?.modes };
+        return handler.handle(data, type?.elements, ProcessType.ROOT | ProcessType.DEFAULT);
     }
 
 general_start
     = elements:any_element*
     {
     	return { 
-        	type: "root",
         	modes: undefined,
         	elements 
         }
@@ -112,7 +168,6 @@ moded_start
     = '/' elements:any_element* '/' modes:modes
     {
     	return {
-        	type: "root",
         	modes,
         	elements
         }
@@ -236,7 +291,10 @@ primitive
         { return escaped; }
       )
     )
-
+    {
+    	return handler.buildElement('primitive', { character }, new Map([[character, [1]]]));
+    }
+    
 group 
     = 
     '(' 
@@ -259,22 +317,13 @@ group
         type == '?:' ? 'NC' :
         'N';
     
-      let data = [{
-        type: "group",
-        // C - Capturing, NC - Non-Capturing, N - named
-        data: {
-        	detailedType,
-            name: detailedType == 'N' ? type : undefined,
-            end: 0
-        },
-        transitions: []
-      }];
+      const data = {
+        detailedType,
+        name: detailedType == 'N' ? type : undefined,
+        end: 0
+      };
       
-      processElements(data, elements);
-      
-      data[0].data.end = data.length-1;
-
-	  return data;
+	  return handler.handle(data, elements, ProcessType.GROUP | ProcessType.DEFAULT);
     }
 
 lookaround 
@@ -297,15 +346,7 @@ option
     = 
     elements:to_option |2..,'|'|
     {
-    	let data = [{
-        	type: "option",
-            data: {},
-            transitions: []
-        }];
-    
-    	processElements(data, elements, ProcessType.OPTION);
-    
-        return data;
+    	return handler.handle({}, elements, ProcessType.OPTION);
     }
 
 optional 
@@ -350,22 +391,15 @@ iteration
         const end =
         	detailedType?.end != undefined ? detailedType?.end : undefined;
     
-    	let data = [{
-        	type: "iteration",
-            data: {
-            	detailedType,
-                start,
-                end,
-                lazy: lazy != undefined
-            },
-            transitions: []
-        }];
+    	const data = {
+          detailedType,
+          start,
+          end,
+          lazy: lazy != undefined
+        };
         
         const iterationType = detailedType == '*' ? ProcessType.ITERATION_ZERO : ProcessType.ITERATION_ONE;
-        
-        processElements(data, [element], iterationType | ProcessType.DEFAULT);
-    
-    	return data;
+        return handler.handle(data, [element], iterationType | ProcessType.DEFAULT);
     }
 
 list
