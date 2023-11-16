@@ -3,37 +3,43 @@
 /* ----------------------------------------- */
 
 {{
-    const ProcessType = {
-   	  NONE: 0x0,
-      ROOT: 0x1,
-      DEFAULT: 0x2,
-      OPTION: 0x4,
-      ITERATION_ZERO: 0x8,
-      ITERATION_ONE: 0x10,
-      GROUP: 0x20
-    };
+    const stateTypeBits = (0x1 << 32) - 1;
+    const stateFlagsBits = stateTypeBits << 32;
 
-	const MapType = new Map(
+    const States = {
+        ROOT: 0x1,
+        OPTION: 0x2,
+        ITERATION_ZERO: 0x4,
+        ITERATION_ONE: 0x8,
+        GROUP: 0x10,
+    };
+    
+    const Flags = {
+        NONE: 0x1,
+        DEFAULT: 0x2
+    }
+
+	const MapState = new Map(
     	[
-        	[ProcessType.ROOT, 'root'],
-            [ProcessType.OPTION, 'option'],
-            [ProcessType.ITERATION_ZERO, 'iteration'],
-            [ProcessType.ITERATION_ONE, 'iteration'],
-            [ProcessType.GROUP, 'group']
+        	[States.ROOT, 'root'],
+            [States.OPTION, 'option'],
+            [States.ITERATION_ZERO, 'iteration'],
+            [States.ITERATION_ONE, 'iteration'],
+            [States.GROUP, 'group']
         ]
     );
     
     class ParserHandler {
-        handle(data, elements, flags=ProcessType.DEFAULT) 
+        handle(data, elements, state, flags=Flags.DEFAULT) 
         {
         	let pointer = 0;
             let offset = 0;
-        	let outputElements = [this.buildElement(MapType.get(flags & (~ProcessType.DEFAULT)), data)];
+        	let outputElements = [this.buildElement(MapState.get(state), data)];
             
-            if(flags & ProcessType.DEFAULT)
+            if(flags & Flags.DEFAULT)
             	this.addTransitionToElement(outputElements[pointer++], null, pointer);
             
-            if(flags & ProcessType.OPTION)
+            if(flags & Flags.OPTION)
             	this.handleOptionBefore(outputElements, elements);
     
             elements.forEach((element, id) => {
@@ -54,14 +60,14 @@
                 outputElements.push(this.addTransitionToElement(element, null, offset));
             });
             
-            if(flags & ProcessType.ROOT)
+            if(flags & Flags.ROOT)
             	this.handleRootAfter(outputElements);
 
-			if(flags & ProcessType.GROUP)
+			if(flags & Flags.GROUP)
                 this.handleGroupAfter(outputElements);
 
-            if(flags & (ProcessType.ITERATION_ZERO | ProcessType.ITERATION_ONE))
-                this.handleIterationAfter(outputElements, flags);
+            if(flags & (Flags.ITERATION_ZERO | Flags.ITERATION_ONE))
+                this.handleIterationAfter(outputElements, state);
                 
             return outputElements;
         }
@@ -101,7 +107,7 @@
             });
         }
         
-        handleIterationAfter(outputElements, flags)
+        handleIterationAfter(outputElements, type)
         {
         	const dataLength = outputElements.length;
         
@@ -111,7 +117,7 @@
               ]))
             );
 
-            if(flags & ProcessType.ITERATION_ZERO)
+            if(type & State.ITERATION_ZERO)
             	this.addTransitionToElement(outputElements[0], null, outputElements.length);
         }
         
@@ -152,7 +158,7 @@ start
     type:(moded_start / general_start)
     {
     	const data = { modes: type?.modes };
-        return handler.handle(data, type?.elements, ProcessType.ROOT | ProcessType.DEFAULT);
+        return handler.handle(data, type?.elements, States.ROOT);
     }
 
 general_start
@@ -323,7 +329,7 @@ group
         end: 0
       };
       
-	  return handler.handle(data, elements, ProcessType.GROUP | ProcessType.DEFAULT);
+	  return handler.handle(data, elements, States.GROUP);
     }
 
 lookaround 
@@ -346,7 +352,7 @@ option
     = 
     elements:to_option |2..,'|'|
     {
-    	return handler.handle({}, elements, ProcessType.OPTION);
+    	return handler.handle({}, elements, States.OPTION, Flags.NONE);
     }
 
 optional 
@@ -398,8 +404,8 @@ iteration
           lazy: lazy != undefined
         };
         
-        const iterationType = detailedType == '*' ? ProcessType.ITERATION_ZERO : ProcessType.ITERATION_ONE;
-        return handler.handle(data, [element], iterationType | ProcessType.DEFAULT);
+        const iterationType = detailedType == '*' ? States.ITERATION_ZERO : States.ITERATION_ONE;
+        return handler.handle(data, [element], iterationType);
     }
 
 list
