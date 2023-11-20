@@ -1,170 +1,15 @@
-/* ----------------------------------------- */
-/* ---- functions, classes & structures ---- */
-/* ----------------------------------------- */
-
-{{
-    const stateTypeBits = (0x1 << 32) - 1;
-    const stateFlagsBits = stateTypeBits << 32;
-
-    const States = {
-        ROOT: 0x1,
-        OPTION: 0x2,
-        ITERATION_ZERO: 0x4,
-        ITERATION_ONE: 0x8,
-        GROUP: 0x10,
-    };
-    
-    const Flags = {
-        NONE: 0x1,
-        DEFAULT: 0x2
-    }
-
-	const MapState = new Map(
-    	[
-        	[States.ROOT, 'root'],
-            [States.OPTION, 'option'],
-            [States.ITERATION_ZERO, 'iteration'],
-            [States.ITERATION_ONE, 'iteration'],
-            [States.GROUP, 'group']
-        ]
-    );
-    
-    class ParserHandler {
-        handle(data, elements, state, flags=Flags.DEFAULT) 
-        {
-        	let pointer = 0;
-            let offset = 0;
-        	let outputElements = [this.buildElement(MapState.get(state), data)];
-            
-            if(flags & Flags.DEFAULT)
-            	this.addTransitionToElement(outputElements[pointer++], null, pointer);
-            
-            if(flags & Flags.OPTION)
-            	this.handleOptionBefore(outputElements, elements);
-    
-            elements.forEach((element, id) => {
-                if(Array.isArray(element))
-                {
-                    offset += element.length;
-                    outputElements.push(...element);
-                    return;
-                }
-                
-                if(element?.type === 'primitive')
-                {
-                	outputElements.push(element);
-                	return;
-                }
-                
-                offset++;
-                outputElements.push(this.addTransitionToElement(element, null, offset));
-            });
-            
-            if(flags & Flags.ROOT)
-            	this.handleRootAfter(outputElements);
-
-			if(flags & Flags.GROUP)
-                this.handleGroupAfter(outputElements);
-
-            if(flags & (Flags.ITERATION_ZERO | Flags.ITERATION_ONE))
-                this.handleIterationAfter(outputElements, state);
-                
-            return outputElements;
-        }
-        
-        handleRootAfter(outputElements){
-        	outputElements.push({type: 'end'});
-        }
-        
-        handleOptionBefore(outputElements, elements)
-        {
-        	let offset = 1;
-            let sumLength = elements.reduce((x, y) => x + (Array.isArray(y) ? y.length : 1), 0);
-            
-        	elements.forEach((element, id) => {
-            	if(Array.isArray(element))
-                {
-                	let input = null;
-                	if(element[element.length-1]?.type === "primitive") {
-                		input = element[element.length-1]?.data?.character;
-                        
-                        element[element.length-1].transitions.get(input).pop();
-                    }
-                    else if(element[element.length-1].transitions.has(null))
-                    	element[element.length-1].transitions.get(null).pop()
-                    	
-                	this.addTransitionToElement(element[element.length-1], input, sumLength - (offset + element.length) + 2);
-                }
-                else if(element?.type === "primitive")
-                {
-                	let input = element?.data?.character;
-                	element.transitions.get(input).pop();
-                	this.addTransitionToElement(element, element?.data?.character, sumLength - offset + 1);
-                }
-                
-                this.addTransitionToElement(outputElements[0], null, offset);
-                offset += Array.isArray(element) ? element.length : 1;
-            });
-        }
-        
-        handleIterationAfter(outputElements, type)
-        {
-        	const dataLength = outputElements.length;
-        
-        	outputElements.push(
-              this.buildElement("iteration_end", {}, new Map([
-                [null, [-dataLength + 1, 1]]
-              ]))
-            );
-
-            if(type & State.ITERATION_ZERO)
-            	this.addTransitionToElement(outputElements[0], null, outputElements.length);
-        }
-        
-        handleGroupAfter(outputElements)
-        {
-        	outputElements[0].data.end = outputElements.length - 1;
-        }
-        
-        buildElement(type, data={}, transitions = new Map()) {
-        	return {
-            	type,
-                data,
-                transitions
-            };
-        }
-        
-        addTransitionToElement(element, input, by){
-        	if(element.transitions === undefined) 
-            	element.transitions = new Map();
-            if(!element.transitions.has(input))
-            	element.transitions.set(input, []);
-            
-        	element.transitions.get(input).push(by);
-            return element;
-        }
-    }
-    
-    const handler = new ParserHandler();
-}}
-
-
 /* ------------------------------------ */
 /* ---- start of the regex grammar ---- */
 /* ------------------------------------ */
 
 start 
-    = 
-    type:(moded_start / general_start)
-    {
-    	const data = { modes: type?.modes };
-        return handler.handle(data, type?.elements, States.ROOT);
-    }
+    = moded_start / general_start
 
 general_start
     = elements:any_element*
     {
     	return { 
+        	type: "root",
         	modes: undefined,
         	elements 
         }
@@ -174,6 +19,7 @@ moded_start
     = '/' elements:any_element* '/' modes:modes
     {
     	return {
+        	type: "root",
         	modes,
         	elements
         }
@@ -297,10 +143,7 @@ primitive
         { return escaped; }
       )
     )
-    {
-    	return handler.buildElement('primitive', { character }, new Map([[character, [1]]]));
-    }
-    
+
 group 
     = 
     '(' 
@@ -323,13 +166,13 @@ group
         type == '?:' ? 'NC' :
         'N';
     
-      const data = {
+      return {
+        type: "group",
+        // C - Capturing, NC - Non-Capturing, N - named
         detailedType,
         name: detailedType == 'N' ? type : undefined,
-        end: 0
-      };
-      
-	  return handler.handle(data, elements, States.GROUP);
+        elements
+      }
     }
 
 lookaround 
@@ -352,7 +195,10 @@ option
     = 
     elements:to_option |2..,'|'|
     {
-    	return handler.handle({}, elements, States.OPTION, Flags.NONE);
+    	return {
+        	type: "option",
+            elements
+        }
     }
 
 optional 
@@ -368,7 +214,7 @@ optional
 iteration
     = 
     element:to_iterate 
-    detailedType:(
+    type:(
         '*' /
         '+' / 
         (
@@ -390,22 +236,20 @@ iteration
    	lazy:'?'?
     {
     	const start = 
-        	detailedType == '*' ? 0 :
-            detailedType == '+' ? 1 : 
-            detailedType?.start;
+        	type == '*' ? 0 :
+            type == '+' ? 1 : 
+            type?.start;
             
         const end =
-        	detailedType?.end != undefined ? detailedType?.end : undefined;
+        	type?.end != undefined ? type?.end : undefined;
     
-    	const data = {
-          detailedType,
-          start,
-          end,
-          lazy: lazy != undefined
-        };
-        
-        const iterationType = detailedType == '*' ? States.ITERATION_ZERO : States.ITERATION_ONE;
-        return handler.handle(data, [element], iterationType);
+    	return {
+        	type: "iteration",
+            start,
+            end,
+            isLazy: lazy == '?',
+            element
+        }
     }
 
 list

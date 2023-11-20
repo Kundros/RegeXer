@@ -1,0 +1,9 @@
+{
+    "tspegjs": {
+        "customHeader": "import * as customTypes from \"./parserTypes\"\nexport * as customTypes from \"./parserTypes\""
+    },
+    "returnTypes": {
+        "Start": "customTypes.RootState",
+        "Primitive": "customTypes.PrimitiveState"
+    }
+}

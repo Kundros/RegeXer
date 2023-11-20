@@ -1,26 +1,208 @@
+/* ----------------------------------------- */
+/* ---- functions, classes & structures ---- */
+/* ----------------------------------------- */
+
+{
+    const States = {
+    	END: 0x0,
+        ROOT: 0x1,
+        PRIMITIVE: 0x2,
+        OPTION: 0x4,
+        ITERATION_ZERO: 0x8,
+        ITERATION_ONE: 0x10,
+        ITERATION_END: 0x20,
+        GROUP: 0x40,
+        OPTIONAL: 0x80,
+        P_LIST: 0x100,
+        N_LIST: 0x200
+    };
+    
+    const Modifiers = {
+    	g: 0x1,
+        m: 0x2,
+        i: 0x4,
+        y: 0x8,
+        u: 0x10,
+        v: 0x20,
+        s: 0x40,
+        d: 0x80
+    }
+    
+    const Flags = {
+        NONE: 0x1,
+        DEFAULT: 0x2
+    }
+    
+    class ParserHandler {
+        handle(data, elements, state, flags=Flags.DEFAULT) 
+        {
+        	let pointer = 0;
+            let offset = 0;
+        	let outputElements = this.buildElement(state, data);
+            outputElements.AST.children.push(...elements.map(element => element.AST));
+            
+            if(flags & Flags.DEFAULT)
+            	this.addTransitionToElement(outputElements.NFA[pointer++], null, pointer);
+                
+            if(state & States.PRIMITIVE)
+            	this.addTransitionToElement(outputElements.NFA[pointer], outputElements.NFA[pointer++].ASTelement.chr, pointer);
+                
+            if(state & States.OPTION)
+            	this.handleOptionBefore(outputElements.NFA, elements);
+                
+            if(state & States.OPTIONAL)
+            	this.handleOptionalBefore(outputElements.NFA, elements);
+    		
+            if(state & (States.P_LIST | state.N_LIST))
+            	this.handleListBefore(outputElements.NFA, elements, state);
+    
+            elements.forEach((element, id) => {
+                offset += element.NFA.length;
+                outputElements.NFA.push(...element.NFA);
+            });
+            
+            if(state & States.ROOT)
+            	this.handleRootAfter(outputElements.NFA);
+
+			if(state & States.GROUP)
+                this.handleGroupAfter(outputElements.NFA);
+
+            if(state & (States.ITERATION_ZERO | States.ITERATION_ONE))
+                this.handleIterationAfter(outputElements.NFA, state);
+                
+            return outputElements;
+        }
+        
+        handleRootAfter(nfa){
+        	nfa.push(States.END);
+            /*nfa.forEach(element => {
+            	if(element != 0) element.ASTelement = undefined;
+            });*/
+        }
+        
+        handleOptionBefore(nfa, elements)
+        {
+        	let offset = 1;
+            const sumLength = elements.reduce((x, y) => x + (Array.isArray(y.NFA) ? y.NFA.length : 1), 0);
+            
+        	elements.forEach((element, id) => {
+            	element = element.NFA;
+                let last = element[element.length-1];
+                const input = last?.ASTelement?.type === States.PRIMITIVE ? last.ASTelement.chr : null;
+                    
+                last.transitions = last.transitions.filter(element => element[1] != 1);
+                    
+                if(element[0].ASTelement.type & (States.ITERATION_ZERO | States.ITERATION_ONE))
+                {
+                    let transitions = element[0].transitions;
+                    let biggestPosition = 0;
+                        
+                    transitions.forEach((transition, index) => {
+                        if(transition[1] > transitions[biggestPosition][1])
+                        biggestPosition = index;
+                    });
+                        
+                    transitions[biggestPosition][1] = sumLength - offset + 1;
+                }
+                
+                this.addTransitionToElement(last, input, sumLength - (offset + element.length) + 2);
+                this.addTransitionToElement(nfa[0], null, offset);
+                offset += Array.isArray(element) ? element.length : 1;
+            });
+        }
+        
+        handleOptionalBefore(nfa, elements)
+        {
+        	const sumLength = elements.reduce((x, y) => x + (Array.isArray(y.NFA) ? y.NFA.length : 1), 0);
+        	this.addTransitionToElement(nfa[0], null, sumLength + 1)
+        }
+        
+        handleListBefore(nfa, elements, state)
+        {
+        
+        }
+        
+        handleIterationAfter(nfa, state)
+        {
+        	const dataLength = nfa.length;
+        
+        	nfa.push(
+                this.buildNFAwhithoutASTref(States.ITERATION_END, [
+                    [null, -dataLength + 1],
+                    [null, 1]
+                ])
+            );
+
+            if(state & States.ITERATION_ZERO)
+            	this.addTransitionToElement(nfa[0], null, nfa.length);
+        }
+        
+        handleGroupAfter(nfa)
+        {
+        	nfa[0].ASTelement.end = nfa.length - 1;
+        }
+        
+        buildElement(type, data={}, transitions = []) 
+        {
+        	let element = {
+                AST: {
+                    type,
+                    ...data,
+                    children: []
+                },
+                NFA: []
+            };
+            
+            element.NFA.push({ASTelement: element.AST, transitions});
+            
+            return element;
+        }
+        
+        buildNFAwhithoutASTref(type, transitions = [])
+        {
+        	return { transitions };
+        }
+        
+        addTransitionToElement(element, input, by){
+        	if(element.transitions === undefined) 
+            	element.transitions = [];
+                
+            element.transitions.push([input, by]);
+            
+            return element;
+        }
+    }
+    
+    const handler = new ParserHandler();
+}
+
+
 /* ------------------------------------ */
 /* ---- start of the regex grammar ---- */
 /* ------------------------------------ */
 
 start 
-    = moded_start / general_start
+    = 
+    type:(moded_start / general_start)
+    {
+    	const data = { modifiers: type?.modifiers };
+        return handler.handle(data, type?.elements, States.ROOT);
+    }
 
 general_start
     = elements:any_element*
     {
     	return { 
-        	type: "root",
-        	modes: undefined,
+        	modifiers: undefined,
         	elements 
         }
     }
 
 moded_start
-    = '/' elements:any_element* '/' modes:modes
+    = '/' elements:any_element* '/' modifiers:modes
     {
     	return {
-        	type: "root",
-        	modes,
+        	modifiers,
         	elements
         }
     }
@@ -28,12 +210,12 @@ moded_start
 /* ---- modes ---- */
 
 modes 
-	= @modes:('m' / 'g' / 'i' / 'y' / 'u' / 'v' / 's' / 'd')*
+	= modifiers:(@modifiers:('m' / 'g' / 'i' / 'y' / 'u' / 'v' / 's' / 'd')*
     &{
     	let alreadyUsed = {};
         
         let parsable = true;
-		modes.forEach((character) => {
+		modifiers.forEach((character) => {
         	if(Object.hasOwn(alreadyUsed, character))
             {
             	parsable = false;
@@ -44,6 +226,9 @@ modes
         });
         
         return parsable;
+    })
+    {
+    	return modifiers.reduce((x,y) => x | Modifiers[y], 0);
     }
 
 
@@ -56,7 +241,7 @@ general
     = list / primitive / lookaround / group / EOS / SOS
 
 any_element 
-    = iteration / option / optional / general
+    = option / iteration / optional / general
 
 to_iterate
     = primitive / group / list
@@ -135,44 +320,47 @@ hexadecimal_ascii
 primitive
     = 
     character:(
-      hexadecimal_ascii /
-      [a-zA-Z0-9 ] / 
-      '.' /
-      (
-      	'\\' escaped:escaped_primitive
-        { return escaped; }
-      )
+        hexadecimal_ascii /
+        [a-zA-Z0-9 ] / 
+        '.' /
+        (
+            '\\' escaped:escaped_primitive
+            { return escaped; }
+        )
     )
-
+    {
+    	return handler.handle({ chr: character }, [], States.PRIMITIVE, Flags.NONE);
+    }
+    
 group 
     = 
     '(' 
         
         type:(
-          '?:' / 
-          (
-          	'?<' name:[a-zA-Z]+ '>'
-            {
-           		return name.join('');
-            }
-          )
+            '?:' / 
+            (
+                '?<' name:[a-zA-Z]+ '>'
+                {
+                    return name.join('');
+                }
+            )
         )?
           
         elements:any_element*  
     ')'
     {
-      const detailedType = 
-        type == undefined ? 'C' : 
-        type == '?:' ? 'NC' :
-        'N';
+        const detailedType = 
+            type == undefined ? 'C' : 
+            type == '?:' ? 'NC' :
+            'N';
     
-      return {
-        type: "group",
-        // C - Capturing, NC - Non-Capturing, N - named
-        detailedType,
-        name: detailedType == 'N' ? type : undefined,
-        elements
-      }
+        const data = {
+            detailedType,
+            name: detailedType == 'N' ? type : undefined,
+            end: 0
+        };
+      
+	    return handler.handle(data, elements, States.GROUP);
     }
 
 lookaround 
@@ -193,63 +381,59 @@ lookaround
 
 option 
     = 
-    elements:to_option |2..,'|'|
+    elements:(to_option |2..,'|'|)
     {
-    	return {
-        	type: "option",
-            elements
-        }
+    	return handler.handle({}, elements, States.OPTION, Flags.NONE);
     }
 
 optional 
     = 
     element:to_optional '?'
     {
-    	return {
-        	type: "optional",
-            element
-        }
+        return handler.handle({}, [element], States.OPTIONAL);
     }
 
 iteration
     = 
     element:to_iterate 
-    type:(
+    detailedType:(
         '*' /
         '+' / 
         (
-          '{' 
-            start:integer
-            end:(
-              ',' end:(@end:$integer? &{ return start <= end })?
-              { return end != undefined ? parseInt(end, 10) : undefined; }
-            )? 
-          '}'
-          { 
-          	return {
-            	start,
-                end
+            '{' 
+                start:integer
+                end:(
+                    ',' end:(@end:$integer? &{ return start <= end })?
+                    { return end != undefined ? parseInt(end, 10) : undefined; }
+                )? 
+            '}'
+            { 
+                return {
+                    start,
+                    end
+                }
             }
-          }
         )
     )
    	lazy:'?'?
     {
     	const start = 
-        	type == '*' ? 0 :
-            type == '+' ? 1 : 
-            type?.start;
+        	detailedType == '*' ? 0 :
+            detailedType == '+' ? 1 : 
+            detailedType?.start;
             
         const end =
-        	type?.end != undefined ? type?.end : undefined;
+        	detailedType?.end != undefined ? detailedType?.end : undefined;
     
-    	return {
-        	type: "iteration",
+    	const data = {
+            detailedType,
             start,
             end,
-            isLazy: lazy == '?',
-            element
-        }
+            lazy: lazy != undefined
+        };
+        
+        const iterationType = detailedType == '*' ? States.ITERATION_ZERO : States.ITERATION_ONE;
+        return handler.handle(data, [element], iterationType);
     }
 
 list
@@ -259,12 +443,7 @@ list
         elements:to_list* 
     ']'
     {
-    	return {
-        	type: "list",
-            // N - negative, P - positive
-            detailedType: negation == '^' ? 'N' : 'P',
-            elements
-        }
+    	return handler.handle(data, elements, negation == '^' ? States.N_LIST : States.P_LIST);
     }
 
 EOS = '$' // end of string
