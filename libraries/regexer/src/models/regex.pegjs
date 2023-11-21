@@ -5,16 +5,17 @@
 {
     const States = {
     	END: 0x0,
-        ROOT: 0x1,
-        PRIMITIVE: 0x2,
-        OPTION: 0x4,
-        ITERATION_ZERO: 0x8,
-        ITERATION_ONE: 0x10,
-        ITERATION_END: 0x20,
-        GROUP: 0x40,
-        OPTIONAL: 0x80,
-        P_LIST: 0x100,
-        N_LIST: 0x200
+        NULL: 0x1,
+        ROOT: 0x2,
+        PRIMITIVE: 0x4,
+        OPTION: 0x8,
+        ITERATION_ZERO: 0x10,
+        ITERATION_ONE: 0x20,
+        ITERATION_END: 0x40,
+        GROUP: 0x80,
+        OPTIONAL: 0x100,
+        P_LIST: 0x200,
+        N_LIST: 0x400
     };
     
     const Modifiers = {
@@ -39,13 +40,15 @@
         	let pointer = 0;
             let offset = 0;
         	let outputElements = this.buildElement(state, data);
-            outputElements.AST.children.push(...elements.map(element => element.AST));
+            
+            if(outputElements?.AST?.children !== undefined)
+            	outputElements.AST.children.push(...elements.map(element => element.AST));
             
             if(flags & Flags.DEFAULT)
-            	this.addTransitionToElement(outputElements.NFA[pointer++], null, pointer);
+            	this.addTransitionToElement(outputElements.NFA[pointer], null, ++pointer);
                 
             if(state & States.PRIMITIVE)
-            	this.addTransitionToElement(outputElements.NFA[pointer], outputElements.NFA[pointer++].ASTelement.chr, pointer);
+            	this.addTransitionToElement(outputElements.NFA[pointer], outputElements.NFA[pointer].ASTelement.chr, ++pointer);
                 
             if(state & States.OPTION)
             	this.handleOptionBefore(outputElements.NFA, elements);
@@ -73,17 +76,17 @@
             return outputElements;
         }
         
-        handleRootAfter(nfa){
-        	nfa.push(States.END);
-            /*nfa.forEach(element => {
+        handleRootAfter(outputNFA){
+        	outputNFA.push(States.END);
+            outputNFA.forEach(element => {
             	if(element != 0) element.ASTelement = undefined;
-            });*/
+            });
         }
         
-        handleOptionBefore(nfa, elements)
+        handleOptionBefore(outputNFA, elements)
         {
         	let offset = 1;
-            const sumLength = elements.reduce((x, y) => x + (Array.isArray(y.NFA) ? y.NFA.length : 1), 0);
+            const sumLength = elements.reduce((x, y) => x + y.NFA.length, 0);
             
         	elements.forEach((element, id) => {
             	element = element.NFA;
@@ -91,8 +94,15 @@
                 const input = last?.ASTelement?.type === States.PRIMITIVE ? last.ASTelement.chr : null;
                     
                 last.transitions = last.transitions.filter(element => element[1] != 1);
-                    
-                if(element[0].ASTelement.type & (States.ITERATION_ZERO | States.ITERATION_ONE))
+               
+               	/* if option most top element is one of these, must be redirected to option end */
+                if(
+                  element[0].ASTelement.type & (
+                    States.ITERATION_ZERO |
+                    States.ITERATION_ONE |
+                    States.OPTIONAL
+                  )
+                )
                 {
                     let transitions = element[0].transitions;
                     let biggestPosition = 0;
@@ -106,27 +116,27 @@
                 }
                 
                 this.addTransitionToElement(last, input, sumLength - (offset + element.length) + 2);
-                this.addTransitionToElement(nfa[0], null, offset);
+                this.addTransitionToElement(outputNFA[0], null, offset);
                 offset += Array.isArray(element) ? element.length : 1;
             });
         }
         
-        handleOptionalBefore(nfa, elements)
+        handleOptionalBefore(outputNFA, elements)
         {
         	const sumLength = elements.reduce((x, y) => x + (Array.isArray(y.NFA) ? y.NFA.length : 1), 0);
-        	this.addTransitionToElement(nfa[0], null, sumLength + 1)
+        	this.addTransitionToElement(outputNFA[0], null, sumLength + 1)
         }
         
-        handleListBefore(nfa, elements, state)
+        handleListBefore(outputNFA, elements, state)
         {
         
         }
         
-        handleIterationAfter(nfa, state)
+        handleIterationAfter(outputNFA, state)
         {
-        	const dataLength = nfa.length;
+        	const dataLength = outputNFA.length;
         
-        	nfa.push(
+        	outputNFA.push(
                 this.buildNFAwhithoutASTref(States.ITERATION_END, [
                     [null, -dataLength + 1],
                     [null, 1]
@@ -134,22 +144,27 @@
             );
 
             if(state & States.ITERATION_ZERO)
-            	this.addTransitionToElement(nfa[0], null, nfa.length);
+            	this.addTransitionToElement(outputNFA[0], null, outputNFA.length);
         }
         
-        handleGroupAfter(nfa)
+        handleGroupAfter(outputNFA)
         {
-        	nfa[0].ASTelement.end = nfa.length - 1;
+        	outputNFA[0].ASTelement.end = outputNFA.length - 1;
         }
         
         buildElement(type, data={}, transitions = []) 
         {
+        	let AST = {
+              type,
+              ...data
+            };
+        
+        	if(type & ~(States.NULL | States.PRIMITIVE))
+        		AST.children = []
+        
+        
         	let element = {
-                AST: {
-                    type,
-                    ...data,
-                    children: []
-                },
+                AST,
                 NFA: []
             };
             
@@ -247,14 +262,14 @@ to_iterate
     = primitive / group / list
 
 to_option
-    = iteration / general
+    = iteration / optional / general / null_transition
 
 to_optional 
     = primitive / group / list
 
 to_list
     = 
-    @element:(range_ascii / hexadecimal_ascii / '\\]' / [^\]]) 
+    @element:(range_ascii / hexadecimal_ascii / '\\]' / [^\]\\] / is_escaped) 
     &{
     	if(element?.type != "range")
         	return true;
@@ -289,6 +304,10 @@ escaped_primitive
     '|' /
     ':' /
     '-'
+    
+null_transition 
+	= ""
+    { return handler.handle({}, [], States.NULL, Flags.NONE); }
 
 integer_digit
 	= digit:[0-9] { return parseInt(digit, 10); }
@@ -297,11 +316,22 @@ integer
   	= digits:[0-9]+ { return parseInt(digits.join(""), 10); }
     
 ascii 
-	= [\x00-\x7F]
+	= [\x00-\xFF]
+    
+reserved_character
+	= [.+*?^$()\[\]{}|\\]
+    
+unreserved_character
+	= [^.+*?^$()\[\]{}|\\]
+    
+is_escaped
+	=
+    '\\' escaped:escaped_primitive
+    { return escaped; }
     
 range_ascii
 	= 
-    first:(hexadecimal_ascii / ascii) '-' second:(hexadecimal_ascii / ascii)
+    first:(hexadecimal_ascii / [^\]\\] / is_escaped) '-' second:(hexadecimal_ascii / [^\]\\] / is_escaped)
     {
     	return {
         	type: "range",
@@ -321,12 +351,8 @@ primitive
     = 
     character:(
         hexadecimal_ascii /
-        [a-zA-Z0-9 ] / 
-        '.' /
-        (
-            '\\' escaped:escaped_primitive
-            { return escaped; }
-        )
+        is_escaped /
+        unreserved_character
     )
     {
     	return handler.handle({ chr: character }, [], States.PRIMITIVE, Flags.NONE);
@@ -443,7 +469,7 @@ list
         elements:to_list* 
     ']'
     {
-    	return handler.handle(data, elements, negation == '^' ? States.N_LIST : States.P_LIST);
+    	return handler.handle({}, elements, negation == '^' ? States.N_LIST : States.P_LIST, Flags.NONE);
     }
 
 EOS = '$' // end of string

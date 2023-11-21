@@ -54,11 +54,14 @@ export const RegexStates = {
     END: 0x0,
     ROOT: 0x1,
     PRIMITIVE: 0x2,
-    OPTION: 0x3,
-    ITERATION_ZERO: 0x4,
-    ITERATION_ONE: 0x5,
-    ITERATION_END: 0x6,
-    GROUP: 0x7
+    OPTION: 0x4,
+    ITERATION_ZERO: 0x8,
+    ITERATION_ONE: 0x10,
+    ITERATION_END: 0x20,
+    GROUP: 0x40,
+    OPTIONAL: 0x80,
+    P_LIST: 0x100,
+    N_LIST: 0x200
 } as const;
 
 export type RegexStates = typeof RegexStates[keyof typeof RegexStates];
