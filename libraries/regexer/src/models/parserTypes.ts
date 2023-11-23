@@ -20,7 +20,14 @@ export type ASTPrimitive = AST &
 export type ASTRoot = AST &
 {
     modifiers: number
-};
+}
+
+export type ASTGroup = AST & 
+{
+    detailedType: string,
+    name: string | undefined,
+    end: number
+}
 
 /* NFA type */
 
@@ -52,16 +59,17 @@ export type NFATransition = [string | null, number];
 
 export const RegexStates = {
     END: 0x0,
-    ROOT: 0x1,
-    PRIMITIVE: 0x2,
-    OPTION: 0x4,
-    ITERATION_ZERO: 0x8,
-    ITERATION_ONE: 0x10,
-    ITERATION_END: 0x20,
-    GROUP: 0x40,
-    OPTIONAL: 0x80,
-    P_LIST: 0x100,
-    N_LIST: 0x200
+    NULL: 0x1,
+    ROOT: 0x2,
+    PRIMITIVE: 0x4,
+    OPTION: 0x8,
+    ITERATION_ZERO: 0x10,
+    ITERATION_ONE: 0x20,
+    ITERATION_END: 0x40,
+    GROUP: 0x80,
+    OPTIONAL: 0x100,
+    P_LIST: 0x200,
+    N_LIST: 0x400
 } as const;
 
 export type RegexStates = typeof RegexStates[keyof typeof RegexStates];

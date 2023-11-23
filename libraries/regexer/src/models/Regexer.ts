@@ -1,6 +1,6 @@
 import { StringReader } from "@helpers/StringReader"
 import { RegexMatch } from "@models/RegexMatch";
-import { parse, customTypes } from "@models/regexParser"
+import { parse, RegexTypes } from "@models/regexParser"
 import { RegCompileException } from "@exceptions/RegCompileException";
 
 export class Regexer{
@@ -30,6 +30,6 @@ export class Regexer{
         return new RegexMatch();
     }
 
-    private AST_: customTypes.ASTRoot;
-    private NFA_: customTypes.NFAState[];
+    private AST_: RegexTypes.ASTRoot;
+    private NFA_: RegexTypes.NFAState[];
 }

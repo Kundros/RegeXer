@@ -56,9 +56,12 @@
             if(state & States.OPTIONAL)
             	this.handleOptionalBefore(outputElements.NFA, elements);
     		
-            if(state & (States.P_LIST | state.N_LIST))
+            if(state & (States.P_LIST | States.N_LIST))
+            {
             	this.handleListBefore(outputElements.NFA, elements, state);
-    
+                return outputElements;
+    		}
+            
             elements.forEach((element, id) => {
                 offset += element.NFA.length;
                 outputElements.NFA.push(...element.NFA);
@@ -78,9 +81,11 @@
         
         handleRootAfter(outputNFA){
         	outputNFA.push(States.END);
-            outputNFA.forEach(element => {
+
+            // DEBUG
+            /*outputNFA.forEach(element => {
             	if(element != 0) element.ASTelement = undefined;
-            });
+            });*/
         }
         
         handleOptionBefore(outputNFA, elements)
@@ -124,12 +129,33 @@
         handleOptionalBefore(outputNFA, elements)
         {
         	const sumLength = elements.reduce((x, y) => x + (Array.isArray(y.NFA) ? y.NFA.length : 1), 0);
-        	this.addTransitionToElement(outputNFA[0], null, sumLength + 1)
+        	this.addTransitionToElement(outputNFA[0], null, sumLength + 1);
         }
         
         handleListBefore(outputNFA, elements, state)
         {
-        
+        	if(state & States.P_LIST)
+            {
+                const transitionString = elements.reduce((x, y) => x + y,"");
+                this.addTransitionToElement(outputNFA[0], transitionString, 1);
+                return;
+            }
+            
+            let mapCharacters = [];
+            
+            for(let i = 0; i < 256; i++)
+            	mapCharacters.push(String.fromCharCode(i));
+            
+            elements.forEach(str => {
+            	const length = str.length;
+            	for (let i = 0; i < length; i++) { 
+                	const code = str.charCodeAt(i);
+                    mapCharacters[code] = undefined;
+                };
+            });
+            
+            const excluded = mapCharacters.filter(x => x != undefined).join('');
+            this.addTransitionToElement(outputNFA[0], excluded, 1);
         }
         
         handleIterationAfter(outputNFA, state)
@@ -159,7 +185,7 @@
               ...data
             };
         
-        	if(type & ~(States.NULL | States.PRIMITIVE))
+        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST))
         		AST.children = []
         
         
@@ -268,15 +294,7 @@ to_optional
     = primitive / group / list
 
 to_list
-    = 
-    @element:(range_ascii / hexadecimal_ascii / '\\]' / [^\]\\] / is_escaped) 
-    &{
-    	if(element?.type != "range")
-        	return true;
-    	return element?.start <= element?.end;
-    }
-    
-    
+    = range_ascii / hexadecimal_ascii / [^\]\\] / is_escaped
     
 /* ----------------------- */
 /* ---- Regex grammar ---- */
@@ -331,13 +349,20 @@ is_escaped
     
 range_ascii
 	= 
-    first:(hexadecimal_ascii / [^\]\\] / is_escaped) '-' second:(hexadecimal_ascii / [^\]\\] / is_escaped)
+    first:(hexadecimal_ascii / [^\]\\] / is_escaped) '-' second:(hexadecimal_ascii / [^\]\\] / is_escaped) 
+    &{
+    	return first.charCodeAt(0) <= second.charCodeAt(0);
+    }
     {
-    	return {
-        	type: "range",
-            start: first,
-            end: second
-        }
+    	let stringCharacters = "";
+        
+        const start = first.charCodeAt(0);
+        const end = second.charCodeAt(0);
+        
+        for(let i = start; i <= end; i++)
+            stringCharacters += String.fromCharCode(i);
+    
+    	return stringCharacters;
     }
     
 hexadecimal_ascii
@@ -466,10 +491,15 @@ list
     = 
     '['
         negation:'^'? 
-        elements:to_list* 
+        elements:to_list+
     ']'
     {
-    	return handler.handle({}, elements, negation == '^' ? States.N_LIST : States.P_LIST, Flags.NONE);
+    	return handler.handle(
+        	{ neg: negation === '^'}, 
+            elements, 
+            negation === '^' ? States.N_LIST : States.P_LIST, 
+            Flags.NONE
+        );
     }
 
 EOS = '$' // end of string
