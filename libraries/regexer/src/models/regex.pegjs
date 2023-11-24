@@ -42,19 +42,33 @@
         	let outputElements = this.buildElement(state, data);
             
             if(outputElements?.AST?.children !== undefined)
-            	outputElements.AST.children.push(...elements.map(element => element.AST));
+            {
+            	elements.forEach(element => {
+                	if(state & States.OPTION)
+                    {
+                    	if(element?.length === 0)
+                    		element.push(this.buildElement(States.NULL));
+                		outputElements.AST.children.push([...element.map(el => el.AST)]);
+                    }
+                    else 
+                    	outputElements.AST.children.push(element.AST);
+                });
+            }
             
             if(flags & Flags.DEFAULT)
             	this.addTransitionToElement(outputElements.NFA[pointer], null, ++pointer);
                 
             if(state & States.PRIMITIVE)
-            	this.addTransitionToElement(outputElements.NFA[pointer], outputElements.NFA[pointer].ASTelement.chr, ++pointer);
-                
-            if(state & States.OPTION)
-            	this.handleOptionBefore(outputElements.NFA, elements);
+            	this.addTransitionToElement(outputElements.NFA[pointer], outputElements.NFA[pointer].ASTelement.chr, ++pointer); 
                 
             if(state & States.OPTIONAL)
             	this.handleOptionalBefore(outputElements.NFA, elements);
+                
+            if(state & States.OPTION)
+            {
+            	this.handleOptionBefore(outputElements.NFA, elements);
+                return outputElements;
+            }
     		
             if(state & (States.P_LIST | States.N_LIST))
             {
@@ -62,8 +76,7 @@
                 return outputElements;
     		}
             
-            elements.forEach((element, id) => {
-                offset += element.NFA.length;
+            elements.forEach(element => {
                 outputElements.NFA.push(...element.NFA);
             });
             
@@ -91,38 +104,46 @@
         handleOptionBefore(outputNFA, elements)
         {
         	let offset = 1;
-            const sumLength = elements.reduce((x, y) => x + y.NFA.length, 0);
+            let toEnd = 0;
+            const sumLength = elements.reduce((x, y) => 
+            	x + (y.length > 0 ? y.reduce((a,b) => a + b.NFA.length, 0) : 1)
+            , 0);
             
-        	elements.forEach((element, id) => {
-            	element = element.NFA;
-                let last = element[element.length-1];
-                const input = last?.ASTelement?.type === States.PRIMITIVE ? last.ASTelement.chr : null;
-                    
-                last.transitions = last.transitions.filter(element => element[1] != 1);
-               
-               	/* if option most top element is one of these, must be redirected to option end */
+        	elements.forEach((option, id) => {
+                this.addTransitionToElement(outputNFA[0], null, offset);
+                
+                const first = option[0].NFA[0];
                 if(
-                  element[0].ASTelement.type & (
+                  first.ASTelement?.type & (
                     States.ITERATION_ZERO |
                     States.ITERATION_ONE |
                     States.OPTIONAL
                   )
                 )
                 {
-                    let transitions = element[0].transitions;
+                    let transitions = first.transitions;
                     let biggestPosition = 0;
-                        
+
                     transitions.forEach((transition, index) => {
-                        if(transition[1] > transitions[biggestPosition][1])
-                        biggestPosition = index;
+                      	if(transition[1] > transitions[biggestPosition][1])
+                          	biggestPosition = index;
                     });
-                        
-                    transitions[biggestPosition][1] = sumLength - offset + 1;
+
+					transitions[biggestPosition][1] = sumLength - offset + 1;
                 }
                 
-                this.addTransitionToElement(last, input, sumLength - (offset + element.length) + 2);
-                this.addTransitionToElement(outputNFA[0], null, offset);
-                offset += Array.isArray(element) ? element.length : 1;
+                option.forEach(element => {
+                	outputNFA.push(...element.NFA);
+                    toEnd = sumLength - (offset + element.NFA.length) + 2;
+                    offset += element.NFA.length;
+                });
+                
+                let last = outputNFA[outputNFA.length-1];
+                const input = last?.ASTelement?.type === States.PRIMITIVE ? last.ASTelement.chr : null;
+                
+                last.transitions = last.transitions.filter(element => element[1] != 1);
+                
+                this.addTransitionToElement(last, input, toEnd);
             });
         }
         
@@ -181,13 +202,12 @@
         buildElement(type, data={}, transitions = []) 
         {
         	let AST = {
-              type,
-              ...data
+                type,
+                ...data
             };
         
         	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST))
         		AST.children = []
-        
         
         	let element = {
                 AST,
@@ -288,7 +308,7 @@ to_iterate
     = primitive / group / list
 
 to_option
-    = iteration / optional / general / null_transition
+    = iteration / optional / general
 
 to_optional 
     = primitive / group / list
@@ -432,7 +452,7 @@ lookaround
 
 option 
     = 
-    elements:(to_option |2..,'|'|)
+    elements:((to_option*) |2..,'|'|)
     {
     	return handler.handle({}, elements, States.OPTION, Flags.NONE);
     }

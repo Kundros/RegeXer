@@ -1416,11 +1416,6 @@ peg$parseto_option() {
       if (s0 === peg$FAILED) {
 // @ts-ignore
         s0 = peg$parsegeneral();
-// @ts-ignore
-        if (s0 === peg$FAILED) {
-// @ts-ignore
-          s0 = peg$parsenull_transition();
-        }
       }
     }
 
@@ -2642,7 +2637,7 @@ peg$parselookaround() {
   function // @ts-ignore
 peg$parseoption() {
 // @ts-ignore
-    var s0, s1, s2, s3, s4;
+    var s0, s1, s2, s3, s4, s5;
 
 // @ts-ignore
     s0 = peg$currPos;
@@ -2651,7 +2646,16 @@ peg$parseoption() {
 // @ts-ignore
     s2 = [];
 // @ts-ignore
-    s3 = peg$parseto_option();
+    s3 = [];
+// @ts-ignore
+    s4 = peg$parseto_option();
+// @ts-ignore
+    while (s4 !== peg$FAILED) {
+// @ts-ignore
+      s3.push(s4);
+// @ts-ignore
+      s4 = peg$parseto_option();
+    }
 // @ts-ignore
     while (s3 !== peg$FAILED) {
 // @ts-ignore
@@ -2674,18 +2678,18 @@ peg$parseoption() {
 // @ts-ignore
       if (s4 !== peg$FAILED) {
 // @ts-ignore
-        s4 = peg$parseto_option();
+        s4 = [];
 // @ts-ignore
-        if (s4 === peg$FAILED) {
+        s5 = peg$parseto_option();
 // @ts-ignore
-          peg$currPos = s3;
+        while (s5 !== peg$FAILED) {
 // @ts-ignore
-          s3 = peg$FAILED;
+          s4.push(s5);
 // @ts-ignore
-        } else {
-// @ts-ignore
-          s3 = s4;
+          s5 = peg$parseto_option();
         }
+// @ts-ignore
+        s3 = s4;
 // @ts-ignore
       } else {
 // @ts-ignore
@@ -3215,8 +3219,25 @@ peg$parseSOS() {
             
 // @ts-ignore
             if(outputElements?.AST?.children !== undefined)
+            {
 // @ts-ignore
-            	outputElements.AST.children.push(...elements.map(element => element.AST));
+            	elements.forEach(element => {
+// @ts-ignore
+                	if(state & States.OPTION)
+                    {
+// @ts-ignore
+                    	if(element?.length === 0)
+// @ts-ignore
+                    		element.push(this.buildElement(States.NULL));
+// @ts-ignore
+                		outputElements.AST.children.push([...element.map(el => el.AST)]);
+                    }
+// @ts-ignore
+                    else 
+// @ts-ignore
+                    	outputElements.AST.children.push(element.AST);
+                });
+            }
             
 // @ts-ignore
             if(flags & Flags.DEFAULT)
@@ -3226,17 +3247,21 @@ peg$parseSOS() {
 // @ts-ignore
             if(state & States.PRIMITIVE)
 // @ts-ignore
-            	this.addTransitionToElement(outputElements.NFA[pointer], outputElements.NFA[pointer].ASTelement.chr, ++pointer);
-                
-// @ts-ignore
-            if(state & States.OPTION)
-// @ts-ignore
-            	this.handleOptionBefore(outputElements.NFA, elements);
+            	this.addTransitionToElement(outputElements.NFA[pointer], outputElements.NFA[pointer].ASTelement.chr, ++pointer); 
                 
 // @ts-ignore
             if(state & States.OPTIONAL)
 // @ts-ignore
             	this.handleOptionalBefore(outputElements.NFA, elements);
+                
+// @ts-ignore
+            if(state & States.OPTION)
+            {
+// @ts-ignore
+            	this.handleOptionBefore(outputElements.NFA, elements);
+// @ts-ignore
+                return outputElements;
+            }
     		
 // @ts-ignore
             if(state & (States.P_LIST | States.N_LIST))
@@ -3248,9 +3273,7 @@ peg$parseSOS() {
     		}
             
 // @ts-ignore
-            elements.forEach((element, id) => {
-// @ts-ignore
-                offset += element.NFA.length;
+            elements.forEach(element => {
 // @ts-ignore
                 outputElements.NFA.push(...element.NFA);
             });
@@ -3293,26 +3316,24 @@ peg$parseSOS() {
 // @ts-ignore
         	let offset = 1;
 // @ts-ignore
-            const sumLength = elements.reduce((x, y) => x + y.NFA.length, 0);
+            let toEnd = 0;
+// @ts-ignore
+            const sumLength = elements.reduce((x, y) => 
+// @ts-ignore
+            	x + (y.length > 0 ? y.reduce((a,b) => a + b.NFA.length, 0) : 1)
+            , 0);
             
 // @ts-ignore
-        	elements.forEach((element, id) => {
+        	elements.forEach((option, id) => {
 // @ts-ignore
-            	element = element.NFA;
+                this.addTransitionToElement(outputNFA[0], null, offset);
+                
 // @ts-ignore
-                let last = element[element.length-1];
-// @ts-ignore
-                const input = last?.ASTelement?.type === States.PRIMITIVE ? last.ASTelement.chr : null;
-                    
-// @ts-ignore
-                last.transitions = last.transitions.filter(element => element[1] != 1);
-               
-// @ts-ignore
-               	/* if option most top element is one of these, must be redirected to option end */
+                const first = option[0].NFA[0];
 // @ts-ignore
                 if(
 // @ts-ignore
-                  element[0].ASTelement.type & (
+                  first.ASTelement?.type & (
 // @ts-ignore
                     States.ITERATION_ZERO |
 // @ts-ignore
@@ -3323,28 +3344,42 @@ peg$parseSOS() {
                 )
                 {
 // @ts-ignore
-                    let transitions = element[0].transitions;
+                    let transitions = first.transitions;
 // @ts-ignore
                     let biggestPosition = 0;
-                        
+
 // @ts-ignore
                     transitions.forEach((transition, index) => {
 // @ts-ignore
-                        if(transition[1] > transitions[biggestPosition][1])
+                      	if(transition[1] > transitions[biggestPosition][1])
 // @ts-ignore
-                        biggestPosition = index;
+                          	biggestPosition = index;
                     });
-                        
+
 // @ts-ignore
-                    transitions[biggestPosition][1] = sumLength - offset + 1;
+					transitions[biggestPosition][1] = sumLength - offset + 1;
                 }
                 
 // @ts-ignore
-                this.addTransitionToElement(last, input, sumLength - (offset + element.length) + 2);
+                option.forEach(element => {
 // @ts-ignore
-                this.addTransitionToElement(outputNFA[0], null, offset);
+                	outputNFA.push(...element.NFA);
 // @ts-ignore
-                offset += Array.isArray(element) ? element.length : 1;
+                    toEnd = sumLength - (offset + element.NFA.length) + 2;
+// @ts-ignore
+                    offset += element.NFA.length;
+                });
+                
+// @ts-ignore
+                let last = outputNFA[outputNFA.length-1];
+// @ts-ignore
+                const input = last?.ASTelement?.type === States.PRIMITIVE ? last.ASTelement.chr : null;
+                
+// @ts-ignore
+                last.transitions = last.transitions.filter(element => element[1] != 1);
+                
+// @ts-ignore
+                this.addTransitionToElement(last, input, toEnd);
             });
         }
         
@@ -3434,16 +3469,15 @@ peg$parseSOS() {
 // @ts-ignore
         	let AST = {
 // @ts-ignore
-              type,
+                type,
 // @ts-ignore
-              ...data
+                ...data
             };
         
 // @ts-ignore
         	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST))
 // @ts-ignore
         		AST.children = []
-        
         
 // @ts-ignore
         	let element = {
@@ -3619,7 +3653,7 @@ export type Modes = number;
 export type General = List | Primitive | Lookaround | Group | EOS | SOS;
 export type AnyElement = Option | Iteration | Optional | General;
 export type ToIterate = Primitive | Group | List;
-export type ToOption = Iteration | Optional | General | NullTransition;
+export type ToOption = Iteration | Optional | General;
 export type ToOptional = Primitive | Group | List;
 export type ToList = RangeAscii | HexadecimalAscii | string | IsEscaped;
 export type EscapedPrimitive =
