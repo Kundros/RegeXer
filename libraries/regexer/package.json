@@ -6,8 +6,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "peggy ./src/models/regex.pegjs --plugin ./node_modules/ts-pegjs/dist/tspegjs --extra-options-file pegconfig.json --format es --output ./src/models/regexParser.ts && tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-    "start": "node dist/index.js",
+    "build": "npm run build_peggy && npm run build_main",
+    "build_peggy": "peggy ./src/models/regex.pegjs --plugin ./node_modules/ts-pegjs/dist/tspegjs --extra-options-file pegconfig.json --format es --output ./src/models/regexParser.ts",
+    "build_main": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "start": "node --trace-warnings dist/index.js",
     "dev": "node --trace-warnings dist/index.js",
     "test": "jest index"
   },

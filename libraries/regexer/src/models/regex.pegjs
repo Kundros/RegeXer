@@ -16,7 +16,8 @@
         GROUP: 0x100,
         OPTIONAL: 0x200,
         P_LIST: 0x400,
-        N_LIST: 0x800
+        N_LIST: 0x800,
+        LIST_END: 0x1000
     };
     
     const Modifiers = {
@@ -157,10 +158,21 @@
         
         handleListBefore(outputNFA, elements, state)
         {
+        	outputNFA.push(this.buildElement(States.LIST_END).NFA[0]);
+            this.addTransitionToElement(outputNFA[1], null, 1);
+            
         	if(state & States.P_LIST)
             {
-                const transitionString = elements.reduce((x, y) => x + y,"");
-                this.addTransitionToElement(outputNFA[0], transitionString, 1);
+                elements.forEach((element) => {
+                	if(Array.isArray(element))
+                    {
+                    	element.forEach((str) => {
+                        	this.addTransitionToElement(outputNFA[0], str, 1);
+                        });
+                        return;
+                    }
+                	this.addTransitionToElement(outputNFA[0], element, 1);
+                });
                 return;
             }
             
@@ -169,16 +181,23 @@
             for(let i = 0; i < 256; i++)
             	mapCharacters.push(String.fromCharCode(i));
             
-            elements.forEach(str => {
-            	const length = str.length;
-            	for (let i = 0; i < length; i++) { 
-                	const code = str.charCodeAt(i);
-                    mapCharacters[code] = undefined;
-                };
+            elements.forEach(element => {
+            	if(Array.isArray(element))
+                {
+                    element.forEach((str) => {
+                      	const code = str.charCodeAt(0);
+                    	mapCharacters[code] = undefined;
+                    });
+                    return;
+                }
+            	const code = element.charCodeAt(0);
+                mapCharacters[code] = undefined;
             });
             
-            const excluded = mapCharacters.filter(x => x != undefined).join('');
-            this.addTransitionToElement(outputNFA[0], excluded, 1);
+            const excluded = mapCharacters.filter(x => x != undefined);
+            excluded.forEach((element) => {
+            	this.addTransitionToElement(outputNFA[0], element, 1);
+            });
         }
         
         handleIterationAfter(outputNFA, state)
@@ -208,7 +227,7 @@
                 ...data
             };
         
-        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST))
+        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST | States.LIST_END))
         		AST.children = []
         
         	let element = {
@@ -376,13 +395,13 @@ range_ascii
     	return first.charCodeAt(0) <= second.charCodeAt(0);
     }
     {
-    	let stringCharacters = "";
+    	let stringCharacters = [];
         
         const start = first.charCodeAt(0);
         const end = second.charCodeAt(0);
         
         for(let i = start; i <= end; i++)
-            stringCharacters += String.fromCharCode(i);
+            stringCharacters.push(String.fromCharCode(i));
     
     	return stringCharacters;
     }

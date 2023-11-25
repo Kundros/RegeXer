@@ -466,7 +466,7 @@ function peg$parse(input, options) {
 
   var peg$f10 = function(first, second) {
 // @ts-ignore
-    	let stringCharacters = "";
+    	let stringCharacters = [];
         
 // @ts-ignore
         const start = first.charCodeAt(0);
@@ -476,7 +476,7 @@ function peg$parse(input, options) {
 // @ts-ignore
         for(let i = start; i <= end; i++)
 // @ts-ignore
-            stringCharacters += String.fromCharCode(i);
+            stringCharacters.push(String.fromCharCode(i));
     
 // @ts-ignore
     	return stringCharacters;
@@ -3181,7 +3181,9 @@ peg$parseSOS() {
 // @ts-ignore
         P_LIST: 0x400,
 // @ts-ignore
-        N_LIST: 0x800
+        N_LIST: 0x800,
+// @ts-ignore
+        LIST_END: 0x1000
     };
     
 // @ts-ignore
@@ -3405,12 +3407,29 @@ peg$parseSOS() {
         handleListBefore(outputNFA, elements, state)
         {
 // @ts-ignore
+        	outputNFA.push(this.buildElement(States.LIST_END).NFA[0]);
+// @ts-ignore
+            this.addTransitionToElement(outputNFA[1], null, 1);
+            
+// @ts-ignore
         	if(state & States.P_LIST)
             {
 // @ts-ignore
-                const transitionString = elements.reduce((x, y) => x + y,"");
+                elements.forEach((element) => {
 // @ts-ignore
-                this.addTransitionToElement(outputNFA[0], transitionString, 1);
+                	if(Array.isArray(element))
+                    {
+// @ts-ignore
+                    	element.forEach((str) => {
+// @ts-ignore
+                        	this.addTransitionToElement(outputNFA[0], str, 1);
+                        });
+// @ts-ignore
+                        return;
+                    }
+// @ts-ignore
+                	this.addTransitionToElement(outputNFA[0], element, 1);
+                });
 // @ts-ignore
                 return;
             }
@@ -3424,22 +3443,33 @@ peg$parseSOS() {
             	mapCharacters.push(String.fromCharCode(i));
             
 // @ts-ignore
-            elements.forEach(str => {
+            elements.forEach(element => {
 // @ts-ignore
-            	const length = str.length;
+            	if(Array.isArray(element))
+                {
 // @ts-ignore
-            	for (let i = 0; i < length; i++) { 
+                    element.forEach((str) => {
 // @ts-ignore
-                	const code = str.charCodeAt(i);
+                      	const code = str.charCodeAt(0);
 // @ts-ignore
-                    mapCharacters[code] = undefined;
-                };
+                    	mapCharacters[code] = undefined;
+                    });
+// @ts-ignore
+                    return;
+                }
+// @ts-ignore
+            	const code = element.charCodeAt(0);
+// @ts-ignore
+                mapCharacters[code] = undefined;
             });
             
 // @ts-ignore
-            const excluded = mapCharacters.filter(x => x != undefined).join('');
+            const excluded = mapCharacters.filter(x => x != undefined);
 // @ts-ignore
-            this.addTransitionToElement(outputNFA[0], excluded, 1);
+            excluded.forEach((element) => {
+// @ts-ignore
+            	this.addTransitionToElement(outputNFA[0], element, 1);
+            });
         }
         
 // @ts-ignore
@@ -3484,7 +3514,7 @@ peg$parseSOS() {
             };
         
 // @ts-ignore
-        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST))
+        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST | States.LIST_END))
 // @ts-ignore
         		AST.children = []
         
@@ -3693,7 +3723,7 @@ export type Ascii = string;
 export type ReservedCharacter = string;
 export type UnreservedCharacter = string;
 export type IsEscaped = EscapedPrimitive;
-export type RangeAscii = string;
+export type RangeAscii = string[];
 export type HexadecimalAscii = string;
 export type Primitive = RegexTypes.PrimitiveState;
 export type Group = RegexTypes.GroupState;
