@@ -15,8 +15,10 @@ export class Stack<T>
         return this.data_.pop();
     }
 
-    public top() : T
+    public top() : T | undefined
     {
+        if(this.data_.length === 0)
+            return undefined;
         return this.data_[this.data_.length - 1]
     }
 

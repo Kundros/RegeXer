@@ -4,7 +4,12 @@ export type ASTtype
     = 
     AST | 
     ASTPrimitive | 
-    ASTRoot;
+    ASTRoot |
+    ASTGroup |
+    ASTOption |
+    ASTOptional |
+    ASTIteration |
+    ASTList;
 
 export type AST = 
 {
@@ -12,7 +17,12 @@ export type AST =
     children: ASTtype[]
 }
 
-export type ASTPrimitive = AST &
+export type ASTNoChildren = 
+{
+    type: number
+}
+
+export type ASTPrimitive = ASTNoChildren &
 {
     chr: string
 }
@@ -29,6 +39,25 @@ export type ASTGroup = AST &
     end: number
 }
 
+export type ASTOption = ASTNoChildren & 
+{
+    children: ASTtype[][]
+}
+
+export type ASTOptional = AST;
+
+export type ASTIteration = AST & 
+{
+    lazy: boolean,
+    start: number,
+    end: number | undefined
+}
+
+export type ASTList = ASTNoChildren & 
+{
+    neg: boolean
+}
+
 /* NFA type */
 
 export type NFAState = 
@@ -36,8 +65,6 @@ export type NFAState =
     ASTelement: ASTtype | undefined,
     transitions: NFATransition[]
 }
-
-export type ASTEnd = typeof RegexStates.END
 
 /* StateTypes */
 
@@ -53,6 +80,37 @@ export type PrimitiveState =
     NFA: NFAState[]
 }
 
+export type GroupState = 
+{
+    AST: ASTGroup,
+    NFA: NFAState[]
+}
+
+export type OptionState = 
+{
+    AST: ASTOption,
+    NFA: NFAState[]
+}
+
+export type OptionalState = 
+{
+    AST: ASTOptional,
+    NFA: NFAState[]
+}
+
+export type IterationState = 
+{
+    AST: ASTIteration,
+    NFA: NFAState[]
+}
+
+export type ListState =
+{
+    AST: ASTList,
+    NFA: NFAState[]
+}
+
+
 /* other */
 
 export type NFATransition = [string | null, number];
@@ -65,17 +123,18 @@ export const RegexStates = {
     OPTION: 0x8,
     ITERATION_ZERO: 0x10,
     ITERATION_ONE: 0x20,
-    ITERATION_END: 0x40,
-    GROUP: 0x80,
-    OPTIONAL: 0x100,
-    P_LIST: 0x200,
-    N_LIST: 0x400
+    ITERATION_RANGE: 0x40,
+    ITERATION_END: 0x80,
+    GROUP: 0x100,
+    OPTIONAL: 0x200,
+    P_LIST: 0x400,
+    N_LIST: 0x800
 } as const;
 
 export type RegexStates = typeof RegexStates[keyof typeof RegexStates];
 
 export const Modifiers = {
-    NONE: undefined,
+    NONE: 0x0,
     g: 0x1,
     m: 0x2,
     i: 0x4,
@@ -84,6 +143,6 @@ export const Modifiers = {
     v: 0x20,
     s: 0x40,
     d: 0x80
-}
+} as const;
 
 export type Modifiers = typeof Modifiers[keyof typeof Modifiers];

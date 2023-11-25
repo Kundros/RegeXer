@@ -4,6 +4,11 @@
     },
     "returnTypes": {
         "Start": "RegexTypes.RootState",
-        "Primitive": "RegexTypes.PrimitiveState"
+        "Primitive": "RegexTypes.PrimitiveState",
+        "Group": "RegexTypes.GroupState",
+        "Option": "RegexTypes.OptionState",
+        "Optional": "RegexTypes.OptionalState",
+        "Iteration": "RegexTypes.IterationState",
+        "List": "RegexTypes.ListState"
     }
 }

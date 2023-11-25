@@ -11,14 +11,16 @@
         OPTION: 0x8,
         ITERATION_ZERO: 0x10,
         ITERATION_ONE: 0x20,
-        ITERATION_END: 0x40,
-        GROUP: 0x80,
-        OPTIONAL: 0x100,
-        P_LIST: 0x200,
-        N_LIST: 0x400
+        ITERATION_RANGE: 0x40,
+        ITERATION_END: 0x80,
+        GROUP: 0x100,
+        OPTIONAL: 0x200,
+        P_LIST: 0x400,
+        N_LIST: 0x800
     };
     
     const Modifiers = {
+        NONE: 0x0,
     	g: 0x1,
         m: 0x2,
         i: 0x4,
@@ -93,7 +95,7 @@
         }
         
         handleRootAfter(outputNFA){
-        	outputNFA.push(States.END);
+        	outputNFA.push(this.buildElement(States.END).NFA[0]);
 
             // DEBUG
             /*outputNFA.forEach(element => {
@@ -254,13 +256,13 @@ general_start
     = elements:any_element*
     {
     	return { 
-        	modifiers: undefined,
+        	modifiers: Modifiers.NONE,
         	elements 
         }
     }
 
 moded_start
-    = '/' elements:any_element* '/' modifiers:modes
+    = '/' elements:any_element* '/' modifiers:modifiers
     {
     	return {
         	modifiers,
@@ -268,9 +270,9 @@ moded_start
         }
     }
 
-/* ---- modes ---- */
+/* ---- modifiers ---- */
 
-modes 
+modifiers 
 	= modifiers:(@modifiers:('m' / 'g' / 'i' / 'y' / 'u' / 'v' / 's' / 'd')*
     &{
     	let alreadyUsed = {};
@@ -497,13 +499,16 @@ iteration
         	detailedType?.end != undefined ? detailedType?.end : undefined;
     
     	const data = {
-            detailedType,
             start,
             end,
             lazy: lazy != undefined
         };
         
-        const iterationType = detailedType == '*' ? States.ITERATION_ZERO : States.ITERATION_ONE;
+        const iterationType = 
+            detailedType == '*' ? States.ITERATION_ZERO :
+            detailedType == '+' ? States.ITERATION_ONE :
+            States.ITERATION_RANGE;
+
         return handler.handle(data, [element], iterationType);
     }
 

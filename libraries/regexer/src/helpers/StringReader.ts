@@ -4,18 +4,18 @@ export class StringReader implements Iterable<string> {
         this.string_ = string;
     }
 
-    public next() : string | null
+    public next() : string | undefined
     {
         if(this.internal_pointer_ + 1 >= this.string_.length)
-            return null;
+            return undefined;
 
         return this.string_[++this.internal_pointer_];
     }
 
-    public before() : string | null
+    public before() : string | undefined
     {
         if(this.internal_pointer_ <= 0)
-            return null;
+            return undefined;
 
         return this.string_[--this.internal_pointer_];
     }
@@ -25,18 +25,18 @@ export class StringReader implements Iterable<string> {
         return this.string_[this.internal_pointer_];
     }
 
-    public peak() : string | null
+    public peak() : string | undefined
     {
         if(this.internal_pointer_ + 1 >= this.string_.length)
-            return null;
+            return undefined;
 
         return this.string_[this.internal_pointer_ + 1];
     }
 
-    public seek(position: number) : string | null
+    public seek(position: number) : string | undefined
     {
         if(position >= this.string_.length || position < 0)
-            return null;
+            return undefined;
 
         return this.string_[this.internal_pointer_ = position];
     }
@@ -53,7 +53,7 @@ export class StringReader implements Iterable<string> {
 
     public reset_pointer() : void
     {
-        this.internal_pointer_ = -1;
+        this.internal_pointer_ = 0;
     }
 
     [Symbol.iterator](): Iterator<string> 
@@ -61,7 +61,7 @@ export class StringReader implements Iterable<string> {
         return {
             next: () : IteratorResult<string> => {
                 return {
-                    done: (this.peak() == null),
+                    done: (this.peak() == undefined),
                     value: this.next() ?? ""
                 }
             }
@@ -69,5 +69,5 @@ export class StringReader implements Iterable<string> {
     }
 
     private readonly string_ : string;
-    private internal_pointer_ : number = -1;
+    private internal_pointer_ : number = 0;
 }
