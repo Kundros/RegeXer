@@ -5,7 +5,6 @@ import { RegCompileException } from "@exceptions/RegCompileException";
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { Worker } from 'worker_threads';
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export class Regexer{
     constructor(regexString : string = "")
@@ -20,7 +19,7 @@ export class Regexer{
             throw new RegCompileException("unable to parse regex");
         }
 
-        this.worker_ = new Worker(__dirname + "/MatchingWorker", {
+        this.worker_ = new Worker("./dist/models/MatchingWorker", {
             workerData: {
                 AST: this.AST_,
                 NFA: this.NFA_

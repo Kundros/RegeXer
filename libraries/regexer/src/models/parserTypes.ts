@@ -13,13 +13,17 @@ export type ASTtype
 
 export type AST = 
 {
-    type: number,
+    type: RegexStates,
+    start: number,
+    end: number,
     children: ASTtype[]
 }
 
 export type ASTNoChildren = 
 {
-    type: number
+    type: RegexStates,
+    start: number,
+    end: number
 }
 
 export type ASTPrimitive = ASTNoChildren &
@@ -34,7 +38,7 @@ export type ASTRoot = AST &
 
 export type ASTGroup = AST & 
 {
-    detailedType: string,
+    detailedType: GroupTypes,
     name: string | undefined,
     end: number
 }
@@ -146,3 +150,11 @@ export const Modifiers = {
 } as const;
 
 export type Modifiers = typeof Modifiers[keyof typeof Modifiers];
+
+export const GroupTypes = {
+    CAPTURING: 'C',
+    NON_CAPTURING: 'NC',
+    NAMED: 'N'
+} as const;
+
+export type GroupTypes = typeof GroupTypes[keyof typeof GroupTypes];

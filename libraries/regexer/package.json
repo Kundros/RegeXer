@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Core engine executing regexes step by step.",
   "type": "module",
+  "module": "es",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -11,7 +12,7 @@
     "build_main": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "node --trace-warnings dist/index.js",
     "dev": "node --trace-warnings dist/index.js",
-    "test": "jest index"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js index"
   },
   "author": "Dominik Kundra, KUN0161",
   "license": "ISC",

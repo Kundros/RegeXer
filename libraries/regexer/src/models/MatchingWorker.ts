@@ -2,6 +2,8 @@ import { workerData, parentPort } from 'worker_threads';
 import { RegexTypes } from './regexParser';
 import { Stack } from '@regexer/structures/Stack';
 import { RegexMatch } from './RegexMatch';
+import { MatchStateType } from './MatchStateTypes';
+import { ASTGroup } from './parserTypes';
 
 const AST: RegexTypes.ASTRoot = workerData.AST;
 const NFA: RegexTypes.NFAState[] = workerData.NFA;
@@ -14,28 +16,41 @@ parentPort.on("message", (message : { type: string, data: any }) => {
             if(typeof message.data !== "string") return;
             const matchString : string = message.data;
 
-            try{
+            //try{
                 match(matchString);
-            } 
-            catch(e) {
-                parentPort.postMessage({type: "error", data: "Unable to match string."});
-            }
+            //} 
+            //catch(e) {
+            //    parentPort.postMessage({type: "error", data: "Unexpected error during matching."});
+            //}
 
             break;
         }
     }
 });
 
+type matchingState = {transition: number, state: RegexTypes.NFAState};
+
+/**
+ * match the string if possible
+ * @param matchString string that is run thru NFA
+ */
 function match(matchString) : void
 {
     let stringPosStack = new Stack<number>([0]);
-    let regexPosStack = new Stack<number>([0]);
-    let transitionsPosStack = new Stack<number>();
-    let statesStack = new Stack<RegexTypes.NFAState>();
 
+    let regexPosStack = new Stack<number>([0]);
+    let statesStack = new Stack<matchingState>();
+
+    let match = new RegexMatch();
+
+    let isBacktracking = false;
 
     while(true) {
         const nfaState = NFA[regexPosStack.top()];
+        
+        if(!isBacktracking)
+            handleMatchState(match, {transition: 0, state: nfaState}, stringPosStack.top());
+        isBacktracking = false;
 
         /* If we are at the last nfa node aka. END we're done matching */
         if(nfaState?.ASTelement?.type === RegexTypes.RegexStates.END)
@@ -45,73 +60,98 @@ function match(matchString) : void
 
         /* 
             If the state isn't at the top of the stack we need to add it as new state
-            + we add starting transition position at 0
+                + we add starting transition position at 0
             otherwise we move transition position by 1
          */
-        if(statesStack.top() !== nfaState)
+        if(statesStack.top()?.state !== nfaState)
         {
-            statesStack.push(nfaState);
-            transitionsPosStack.push(0);
+            statesStack.push({transition: 0, state: nfaState});
         }
         else
         {
-            transitionsPosStack.push(transitionsPosStack.pop() + 1);
+            statesStack.top().transition++;
         }
+
 
         /*
             If we have no more transitions left, we backtrack
             + if we tried all paths and failed exit matching and send error message
         */
-        if(transitions.length <= transitionsPosStack.top())
+        if(transitions.length <= statesStack.top().transition)
         {
-            transitionsPosStack.pop();
             statesStack.pop();
             regexPosStack.pop();
 
-            /* no more left paths */
-            if(transitionsPosStack.size() === 0)
+            /* match wasn't found from position (move by one) */
+            if(statesStack.size() === 0)
             {
-                parentPort.postMessage({type: "error", data: "Unable to match string."});
-                return;
+                /* no match from any position wasn't found */
+                if(stringPosStack.top() + 1 >= matchString.length)
+                {
+                    parentPort.postMessage({type: "error", data: match });
+                    return;
+                }
+
+                stringPosStack.push(stringPosStack.pop() + 1);
+                regexPosStack.push(0);
+
+                isBacktracking = true;
+                continue; // backtracking
             }
+
+            stringPosStack.pop();
             
+            isBacktracking = true;
             continue; // backtracking
         }
 
-        /*
-            If we're at the end of the matching string, without successful match
-            we need to backtrack (aka pop all stacks)
-        */
-        if(stringPosStack.top() >= matchString.length)
-        {
-            stringPosStack.pop();
-            transitionsPosStack.pop();
-            statesStack.pop();
-            regexPosStack.pop();
-            continue; // backtracking
-        }
+
         /* --- ------------------- --- */
         /* --- applying transition --- */
         /* --- ------------------- --- */
 
-        const transition = transitions[transitionsPosStack.top()];
+        const transition = transitions[statesStack.top().transition];
 
         // handle null transition (without moving position in string)
         if(transition[0] === null)
         {
             regexPosStack.push(regexPosStack.top() + transition[1]);
+            stringPosStack.push(stringPosStack.top());
             continue;
         }
 
         /* we now try if we can transition into new state */
-        if(matchString[stringPosStack.top()] === transition[0])
+        if(matchString[stringPosStack.top()] === transition[0] && stringPosStack.top() < matchString.length)
         {
             regexPosStack.push(regexPosStack.top() + transition[1]);
             stringPosStack.push(stringPosStack.top() + 1);
-
             continue;
         }
     }
 
-    parentPort.postMessage({ type: "success", data: [] });
+    parentPort.postMessage({ type: "success", data: match });
+}
+
+function handleMatchState(match : RegexMatch, matchingState : matchingState, stringPosition : number, action : number = 0) : void
+{
+    const localAST = matchingState?.state?.ASTelement;
+
+    if(localAST === undefined) return;
+
+    let state = {
+        data: [localAST.type, localAST.start, localAST.end, stringPosition],
+    } as MatchStateType;
+
+
+    if(localAST.type & RegexTypes.RegexStates.GROUP)
+    {
+        const group = localAST as ASTGroup;
+
+        if(group.detailedType === RegexTypes.GroupTypes.CAPTURING)
+        {
+            match.handleCapture(stringPosition);
+        }
+    }
+
+    match.pushState(state);
 }

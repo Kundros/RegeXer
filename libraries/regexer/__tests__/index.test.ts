@@ -114,7 +114,7 @@ test('capturing group (empty)', () => {
 
     const group = astRoot.children[0] as RegexTypes.ASTGroup;
 
-    expect(group.end).toBe(0);
+    expect(group.end).toBe(2);
     expect(group.name).toBe(undefined);
     expect(group.detailedType).toBe('C');
 
@@ -132,20 +132,20 @@ test('capturing group (nested)', () => {
     ]);
 
     const group1 = astRoot.children[0] as RegexTypes.ASTGroup;
-    expect(group1.end).toBe(7);
+    expect(group1.end).toBe(11);
 
     expect(nfaStart[2].transitions[0]).toStrictEqual(['a', 1]);
     expect(nfaStart[3].transitions[0]).toStrictEqual(['b', 1]);
 
     expect(nfaStart[4].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
     const group2 = nfaStart[4].ASTelement as RegexTypes.ASTGroup;
-    expect(group2.end).toBe(2);
+    expect(group2.end).toBe(7);
 
     expect(nfaStart[7].transitions[0]).toStrictEqual(['e', 1]);
 
     expect(nfaStart[8].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
     const group3 = nfaStart[8].ASTelement as RegexTypes.ASTGroup;
-    expect(group3.end).toBe(0);
+    expect(group3.end).toBe(10);
 
     expect(nfaStart[9].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
 });

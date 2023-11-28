@@ -512,9 +512,7 @@ function peg$parse(input, options) {
 // @ts-ignore
             detailedType,
 // @ts-ignore
-            name: detailedType == 'N' ? type : undefined,
-// @ts-ignore
-            end: 0
+            name: detailedType == 'N' ? type : undefined
         };
       
 // @ts-ignore
@@ -3216,6 +3214,7 @@ peg$parseSOS() {
         DEFAULT: 0x2
     }
     
+    
 // @ts-ignore
     class ParserHandler {
 // @ts-ignore
@@ -3295,7 +3294,7 @@ peg$parseSOS() {
             	this.handleRootAfter(outputElements.NFA);
 
 // @ts-ignore
-			if(state & States.GROUP)
+            if(state & States.GROUP)
 // @ts-ignore
                 this.handleGroupAfter(outputElements.NFA);
 
@@ -3499,9 +3498,9 @@ peg$parseSOS() {
         handleGroupAfter(outputNFA)
         {
 // @ts-ignore
-        	outputNFA[0].ASTelement.end = outputNFA.length - 1;
+        	outputNFA[0].ASTelement.endNFA = outputNFA.length - 1;
         }
-        
+
 // @ts-ignore
         buildElement(type, data={}, transitions = []) 
         {
@@ -3509,6 +3508,10 @@ peg$parseSOS() {
         	let AST = {
 // @ts-ignore
                 type,
+// @ts-ignore
+            	start: range().start,
+// @ts-ignore
+                end: range().end,
 // @ts-ignore
                 ...data
             };
@@ -3716,7 +3719,10 @@ export type EscapedPrimitive =
   | "|"
   | ":"
   | "-";
-export type NullTransition = { AST: { type: any }; NFA: never[] };
+export type NullTransition = {
+  AST: { type: any; start: number; end: number };
+  NFA: never[];
+};
 export type IntegerDigit = number;
 export type Integer = number;
 export type Ascii = string;

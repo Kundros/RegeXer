@@ -37,6 +37,7 @@
         DEFAULT: 0x2
     }
     
+    
     class ParserHandler {
         handle(data, elements, state, flags=Flags.DEFAULT) 
         {
@@ -86,7 +87,7 @@
             if(state & States.ROOT)
             	this.handleRootAfter(outputElements.NFA);
 
-			if(state & States.GROUP)
+            if(state & States.GROUP)
                 this.handleGroupAfter(outputElements.NFA);
 
             if(state & (States.ITERATION_ZERO | States.ITERATION_ONE))
@@ -217,13 +218,15 @@
         
         handleGroupAfter(outputNFA)
         {
-        	outputNFA[0].ASTelement.end = outputNFA.length - 1;
+        	outputNFA[0].ASTelement.endNFA = outputNFA.length - 1;
         }
-        
+
         buildElement(type, data={}, transitions = []) 
         {
         	let AST = {
                 type,
+            	start: range().start,
+                end: range().end,
                 ...data
             };
         
@@ -448,8 +451,7 @@ group
     
         const data = {
             detailedType,
-            name: detailedType == 'N' ? type : undefined,
-            end: 0
+            name: detailedType == 'N' ? type : undefined
         };
       
 	    return handler.handle(data, elements, States.GROUP);
