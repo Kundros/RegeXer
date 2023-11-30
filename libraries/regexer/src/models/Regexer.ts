@@ -1,10 +1,13 @@
-import { RegexMatch } from "@models/RegexMatch";
+import { MatchData, RegexMatch } from "@models/RegexMatch";
 import { parse, RegexTypes } from "@models/regexParser"
 import { RegCompileException } from "@exceptions/RegCompileException";
 
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { Worker } from 'worker_threads';
+import { RegMatchException } from "@regexer/exceptions/RegMatchException";
+
+type workerReturn = {type: string, pid: number, data: unknown};
 
 export class Regexer{
     constructor(regexString : string = "")
@@ -19,6 +22,11 @@ export class Regexer{
             throw new RegCompileException("unable to parse regex");
         }
 
+        /* DEBUG */
+        /*this.NFA_.forEach(element => {
+            console.log(element);
+        });*/
+
         this.worker_ = new Worker("./dist/models/MatchingWorker", {
             workerData: {
                 AST: this.AST_,
@@ -27,19 +35,26 @@ export class Regexer{
         });
     }
 
-    public async match(matchString : string)
+    public async match(matchString : string) : Promise<{success: boolean, match: RegexMatch}>
     {
+        const pid = this.nextPid++;
         let external_reject : (any) => void, external_resolve : (unknown) => void;
 
         const result = await new Promise((resolve, reject) => {
-            this.worker_.postMessage({ type: "match", data: matchString });
+            this.worker_.postMessage({ type: "match", pid, data: matchString });
 
             external_reject = (reason?: any) => {
-                reject(reason);
+                const returned = reason as workerReturn;
+
+                if(returned.pid === pid)
+                    reject(reason);
             }
 
             external_resolve = (value: unknown) => {
-                resolve(value);
+                const returned = value as workerReturn;
+
+                if(returned.pid === pid)
+                    resolve(value);
             }
 
             this.worker_.on('error', external_reject);
@@ -49,10 +64,16 @@ export class Regexer{
         this.worker_.removeListener('error', external_reject);
         this.worker_.removeListener('message', external_resolve);
 
-        return result;
+        const returned = result as workerReturn;
+
+        if(returned.type === 'error')
+            throw new RegMatchException(returned.data as string);
+
+        return {success: returned.type === 'succeded', match: new RegexMatch(returned.data as MatchData)};
     }
 
+    private nextPid : number = 0;
     private worker_ : Worker;
     private AST_: RegexTypes.ASTRoot;
-    private NFA_: RegexTypes.NFAState[];
+    private NFA_: RegexTypes.NFAtype[];
 }

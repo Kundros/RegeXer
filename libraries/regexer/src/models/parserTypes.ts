@@ -11,6 +11,11 @@ export type ASTtype
     ASTIteration |
     ASTList;
 
+export type NFAtype
+    =
+    NFAState |
+    NFAStateList
+
 export type AST = 
 {
     type: RegexStates,
@@ -70,6 +75,12 @@ export type NFAState =
     transitions: NFATransition[]
 }
 
+export type NFAStateList = 
+{
+    ASTelement: ASTtype | undefined,
+    transitions: Set<string>
+}
+
 /* StateTypes */
 
 export type RootState = 
@@ -111,7 +122,7 @@ export type IterationState =
 export type ListState =
 {
     AST: ASTList,
-    NFA: NFAState[]
+    NFA: NFAStateList[]
 }
 
 
@@ -125,14 +136,16 @@ export const RegexStates = {
     ROOT: 0x2,
     PRIMITIVE: 0x4,
     OPTION: 0x8,
-    ITERATION_ZERO: 0x10,
-    ITERATION_ONE: 0x20,
-    ITERATION_RANGE: 0x40,
-    ITERATION_END: 0x80,
-    GROUP: 0x100,
-    OPTIONAL: 0x200,
-    P_LIST: 0x400,
-    N_LIST: 0x800
+    OPTION_END: 0x10,
+    ITERATION_ZERO: 0x20,
+    ITERATION_ONE: 0x40,
+    ITERATION_RANGE: 0x80,
+    ITERATION_END: 0x100,
+    GROUP: 0x200,
+    OPTIONAL: 0x400,
+    P_LIST: 0x800,
+    N_LIST: 0x1000,
+    LIST_END: 0x2000
 } as const;
 
 export type RegexStates = typeof RegexStates[keyof typeof RegexStates];

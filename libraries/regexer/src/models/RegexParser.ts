@@ -3165,23 +3165,25 @@ peg$parseSOS() {
 // @ts-ignore
         OPTION: 0x8,
 // @ts-ignore
-        ITERATION_ZERO: 0x10,
+        OPTION_END: 0x10,
 // @ts-ignore
-        ITERATION_ONE: 0x20,
+        ITERATION_ZERO: 0x20,
 // @ts-ignore
-        ITERATION_RANGE: 0x40,
+        ITERATION_ONE: 0x40,
 // @ts-ignore
-        ITERATION_END: 0x80,
+        ITERATION_RANGE: 0x80,
 // @ts-ignore
-        GROUP: 0x100,
+        ITERATION_END: 0x100,
 // @ts-ignore
-        OPTIONAL: 0x200,
+        GROUP: 0x200,
 // @ts-ignore
-        P_LIST: 0x400,
+        OPTIONAL: 0x400,
 // @ts-ignore
-        N_LIST: 0x800,
+        P_LIST: 0x800,
 // @ts-ignore
-        LIST_END: 0x1000
+        N_LIST: 0x1000,
+// @ts-ignore
+        LIST_END: 0x2000
     };
     
 // @ts-ignore
@@ -3235,10 +3237,6 @@ peg$parseSOS() {
 // @ts-ignore
                 	if(state & States.OPTION)
                     {
-// @ts-ignore
-                    	if(element?.length === 0)
-// @ts-ignore
-                    		element.push(this.buildElement(States.NULL));
 // @ts-ignore
                 		outputElements.AST.children.push([...element.map(el => el.AST)]);
                     }
@@ -3330,7 +3328,7 @@ peg$parseSOS() {
 // @ts-ignore
             const sumLength = elements.reduce((x, y) => 
 // @ts-ignore
-            	x + (y.length > 0 ? y.reduce((a,b) => a + b.NFA.length, 0) : 1)
+            	x + y.reduce((a,b) => a + b.NFA.length, 1)
             , 0);
             
 // @ts-ignore
@@ -3339,57 +3337,26 @@ peg$parseSOS() {
                 this.addTransitionToElement(outputNFA[0], null, offset);
                 
 // @ts-ignore
-                const first = option[0].NFA[0];
-// @ts-ignore
-                if(
-// @ts-ignore
-                  first.ASTelement?.type & (
-// @ts-ignore
-                    States.ITERATION_ZERO |
-// @ts-ignore
-                    States.ITERATION_ONE |
-// @ts-ignore
-                    States.OPTIONAL
-                  )
-                )
-                {
-// @ts-ignore
-                    let transitions = first.transitions;
-// @ts-ignore
-                    let biggestPosition = 0;
-
-// @ts-ignore
-                    transitions.forEach((transition, index) => {
-// @ts-ignore
-                      	if(transition[1] > transitions[biggestPosition][1])
-// @ts-ignore
-                          	biggestPosition = index;
-                    });
-
-// @ts-ignore
-					transitions[biggestPosition][1] = sumLength - offset + 1;
-                }
-                
+                toEnd = sumLength - offset;
 // @ts-ignore
                 option.forEach(element => {
 // @ts-ignore
                 	outputNFA.push(...element.NFA);
 // @ts-ignore
-                    toEnd = sumLength - (offset + element.NFA.length) + 2;
+                    toEnd -= element.NFA.length;
 // @ts-ignore
                     offset += element.NFA.length;
                 });
+// @ts-ignore
+                offset++;
+// @ts-ignore
+                toEnd++;
                 
 // @ts-ignore
-                let last = outputNFA[outputNFA.length-1];
+                outputNFA.push(this.buildNFAwhithoutASTref(States.OPTION_END, [
 // @ts-ignore
-                const input = last?.ASTelement?.type === States.PRIMITIVE ? last.ASTelement.chr : null;
-                
-// @ts-ignore
-                last.transitions = last.transitions.filter(element => element[1] != 1);
-                
-// @ts-ignore
-                this.addTransitionToElement(last, input, toEnd);
+                    [null, toEnd]
+                ]));
             });
         }
         
@@ -3409,6 +3376,9 @@ peg$parseSOS() {
         	outputNFA.push(this.buildElement(States.LIST_END).NFA[0]);
 // @ts-ignore
             this.addTransitionToElement(outputNFA[1], null, 1);
+
+// @ts-ignore
+            outputNFA[0].transitions = new Set();
             
 // @ts-ignore
         	if(state & States.P_LIST)
@@ -3421,7 +3391,7 @@ peg$parseSOS() {
 // @ts-ignore
                     	element.forEach((str) => {
 // @ts-ignore
-                        	this.addTransitionToElement(outputNFA[0], str, 1);
+                        	outputNFA[0].transitions.add(str);
                         });
 // @ts-ignore
                         return;
@@ -3464,10 +3434,11 @@ peg$parseSOS() {
             
 // @ts-ignore
             const excluded = mapCharacters.filter(x => x != undefined);
+
 // @ts-ignore
             excluded.forEach((element) => {
 // @ts-ignore
-            	this.addTransitionToElement(outputNFA[0], element, 1);
+            	outputNFA[0].transitions.add(element);
             });
         }
         

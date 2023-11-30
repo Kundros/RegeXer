@@ -11,24 +11,24 @@ const test = new Regexer("a(a|b|c|d|e|f|g)+a+[a-zA-Z0-9]+");
     {
         console.time("Estimated: ");
 
-        const res = await test.match("abbbbbcccdefffffggggggggggfffeffffaa");
-        console.log(res);
-        writeFile('output1.json', JSON.stringify(res), () => {});
-
-        const result = await test.match("abbbbbcccdefffffggggggggggfffeffoaffakgroegwoovomvomqawkmdopqadppedqqqdgwgqdrergddqwfwegergrekgerklgretklgrtkleklmewrfgwwfwfwjfwnjehejkgherjkgnwregrejrgerjgejgegdbnjkdbjernktbejkgddfnbkjdkjetgenrlgjnjnsgdenjkgejnegjjwdhtbbikegegegeomeimvoerjgeioejgeoigjeoierjgoeigjeogjegekfdmgoiejgeroigejgeodmoirevbedrgoierjerdiogjergedrojgroejggojieirjgeogedrgmgpedogkeg1");
-        console.log(result);
-        writeFile('output2.json', JSON.stringify(result), () => {});
-        
-        const res2 = await test.match("aa");
-        console.log(res2);
-        writeFile('output3.json', JSON.stringify(res2), () => {});
-
-        const res3 = await test.match("aaa");
-        console.log(res3);
-        writeFile('output4.json', JSON.stringify(res3), () => {});
+        await testParse("abbbbbcccdefffffggggggggggfffeffffaa", "output1.json");
+        await testParse("abbbbbcccdefffffggggggggggfffeffoaffakgroegwoovomvomqawkmdopqadppedqqqdgwgqdrergddqwfwegergrekgerklgretklgrtkleklmewrfgwwfwfwjfwnjehejkgherjkgnwregrejrgerjgejgegdbnjkdbjernktbejkgddfnbkjdkjetgenrlgjnjnsgdenjkgejnegjjwdhtbbikegegegeomeimvoerjgeioejgeoigjeoierjgoeigjeogjegekfdmgoiejgeroigejgeodmoirevbedrgoierjerdiogjergedrojgroejggojieirjgeogedrgmgpedogkeg1", "output2.json");
+        await testParse("aa", "output3.json");
+        await testParse("aaa012opqrst", "output4.json");
+        await testParse("a_012opqrst", "output5.json");
 
         console.timeEnd("Estimated: ");
     }
     catch(e){ console.log(e); }
 })()
 //, 1000);
+
+async function testParse(matchString : string, out: string){
+    const res = await test.match(matchString);
+    if(res.success)
+    {
+        console.log(matchString.slice(res.match.start, res.match.end));
+    }
+    console.log(res.match);
+    writeFile(out, JSON.stringify(res), () => {});
+}

@@ -9,15 +9,16 @@
         ROOT: 0x2,
         PRIMITIVE: 0x4,
         OPTION: 0x8,
-        ITERATION_ZERO: 0x10,
-        ITERATION_ONE: 0x20,
-        ITERATION_RANGE: 0x40,
-        ITERATION_END: 0x80,
-        GROUP: 0x100,
-        OPTIONAL: 0x200,
-        P_LIST: 0x400,
-        N_LIST: 0x800,
-        LIST_END: 0x1000
+        OPTION_END: 0x10,
+        ITERATION_ZERO: 0x20,
+        ITERATION_ONE: 0x40,
+        ITERATION_RANGE: 0x80,
+        ITERATION_END: 0x100,
+        GROUP: 0x200,
+        OPTIONAL: 0x400,
+        P_LIST: 0x800,
+        N_LIST: 0x1000,
+        LIST_END: 0x2000
     };
     
     const Modifiers = {
@@ -50,8 +51,6 @@
             	elements.forEach(element => {
                 	if(state & States.OPTION)
                     {
-                    	if(element?.length === 0)
-                    		element.push(this.buildElement(States.NULL));
                 		outputElements.AST.children.push([...element.map(el => el.AST)]);
                     }
                     else 
@@ -110,44 +109,24 @@
         	let offset = 1;
             let toEnd = 0;
             const sumLength = elements.reduce((x, y) => 
-            	x + (y.length > 0 ? y.reduce((a,b) => a + b.NFA.length, 0) : 1)
+            	x + y.reduce((a,b) => a + b.NFA.length, 1)
             , 0);
             
         	elements.forEach((option, id) => {
                 this.addTransitionToElement(outputNFA[0], null, offset);
                 
-                const first = option[0].NFA[0];
-                if(
-                  first.ASTelement?.type & (
-                    States.ITERATION_ZERO |
-                    States.ITERATION_ONE |
-                    States.OPTIONAL
-                  )
-                )
-                {
-                    let transitions = first.transitions;
-                    let biggestPosition = 0;
-
-                    transitions.forEach((transition, index) => {
-                      	if(transition[1] > transitions[biggestPosition][1])
-                          	biggestPosition = index;
-                    });
-
-					transitions[biggestPosition][1] = sumLength - offset + 1;
-                }
-                
+                toEnd = sumLength - offset;
                 option.forEach(element => {
                 	outputNFA.push(...element.NFA);
-                    toEnd = sumLength - (offset + element.NFA.length) + 2;
+                    toEnd -= element.NFA.length;
                     offset += element.NFA.length;
                 });
+                offset++;
+                toEnd++;
                 
-                let last = outputNFA[outputNFA.length-1];
-                const input = last?.ASTelement?.type === States.PRIMITIVE ? last.ASTelement.chr : null;
-                
-                last.transitions = last.transitions.filter(element => element[1] != 1);
-                
-                this.addTransitionToElement(last, input, toEnd);
+                outputNFA.push(this.buildNFAwhithoutASTref(States.OPTION_END, [
+                    [null, toEnd]
+                ]));
             });
         }
         
@@ -161,6 +140,8 @@
         {
         	outputNFA.push(this.buildElement(States.LIST_END).NFA[0]);
             this.addTransitionToElement(outputNFA[1], null, 1);
+
+            outputNFA[0].transitions = new Set();
             
         	if(state & States.P_LIST)
             {
@@ -168,7 +149,7 @@
                 	if(Array.isArray(element))
                     {
                     	element.forEach((str) => {
-                        	this.addTransitionToElement(outputNFA[0], str, 1);
+                        	outputNFA[0].transitions.add(str);
                         });
                         return;
                     }
@@ -196,8 +177,9 @@
             });
             
             const excluded = mapCharacters.filter(x => x != undefined);
+
             excluded.forEach((element) => {
-            	this.addTransitionToElement(outputNFA[0], element, 1);
+            	outputNFA[0].transitions.add(element);
             });
         }
         
