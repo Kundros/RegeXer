@@ -576,9 +576,7 @@ function peg$parse(input, options) {
 // @ts-ignore
     	const data = {
 // @ts-ignore
-            start,
-// @ts-ignore
-            end,
+            range: [start, end],
 // @ts-ignore
             lazy: lazy != undefined
         };
@@ -3353,10 +3351,11 @@ peg$parseSOS() {
                 toEnd++;
                 
 // @ts-ignore
-                outputNFA.push(this.buildNFAwhithoutASTref(States.OPTION_END, [
+                outputNFA.push(this.buildElement(States.OPTION_END, {}, [
 // @ts-ignore
                     [null, toEnd]
-                ]));
+// @ts-ignore
+                ]).NFA[0]);
             });
         }
         
@@ -3480,17 +3479,22 @@ peg$parseSOS() {
 // @ts-ignore
                 type,
 // @ts-ignore
-            	start: range().start,
-// @ts-ignore
-                end: range().end,
-// @ts-ignore
                 ...data
             };
         
 // @ts-ignore
-        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST | States.LIST_END))
+        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST | States.LIST_END | States.OPTION_END))
 // @ts-ignore
         		AST.children = []
+
+// @ts-ignore
+            if(type & ~(States.OPTION_END))
+            {
+// @ts-ignore
+                AST.start = range().start;
+// @ts-ignore
+                AST.end = range().end;
+            }
         
 // @ts-ignore
         	let element = {
@@ -3690,10 +3694,7 @@ export type EscapedPrimitive =
   | "|"
   | ":"
   | "-";
-export type NullTransition = {
-  AST: { type: any; start: number; end: number };
-  NFA: never[];
-};
+export type NullTransition = { AST: { type: any }; NFA: never[] };
 export type IntegerDigit = number;
 export type Integer = number;
 export type Ascii = string;

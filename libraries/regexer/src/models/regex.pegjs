@@ -124,9 +124,9 @@
                 offset++;
                 toEnd++;
                 
-                outputNFA.push(this.buildNFAwhithoutASTref(States.OPTION_END, [
+                outputNFA.push(this.buildElement(States.OPTION_END, {}, [
                     [null, toEnd]
-                ]));
+                ]).NFA[0]);
             });
         }
         
@@ -207,13 +207,17 @@
         {
         	let AST = {
                 type,
-            	start: range().start,
-                end: range().end,
                 ...data
             };
         
-        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST | States.LIST_END))
+        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST | States.LIST_END | States.OPTION_END))
         		AST.children = []
+
+            if(type & ~(States.OPTION_END))
+            {
+                AST.start = range().start;
+                AST.end = range().end;
+            }
         
         	let element = {
                 AST,
@@ -502,8 +506,7 @@ iteration
         	detailedType?.end != undefined ? detailedType?.end : undefined;
     
     	const data = {
-            start,
-            end,
+            range: [start, end],
             lazy: lazy != undefined
         };
         

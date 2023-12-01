@@ -71,11 +71,3 @@ regex notation.**
     /a?/
     ```
     *Note: match element or ignore it.*
-
-
-### TODO:
-
-*when compiling and state stack isn't empty at the end of compilation, then the regex input was invalid.*
-
-### IDEAS:
-*Make language interface and as optional parameter push it to Regexer default ts/js regex syntax will be used.*

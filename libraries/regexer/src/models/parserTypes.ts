@@ -125,7 +125,6 @@ export type ListState =
     NFA: NFAStateList[]
 }
 
-
 /* other */
 
 export type NFATransition = [string | null, number];

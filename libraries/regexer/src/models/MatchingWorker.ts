@@ -3,6 +3,7 @@ import { RegexTypes } from './regexParser';
 import { Stack } from '@regexer/structures/Stack';
 import { NFAState, NFAStateList } from './parserTypes';
 import { MatchBuilder } from './MatchBuilder';
+import { MatchAction } from './RegexMatch';
 
 const AST: RegexTypes.ASTRoot = workerData.AST;
 const NFA: RegexTypes.NFAtype[] = workerData.NFA;
@@ -23,14 +24,14 @@ class Matcher
         this.matchBuilder = new MatchBuilder();
         this.matchBuilder.matchData.start = 0;
 
-        while(true) {
+        while(true) 
+        {
             const nfaState = NFA[this.regexPosStack.top()] as NFAState;
 
             /* If we are at the last nfa node aka. END we're done matching */
             if(nfaState?.ASTelement?.type === RegexTypes.RegexStates.END)
                 break;
-
-            const transitions = nfaState.transitions;
+            
 
             /* 
                 If the state isn't at the top of the stack we need to add it as new state
@@ -38,41 +39,27 @@ class Matcher
                 otherwise we move transition position by 1
             */
             if(this.statesStack.top()?.state !== nfaState)
-            {
                 this.statesStack.push({transition: 0, state: nfaState});
-            }
             else
-            {
                 this.statesStack.top().transition++;
-            }
+            
 
+            /* if the state is list we transition differently */
             if(this.statesStack.top().state?.ASTelement?.type & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST)) 
             {
-                const listState = this.statesStack.top().state as NFAStateList;
-
-                if(this.stringPosStack.top() + 1 <= matchString.length && listState.transitions.has(matchString[this.stringPosStack.top()]))
-                {
-                    this.regexPosStack.push(this.regexPosStack.top() + 1);
-                    this.stringPosStack.push(this.stringPosStack.top() + 1);
-                }
-                else
-                {
-                    if(!this.handleBacktracking(matchString))
-                        return;
-                }
-
+                if(!this.handleList(matchString)) return;
                 continue;
             }
+
 
             /*
                 If we have no more transitions left, we backtrack
                 + if we tried all paths and failed exit matching and send error message
             */  
+            const transitions = nfaState.transitions;
             if(transitions.length <= this.statesStack.top().transition)
             {
-                if(!this.handleBacktracking(matchString))
-                    return;
-                
+                if(!this.handleBacktracking(matchString)) return;
                 continue;
             }
 
@@ -88,6 +75,15 @@ class Matcher
             {
                 this.regexPosStack.push(this.regexPosStack.top() + transition[1]);
                 this.stringPosStack.push(this.stringPosStack.top());
+
+                if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION_END)
+                {
+                    this.matchBuilder.addState({
+                        type: nfaState.ASTelement.type, 
+                        regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end]
+                    });
+                }
+
                 continue;
             }
 
@@ -96,7 +92,13 @@ class Matcher
             {
                 this.regexPosStack.push(this.regexPosStack.top() + transition[1]);
                 this.stringPosStack.push(this.stringPosStack.top() + 1);
-                this.matchBuilder.addState({ type: nfaState.ASTelement.type, regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end], strAt: this.stringPosStack.top()});
+
+                this.matchBuilder.addState({ 
+                    type: nfaState.ASTelement.type, 
+                    regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end], 
+                    strAt: [this.matchBuilder.matchData.start ?? 0 ,this.stringPosStack.top()]
+                });
+
                 continue;
             }
         }
@@ -106,8 +108,24 @@ class Matcher
         parentPort.postMessage({ type: "succeded", pid: this.pid, data: this.matchBuilder.finalize() });
     }
 
+    private handleList(matchString : string)
+    {
+        const listState = this.statesStack.top().state as NFAStateList;
+
+        if(this.stringPosStack.top() + 1 <= matchString.length && listState.transitions.has(matchString[this.stringPosStack.top()]))
+        {
+            this.regexPosStack.push(this.regexPosStack.top() + 1);
+            this.stringPosStack.push(this.stringPosStack.top() + 1);
+        }
+        else
+            return this.handleBacktracking(matchString);
+
+        return true;
+    }
+
     private handleBacktracking(matchString : string) : boolean
     {
+        const nfaState = NFA[this.regexPosStack.top()];
         this.statesStack.pop();
         this.regexPosStack.pop();
 
@@ -128,10 +146,28 @@ class Matcher
 
             this.matchBuilder.matchData.start = this.stringPosStack.top();
 
+            if(nfaState?.ASTelement?.type !== undefined && this.statesStack.top()?.state?.ASTelement?.type & ~RegexTypes.RegexStates.OPTION)
+            {
+                this.matchBuilder.addState({
+                    type: nfaState.ASTelement.type, 
+                    regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
+                    action: MatchAction.BACKTRACKING
+                });
+            }
+
             return true;
         }
 
         this.stringPosStack.pop();
+
+        if(nfaState?.ASTelement?.type !== undefined && this.statesStack.top()?.state?.ASTelement?.type !== RegexTypes.RegexStates.OPTION)
+        {
+            this.matchBuilder.addState({
+                type: nfaState.ASTelement.type, 
+                regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
+                action: MatchAction.BACKTRACKING
+            });
+        }
 
         return true;
     }
