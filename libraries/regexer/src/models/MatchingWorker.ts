@@ -1,5 +1,5 @@
 import { workerData, parentPort } from 'worker_threads';
-import { RegexTypes } from './regexParser';
+import { RegexTypes } from '@models/RegexParser';
 import { Stack } from '@regexer/structures/Stack';
 import { NFAState, NFAStateList } from './parserTypes';
 import { MatchBuilder } from './MatchBuilder';

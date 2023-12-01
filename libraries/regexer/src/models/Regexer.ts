@@ -1,5 +1,5 @@
 import { MatchData, RegexMatch } from "@models/RegexMatch";
-import { parse, RegexTypes } from "@models/regexParser"
+import { parse, RegexTypes } from "@models/RegexParser"
 import { RegCompileException } from "@exceptions/RegCompileException";
 
 import { dirname } from 'path';

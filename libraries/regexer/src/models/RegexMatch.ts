@@ -1,4 +1,4 @@
-import { RegexTypes } from "./regexParser";
+import { RegexTypes } from "./RegexParser";
 
 export class RegexMatch
 {
