@@ -2,16 +2,28 @@
   "name": "regexer",
   "version": "0.0.1",
   "description": "Core engine executing regexes step by step.",
+  "type": "module",
+  "module": "es",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run build_peggy && npm run build_main",
+    "build_peggy": "peggy ./src/models/regex.pegjs --plugin ./node_modules/ts-pegjs/dist/tspegjs --extra-options-file pegconfig.json --format es --output ./src/models/regexParser.ts",
+    "build_main": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "start": "node --trace-warnings dist/index.js",
+    "dev": "node --trace-warnings dist/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js index"
   },
   "author": "Dominik Kundra, KUN0161",
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.7",
     "jest": "^29.7.0",
-    "ts-jest": "^29.1.1"
+    "peggy": "^3.0.2",
+    "ts-jest": "^29.1.1",
+    "tsc-alias": "^1.8.8"
+  },
+  "dependencies": {
+    "ts-pegjs": "^4.2.1"
   }
 }
