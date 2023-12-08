@@ -3,5 +3,5 @@ node_modules/*
 dist
 dist/*
 out/
-out/*
+out*
 .env
