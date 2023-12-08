@@ -14,11 +14,24 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('regex-visualizer-extension.helloWorld', () => {
+	let disposable = vscode.commands.registerCommand('regex-visualizer-extension.helloWorld', async () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		let panel = vscode.window.createWebviewPanel('test', 'test', vscode.ViewColumn.Two, {});
-		panel.webview.html = '';
+
+		console.log("test");
+
+		const regexer = new Regexer("abcd");
+
+		try{
+			const result = await regexer.match("abcde");
+			console.log(result);
+		}
+		catch(e){
+			console.log(e);
+		}
+
+		console.log("test2");
 	});
 
 	context.subscriptions.push(disposable);
