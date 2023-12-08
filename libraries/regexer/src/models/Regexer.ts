@@ -2,9 +2,9 @@ import { MatchData, RegexMatch } from "@models/RegexMatch";
 import { parse, RegexTypes } from "@models/RegexParser"
 import { RegCompileException } from "@exceptions/RegCompileException";
 
-import * as path from 'path';
 import { Worker } from 'worker_threads';
 import { RegMatchException } from "@regexer/exceptions/RegMatchException";
+import { URL, pathToFileURL } from 'url';
 
 type workerReturn = {type: string, pid: number, data: unknown};
 
@@ -25,8 +25,7 @@ export class Regexer{
         /*this.NFA_.forEach(element => {
             console.log(element);
         });*/
-
-        this.worker_ = new Worker(path.resolve(__dirname, "MatchingWorker"), {
+        this.worker_ = new Worker(new URL("./MatchingWorker.ts", pathToFileURL(__dirname).toString()), {
             workerData: {
                 AST: this.AST_,
                 NFA: this.NFA_

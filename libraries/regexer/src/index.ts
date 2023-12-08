@@ -1,6 +1,6 @@
 export { Regexer } from "@models/Regexer";
 export { RegexMatch, MatchData, MatchState, MatchAction } from "@models/RegexMatch"
-import { Regexer } from "@models/Regexer";
+/*import { Regexer } from "@models/Regexer";
 
 import { writeFile } from 'fs'
 
@@ -32,4 +32,4 @@ async function testParse(matchString : string, out: string){
     }
     console.log(res.match);
     writeFile(out, JSON.stringify(res), () => {});
-}
+}*/
