@@ -10,8 +10,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 /** @type WebpackConfig */
 const extensionConfig = {
-  target: 'node',
+  target: 'web',
 	mode: 'none',
+
+  experiments: {
+    asyncWebAssembly: true,
+    layers: true,
+    lazyCompilation: true,
+    outputModule: true,
+    syncWebAssembly: true,
+    topLevelAwait: true,
+  },
 
   entry: { 
     main: {
@@ -21,7 +30,7 @@ const extensionConfig = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js',
-    libraryTarget: 'commonjs2'
+    libraryTarget: 'module'
   },
   module: {
     rules: [

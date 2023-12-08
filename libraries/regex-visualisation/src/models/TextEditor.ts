@@ -8,6 +8,10 @@ export class TextEditor{
         this.registerListeners();
     }
 
+    public bindEvent(eventName : keyof HTMLElementEventMap, callback : (event : Event, text : string) => void) {
+        this.textInput_.addEventListener(eventName, (event : InputEvent) => callback(event, this.textInput_.innerText));
+    }
+
     private registerListeners()
     {
         this.textInput_.addEventListener('input', (event : InputEvent) => this.updateText(event));
