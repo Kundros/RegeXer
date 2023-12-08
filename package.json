@@ -6,10 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "@kundros/regex-visualisation": "file:./libraries/regex-visualisation/dist",
-    "@kundros/regexer": "file:./libraries/regexer/dist"
-  },
   "author": "Dominik Kundra, KUN0161",
   "license": "ISC",
   "devDependencies": {

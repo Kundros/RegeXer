@@ -1,0 +1,77 @@
+@base-color: #352F44;
+@darker-color: #5C5470;
+@light-color: #B9B4C7;
+@lighter-color: #FAF0E6;
+
+@gray-color: #1f1f1f;
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;400&display=swap');
+
+body {
+    background: @base-color;
+    color: @lighter-color;
+    font-size: 16px;
+}
+
+::selection {
+    color: @base-color;
+    background: @light-color;
+}
+
+#main-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+
+    & > div > span {
+        padding: 10px;
+        background: @darker-color;
+        color: @lighter-color;
+        font-size: 16px;
+        font-family: 'Roboto Mono', monospace;
+        letter-spacing: 1px;
+
+        &:focus-visible {
+            outline: none;
+        }
+
+        &[data-text]::after {
+            color: @light-color;
+            pointer-events: none;
+        }
+    }
+
+    & #regex-wrapper, #match-wrapper{
+        position: relative;
+        display: flex;
+        max-width: 100%;
+
+        & canvas {
+            position: absolute;
+            pointer-events: none;
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    & #match-wrapper{
+        height: 60vh;
+
+        & > span {
+            overflow-y: auto;
+            resize: none;
+            width: 100%;
+        }
+    }
+
+    & #regex-wrapper {
+        & > span {
+            resize: none;
+            width: -webkit-fill-available;
+        }
+    }
+
+    & [data-text]::after {
+        content: attr(data-text);
+    }
+}

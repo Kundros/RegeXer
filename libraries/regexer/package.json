@@ -4,8 +4,8 @@
   "description": "Core engine executing regexes step by step.",
   "type": "module",
   "module": "es",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./types/index.d.ts",
   "scripts": {
     "build": "npm run build_peggy && npm run build_main",
     "build_peggy": "peggy ./src/models/regex.pegjs --plugin ./node_modules/ts-pegjs/dist/tspegjs --extra-options-file pegconfig.json --format es --output ./src/models/regexParser.ts",
