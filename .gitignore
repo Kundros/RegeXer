@@ -3,5 +3,7 @@ node_modules/*
 dist
 dist/*
 out/
-out*
+out/*
+types/
+types/*
 .env
