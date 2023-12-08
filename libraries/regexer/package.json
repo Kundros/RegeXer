@@ -27,7 +27,8 @@
   "exports": {
     ".": {
       "require": "./dist/cjs/index.js",
-      "import": "./dist/esm/index.js"
+      "import": "./dist/esm/index.js",
+      "types": "./types/index.d.js"
     }
   },
   "dependencies": {
