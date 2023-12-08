@@ -2,8 +2,7 @@ import { MatchData, RegexMatch } from "@models/RegexMatch";
 import { parse, RegexTypes } from "@models/RegexParser"
 import { RegCompileException } from "@exceptions/RegCompileException";
 
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import * as path from 'path';
 import { Worker } from 'worker_threads';
 import { RegMatchException } from "@regexer/exceptions/RegMatchException";
 
@@ -27,7 +26,7 @@ export class Regexer{
             console.log(element);
         });*/
 
-        this.worker_ = new Worker("./dist/models/MatchingWorker", {
+        this.worker_ = new Worker(path.resolve(__dirname, "MatchingWorker"), {
             workerData: {
                 AST: this.AST_,
                 NFA: this.NFA_
