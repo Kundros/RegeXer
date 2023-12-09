@@ -29,7 +29,7 @@ export class Regexer{
         // hack for webpack
         // TODO: try to fix it, because it isn't correct CommonJS
         // @ts-ignore
-        this.worker_ = new Worker(new URL("./MatchingWorker.ts", import.meta.url), {
+        this.worker_ = new Worker(new URL("./MatchingWorker", import.meta.url), {
             workerData: {
                 AST: this.AST_,
                 NFA: this.NFA_
