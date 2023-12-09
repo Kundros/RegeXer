@@ -25,7 +25,11 @@ export class Regexer{
         /*this.NFA_.forEach(element => {
             console.log(element);
         });*/
-        this.worker_ = new Worker(new URL("./MatchingWorker.ts", pathToFileURL(__dirname).toString()), {
+
+        // hack for webpack
+        // TODO: try to fix it, because it isn't correct CommonJS
+        // @ts-ignore
+        this.worker_ = new Worker(new URL("./MatchingWorker.ts", import.meta.url), {
             workerData: {
                 AST: this.AST_,
                 NFA: this.NFA_
