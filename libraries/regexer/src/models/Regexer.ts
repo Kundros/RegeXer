@@ -4,8 +4,8 @@ import { RegCompileException } from "@exceptions/RegCompileException";
 
 import { Worker } from 'worker_threads';
 import { RegMatchException } from "@regexer/exceptions/RegMatchException";
-import { URL, pathToFileURL } from 'url';
-import * as esm from "esm";
+import { URL } from 'url';
+import * as path from "path";
 
 type workerReturn = {type: string, pid: number, data: unknown};
 
@@ -27,7 +27,7 @@ export class Regexer{
             console.log(element);
         });*/
 
-        this.worker_ = new Worker(new URL("./MatchingWorker", esm.import.meta.url), {
+        this.worker_ = new Worker(new URL("./MatchingWorker", "file:///" + path.resolve(__filename)), {
             workerData: {
                 AST: this.AST_,
                 NFA: this.NFA_
