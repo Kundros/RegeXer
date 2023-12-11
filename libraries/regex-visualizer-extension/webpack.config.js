@@ -37,6 +37,14 @@ const extensionConfig = {
             loader: 'ts-loader'
           }
         ]
+      }, 
+      {
+        test: /\.(js|ts)$/,
+        use: [
+          {
+            loader: path.resolve('./url-path-loader.js')
+          }
+        ],
       }
     ]
   },
