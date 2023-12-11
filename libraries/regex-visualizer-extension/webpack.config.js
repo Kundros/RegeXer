@@ -42,7 +42,7 @@ const extensionConfig = {
         test: /\.(js|ts)$/,
         use: [
           {
-            loader: path.resolve('./url-path-loader.js')
+            loader: path.resolve('loaders/url-path-loader.js')
           }
         ],
       }
