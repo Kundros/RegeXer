@@ -77,6 +77,14 @@ const extensionConfig = {
         options: {
           esModule: true,
         }
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: [
+          { loader: "ifdef-loader", options: { NODE: false } } 
+        ],
+        resolve: { extensions: [ '.js' ] }
       }
     ]
   },

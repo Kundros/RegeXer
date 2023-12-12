@@ -1,5 +1,5 @@
 import { TextEditor } from "./TextEditor";
-import { Regexer } from "@kundros/regexer";
+import { RegexMatch, Regexer } from "@kundros/regexer";
 
 export class RegexVisualizer {
     constructor(regexEditor : TextEditor, stringEditor : TextEditor)
@@ -9,6 +9,9 @@ export class RegexVisualizer {
 
         this.regexEditor_.bindEvent('input', (event: InputEvent, text: string) => this.regexTextCallback(event, text));
 
+        let test = new RegexMatch({
+            states: []
+        });
     }
 
     private regexTextCallback(event: InputEvent, text: string) 
