@@ -13,10 +13,16 @@ const extensionConfig = {
   target: 'web',
 	mode: 'none',
 
+  resolve: {
+    fallback: {
+      path: require.resolve("path-browserify"),
+      url: require.resolve("url/")
+    }
+  },
+
   experiments: {
     asyncWebAssembly: true,
     layers: true,
-    lazyCompilation: true,
     outputModule: true,
     syncWebAssembly: true,
     topLevelAwait: true,
@@ -71,6 +77,22 @@ const extensionConfig = {
         options: {
           esModule: true,
         }
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: [
+          { loader: "ifdef-loader", options: { NODE: false } } 
+        ],
+        resolve: { extensions: [ '.js' ] }
+      },
+      {
+        test: /\.(js|ts)$/,
+        use: [
+          {
+            loader: path.resolve('loaders/url-path-loader.js')
+          }
+        ],
       }
     ]
   },

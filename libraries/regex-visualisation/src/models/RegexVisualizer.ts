@@ -1,23 +1,25 @@
+import { WebviewApi } from "vscode-webview";
 import { TextEditor } from "./TextEditor";
-import { Regexer } from "@kundros/regexer";
+import { RegexMatch } from "@kundros/regexer";
 
 export class RegexVisualizer {
-    constructor(regexEditor : TextEditor, stringEditor : TextEditor)
+    constructor(regexEditor : TextEditor, stringEditor : TextEditor, vscode : WebviewApi<unknown>)
     {
         this.regexEditor_ = regexEditor;
         this.stringEditor_ = stringEditor;
 
         this.regexEditor_.bindEvent('input', (event: InputEvent, text: string) => this.regexTextCallback(event, text));
-
-        this.regexer = new Regexer();
     }
 
-    private regexTextCallback(event: InputEvent, text: string) 
+    private async regexTextCallback(event: InputEvent, text: string) 
     {
-        this.regexer = new Regexer(text);
+        this.vscode_.postMessage({
+            type: 'regex_update',
+            data: text
+        });
     }
 
-    private regexer : Regexer;
     private regexEditor_ : TextEditor;
     private stringEditor_ : TextEditor;
+    private vscode_ : WebviewApi<unknown>;
 }
