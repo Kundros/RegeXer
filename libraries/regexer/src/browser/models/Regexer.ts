@@ -3,7 +3,6 @@ import { parse, RegexTypes } from "@models/RegexParser"
 import { RegCompileException } from "@exceptions/RegCompileException";
 
 import { RegMatchException } from "@regexer/exceptions/RegMatchException";
-import { URL } from 'url';
 import * as path from "path";
 
 type workerReturn = {type: string, pid: number, data: unknown};
