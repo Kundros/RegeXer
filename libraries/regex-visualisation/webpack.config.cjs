@@ -85,6 +85,14 @@ const extensionConfig = {
           { loader: "ifdef-loader", options: { NODE: false } } 
         ],
         resolve: { extensions: [ '.js' ] }
+      },
+      {
+        test: /\.(js|ts)$/,
+        use: [
+          {
+            loader: path.resolve('loaders/url-path-loader.js')
+          }
+        ],
       }
     ]
   },
