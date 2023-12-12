@@ -9,12 +9,10 @@ export class RegexVisualizer {
 
         this.regexEditor_.bindEvent('input', (event: InputEvent, text: string) => this.regexTextCallback(event, text));
 
-        this.regexer = new Regexer();
     }
 
     private regexTextCallback(event: InputEvent, text: string) 
     {
-        this.regexer = new Regexer(text);
     }
 
     private regexer : Regexer;

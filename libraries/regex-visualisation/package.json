@@ -2,19 +2,19 @@
   "name": "regex-visualisation",
   "version": "0.0.1",
   "description": "VS-code plugin to visualise regex execution.",
-  "type": "module",
-  "module": "es",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
   "scripts": {
-    "build_webpack": "webpack --config webpack.config.cjs",
-    "watch_webpack": "webpack --watch",
+    "build:webpack": "webpack --config webpack.config.cjs",
+    "watch:webpack": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Dominik Kundra, KUN0161",
   "license": "ISC",
   "dependencies": {
-    "@kundros/regexer": "file:../regexer"
+    "@kundros/regexer": "file:../regexer",
+    "path-browserify": "^1.0.1",
+    "url": "^0.11.3"
   },
   "devDependencies": {
     "css-loader": "^6.8.1",
