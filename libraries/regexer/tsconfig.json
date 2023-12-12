@@ -15,7 +15,7 @@
       "@exceptions/*": ["./src/exceptions/*"],
       "@structures/*": ["./src/structures/*"],
       "@helpers/*": ["./src/helpers/*"],
-      "@regexNFA/*": ["./src/models/regexNFA/*"]
+      "@browser/*": ["./src/browser/*"]
     }
   },
   "tsc-alias": {
