@@ -39,6 +39,15 @@ const extensionConfig = {
         ]
       }, 
       {
+        test: /\.html$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'html-loader'
+          }
+        ]
+      },
+      {
         test: /\.(js|ts)$/,
         use: [
           {
@@ -51,6 +60,6 @@ const extensionConfig = {
   devtool: 'nosources-source-map',
   infrastructureLogging: {
     level: "log", // enables logging required for problem matchers
-  },
+  }
 };
 module.exports = [ extensionConfig ];

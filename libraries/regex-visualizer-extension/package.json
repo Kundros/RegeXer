@@ -9,7 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
@@ -46,6 +48,8 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@kundros/regexer": "file:../regexer"
+    "@kundros/regex-visualisation": "file:../regex-visualisation",
+    "@kundros/regexer": "file:../regexer",
+    "html-loader": "^4.2.0"
   }
 }
