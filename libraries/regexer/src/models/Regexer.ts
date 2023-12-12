@@ -27,12 +27,15 @@ export class Regexer{
             console.log(element);
         });*/
 
-        this.worker_ = new Worker(new URL("./MatchingWorker", "file:///" + path.resolve(__filename)), {
-            workerData: {
-                AST: this.AST_,
-                NFA: this.NFA_
-            }
-        });
+        if(typeof global !== "undefined") // check if is node
+        {
+            this.worker_ = new Worker(new URL("./MatchingWorker", "file:///" + path.resolve(__filename)), {
+                workerData: {
+                    AST: this.AST_,
+                    NFA: this.NFA_
+                }
+            });
+        }
     }
 
     public async match(matchString : string) : Promise<{success: boolean, match: RegexMatch}>
