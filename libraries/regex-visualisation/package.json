@@ -2,8 +2,7 @@
   "name": "regex-visualisation",
   "version": "0.0.1",
   "description": "VS-code plugin to visualise regex execution.",
-  "main": "dist/index.js",
-  "module": "module",
+  "main": "dist/main.bundle.js",
   "types": "types/index.d.ts",
   "scripts": {
     "build:webpack": "webpack --config webpack.config.cjs",

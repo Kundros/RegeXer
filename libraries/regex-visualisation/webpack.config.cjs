@@ -73,10 +73,10 @@ const extensionConfig = {
       {
         test: /\.html$/i,
         exclude: /node_modules/,
-        loader: 'html-loader',
-        options: {
-          esModule: true,
-        }
+        use: [
+         {loader: 'ts-loader'},
+         {loader: 'html-loader'}
+        ]
       },
       {
         test: /\.js$/,
@@ -98,12 +98,6 @@ const extensionConfig = {
   },
   watchOptions: {
     ignored: ['**/node_modules', path.resolve(__dirname, './dist')],
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: 'src/templates/main.html'
-    })
-  ]
+  }
 };
 module.exports = [ extensionConfig ];

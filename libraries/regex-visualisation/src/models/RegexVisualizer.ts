@@ -2,6 +2,8 @@ import { WebviewApi } from "vscode-webview";
 import { TextEditor } from "./TextEditor";
 import { RegexMatch } from "@kundros/regexer";
 
+import '../styles/main.less';
+
 export class RegexVisualizer {
     constructor(regexEditor : TextEditor, stringEditor : TextEditor, vscode : WebviewApi<unknown>)
     {
