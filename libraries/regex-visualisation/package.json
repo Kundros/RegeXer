@@ -2,10 +2,10 @@
   "name": "regex-visualisation",
   "version": "0.0.1",
   "description": "VS-code plugin to visualise regex execution.",
-  "main": "dist/main.bundle.js",
+  "main": "dist/index.html",
   "types": "types/index.d.ts",
   "scripts": {
-    "build:webpack": "webpack --config webpack.config.cjs",
+    "build:webpack": "webpack --config webpack.config.js",
     "watch:webpack": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

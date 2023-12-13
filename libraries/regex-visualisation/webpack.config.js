@@ -35,20 +35,10 @@ const extensionConfig = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].bundle.js',
-    libraryTarget: 'module'
+    filename: '[name].bundle.js'
   },
   module: {
     rules: [
-      {
-        test: /\.html$/i,
-        exclude: /node_modules/,
-        use: [
-         {
-          loader: 'html-loader'
-         }
-        ]
-      },
       {
         test: /\.ts$/,
         exclude: /node_modules/,
@@ -58,18 +48,6 @@ const extensionConfig = {
           }
         ],
         resolve: { extensions: ['.ts', '.js' ] }
-      },
-      {
-        test: /(RegexVisualizer|TextEditor)\.ts$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'ts-loader'
-          }
-        ],
-        generator: {
-          filename: "[name].js",
-        },
       },
       {
         test: /\.less$/i,
@@ -111,6 +89,11 @@ const extensionConfig = {
   },
   watchOptions: {
     ignored: ['**/node_modules', path.resolve(__dirname, './dist')],
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./src/templates/main.html"
+    })
+  ]
 };
 module.exports = [ extensionConfig ];
