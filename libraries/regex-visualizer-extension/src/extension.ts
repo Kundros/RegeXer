@@ -19,8 +19,8 @@ export function activate(context: vscode.ExtensionContext) {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		let panel = vscode.window.createWebviewPanel(
-			'test', 
-			'test', 
+			'regexVisualisation', 
+			'Regex Visualisation & Debugging', 
 			vscode.ViewColumn.Two, 
 			{
 				enableScripts: true,
@@ -35,6 +35,21 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 			return panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, g1.replace(rootPath, ""))).toString(); 
 		});
+
+		let regexer : Regexer | undefined;
+
+		// Handle messages from the webview
+		panel.webview.onDidReceiveMessage(
+			message => {
+			  switch (message.type) {
+				case 'regex_update':
+				  console.log(new Regexer(message.data));
+				  return;
+			  }
+			},
+			undefined,
+			context.subscriptions
+		);
 			
 		panel.webview.html = fixedPathsHtml;
 	});
