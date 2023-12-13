@@ -41,6 +41,15 @@ const extensionConfig = {
   module: {
     rules: [
       {
+        test: /\.html$/i,
+        exclude: /node_modules/,
+        use: [
+         {
+          loader: 'html-loader'
+         }
+        ]
+      },
+      {
         test: /\.ts$/,
         exclude: /node_modules/,
         use: [
@@ -49,6 +58,18 @@ const extensionConfig = {
           }
         ],
         resolve: { extensions: ['.ts', '.js' ] }
+      },
+      {
+        test: /(RegexVisualizer|TextEditor)\.ts$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader'
+          }
+        ],
+        generator: {
+          filename: "[name].js",
+        },
       },
       {
         test: /\.less$/i,
@@ -68,14 +89,6 @@ const extensionConfig = {
               },
             },
           }
-        ]
-      },
-      {
-        test: /\.html$/i,
-        exclude: /node_modules/,
-        use: [
-         {loader: 'ts-loader'},
-         {loader: 'html-loader'}
         ]
       },
       {
