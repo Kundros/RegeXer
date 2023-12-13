@@ -8,14 +8,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;400&display=swap');
 
 body {
-    background: @base-color;
-    color: @lighter-color;
+    background: var(--vscode-editor-background, @base-color);
+    color: var(--vscode-editor-foreground, @lighter-color);
     font-size: 16px;
 }
 
 ::selection {
-    color: @base-color;
-    background: @light-color;
+    color: var(--vscode-editor-selectionForeground);
+    background: var(--vscode-editor-selectionBackground, @light-color);
 }
 
 #main-wrapper {
@@ -25,10 +25,11 @@ body {
 
     & > div > span {
         padding: 10px;
-        background: @darker-color;
-        color: @lighter-color;
+        background: var(--vscode-editor-foldBackground, @darker-color);
+        color: var(--vscode-editor-foreground, @light-color);
         font-size: 16px;
-        font-family: 'Roboto Mono', monospace;
+        font-family: var(--vscode-editor-font-family), 'Roboto Mono', monospace;
+        font-weight: var(--vscode-editor-font-weight, 400);
         letter-spacing: 1px;
 
         &:focus-visible {
@@ -36,7 +37,7 @@ body {
         }
 
         &[data-text]::after {
-            color: @light-color;
+            color: var(--vscode-editorCodeLens-foreground, @lighter-color);
             pointer-events: none;
         }
     }
