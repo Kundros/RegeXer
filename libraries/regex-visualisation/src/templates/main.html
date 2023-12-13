@@ -4,17 +4,6 @@
     <meta charset="utf-8">
     <title>Regex visualisation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script defer src="../models/RegexVisualizer.ts"></script>
-    <script defer src="../models/TextEditor.ts"></script>
-    <script defer>
-      const vscode = acquireVsCodeApi();
-
-      const regexVisualizer = new RegexVisualizer(
-          new TextEditor(document.querySelector("#regex-wrapper > span"), document.querySelector("#regex-wrapper > canvas")),
-          new TextEditor(document.querySelector("#match-wrapper > span"), document.querySelector("#match-wrapper > canvas")),
-          vscode
-      );
-    </script>
   </head>
   <body>
     <div id="main-wrapper">
