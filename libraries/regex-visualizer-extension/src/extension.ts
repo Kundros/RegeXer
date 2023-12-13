@@ -45,7 +45,11 @@ export function activate(context: vscode.ExtensionContext) {
 			  switch (message.type) {
 				case 'regex_update':
 				{
-					regexer.newParse(message.data);
+					try{
+						regexer.newParse(message.data);
+					}
+					catch(e)
+					{}
 
 					const sendMessage : MessageRegexData = { type: 'regex_data', data: {
 						NFA: regexer.NFA,
