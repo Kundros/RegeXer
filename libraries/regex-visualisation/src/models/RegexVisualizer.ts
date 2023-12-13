@@ -12,7 +12,7 @@ export class RegexVisualizer {
         this.vscode_ = vscode;
 
         this.regexEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.regexTextCallback(event, textElement));
-        window.addEventListener('message', this.messageRecieve);
+        window.addEventListener('message', (event : MessageEvent) => this.messageRecieve(event));
     }
 
     private regexTextCallback(event : InputEvent, textElement : HTMLElement) 

@@ -1,5 +1,5 @@
 import { RegexTypes } from "@kundros/regexer/types/models/RegexParser";
-import { ASTGroup, RegexStates } from "@kundros/regexer/types/models/parserTypes";
+import { ASTGroup, RegexStates } from "@kundros/regexer";
 
 export class RegexHighlighter
 {
