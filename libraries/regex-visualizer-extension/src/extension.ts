@@ -27,6 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 				localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, '..')]
 			});
 
+		/* workaround replacing paths to vscode plugin paths */
 		let fixedPathsHtml = visualizerHtml.replace(/file:\/\/\/(.*\.js)/gm, (match : string, g1 : string) => { 
 			let rootPath = context.extensionUri.path;
 			if(rootPath[0] === '/' || rootPath[0] === '\\'){
