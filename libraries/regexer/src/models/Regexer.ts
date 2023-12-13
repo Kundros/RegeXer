@@ -82,6 +82,16 @@ export class Regexer{
         return {success: returned.type === 'succeded', match: new RegexMatch(returned.data as MatchData)};
     }
 
+    public get NFA()
+    {
+        return this.NFA_;
+    }
+
+    public get AST() 
+    {
+        return this.AST_;
+    }
+
     private nextPid : number = 0;
     private worker_? : Worker;
     private AST_: RegexTypes.ASTRoot;
