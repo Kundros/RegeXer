@@ -1,3 +1,5 @@
+
+
 export class TextEditor{
     constructor(textInput : HTMLElement, canvas : HTMLCanvasElement)
     {
@@ -8,8 +10,8 @@ export class TextEditor{
         this.registerListeners();
     }
 
-    public bindEvent(eventName : keyof HTMLElementEventMap, callback : (event : Event, text : string) => void) {
-        this.textInput_.addEventListener(eventName, (event : InputEvent) => callback(event, this.textInput_.innerText));
+    public bindEvent(eventName : keyof HTMLElementEventMap, callback : (event : Event, text : HTMLElement) => void) {
+        this.textInput_.addEventListener(eventName, (event : InputEvent) => callback(event, this.textInput_));
     }
 
     private registerListeners()
@@ -28,6 +30,10 @@ export class TextEditor{
             this.textInput_.setAttribute('data-text', this.textInput_.getAttribute('data-hidden-text'));
             this.textInput_.removeAttribute('data-hidden-text');
         }
+    }
+
+    public get textInput() {
+        return this.textInput_;
     }
 
     private textInput_ : HTMLElement;

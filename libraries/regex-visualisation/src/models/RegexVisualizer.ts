@@ -1,6 +1,8 @@
 import { WebviewApi } from "vscode-webview";
 import { TextEditor } from "./TextEditor";
 import { Message, MessageRegexData, RegexData } from "types";
+import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
+import { RegexHighlighter } from "./RegexHighlighter";
 
 export class RegexVisualizer {
     constructor(regexEditor : TextEditor, stringEditor : TextEditor, vscode : WebviewApi<unknown>)
@@ -9,15 +11,15 @@ export class RegexVisualizer {
         this.stringEditor_ = stringEditor;
         this.vscode_ = vscode;
 
-        this.regexEditor_.bindEvent('input', (event: InputEvent, text: string) => this.regexTextCallback(event, text));
+        this.regexEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.regexTextCallback(event, textElement));
         window.addEventListener('message', this.messageRecieve);
     }
 
-    private regexTextCallback(event : InputEvent, text : string) 
+    private regexTextCallback(event : InputEvent, textElement : HTMLElement) 
     {
         this.vscode_.postMessage({
             type: 'regex_update',
-            data: text
+            data: textElement.innerText
         });
     }
 
@@ -32,6 +34,12 @@ export class RegexVisualizer {
                 this.regexData_ = RegexData.data;
 
                 console.log(this.regexData_.AST);
+
+                const textElement = this.regexEditor_.textInput;
+
+                const pos = getCursorPosition(textElement);
+                textElement.innerText = RegexHighlighter.highlight(textElement.innerText, this.regexData_.AST);
+                setCursorPosition(textElement, pos);
 
                 break;
             }
