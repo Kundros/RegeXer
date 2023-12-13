@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { Regexer } from "@kundros/regexer";
+import { MessageRegexData } from '@kundros/regex-visualisation/types';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -45,7 +46,13 @@ export function activate(context: vscode.ExtensionContext) {
 				case 'regex_update':
 				{
 					regexer.newParse(message.data);
-					panel.webview.postMessage({ type: 'regex_data', data: regexer }); // post parsed data back to webview
+
+					const sendMessage : MessageRegexData = { type: 'regex_data', data: {
+						NFA: regexer.NFA,
+						AST: regexer.AST
+					} };
+
+					panel.webview.postMessage(sendMessage); // post parsed data back to webview
 				  	return;
 				}
 			  }
