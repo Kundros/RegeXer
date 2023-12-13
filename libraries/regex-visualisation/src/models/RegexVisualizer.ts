@@ -1,7 +1,6 @@
 import { WebviewApi } from "vscode-webview";
 import { TextEditor } from "./TextEditor";
-import { RegexMatch } from "@kundros/regexer";
-import { Message, MessageRegexData } from "types";
+import { Message, MessageRegexData, RegexData } from "types";
 
 export class RegexVisualizer {
     constructor(regexEditor : TextEditor, stringEditor : TextEditor, vscode : WebviewApi<unknown>)
@@ -25,16 +24,21 @@ export class RegexVisualizer {
     private messageRecieve(event : MessageEvent){
         const message = event.data as Message;
 
-        switch(event.type){
+        switch(message.type){
             case 'regex_data':
             {
                 const RegexData = message as MessageRegexData;
+
+                this.regexData_ = RegexData.data;
+
+                console.log(this.regexData_.AST);
 
                 break;
             }
         }
     }
 
+    private regexData_? : RegexData;
     private regexEditor_ : TextEditor;
     private stringEditor_ : TextEditor;
     private vscode_ : WebviewApi<unknown>;

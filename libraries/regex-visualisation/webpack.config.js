@@ -23,7 +23,6 @@ const extensionConfig = {
   experiments: {
     asyncWebAssembly: true,
     layers: true,
-    outputModule: true,
     syncWebAssembly: true,
     topLevelAwait: true,
   },
@@ -68,14 +67,6 @@ const extensionConfig = {
             },
           }
         ]
-      },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: [
-          { loader: "ifdef-loader", options: { NODE: false } } 
-        ],
-        resolve: { extensions: [ '.js' ] }
       },
       {
         test: /\.(js|ts)$/,
