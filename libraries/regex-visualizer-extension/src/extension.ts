@@ -36,15 +36,18 @@ export function activate(context: vscode.ExtensionContext) {
 			return panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, g1.replace(rootPath, ""))).toString(); 
 		});
 
-		let regexer : Regexer | undefined;
+		let regexer : Regexer = new Regexer();
 
 		// Handle messages from the webview
 		panel.webview.onDidReceiveMessage(
 			message => {
 			  switch (message.type) {
 				case 'regex_update':
-				  console.log(new Regexer(message.data));
-				  return;
+				{
+					regexer.newParse(message.data);
+					panel.webview.postMessage({ type: 'regex_data', data: regexer }); // post parsed data back to webview
+				  	return;
+				}
 			  }
 			},
 			undefined,
