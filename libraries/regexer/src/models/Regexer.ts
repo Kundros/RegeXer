@@ -12,6 +12,10 @@ type workerReturn = {type: string, pid: number, data: unknown};
 export class Regexer{
     constructor(regexString : string = "")
     {
+        this.newParse(regexString);
+    }
+
+    public newParse(regexString : string = ""){
         try{
             const data = parse(regexString);
             this.AST_ = data?.AST;
@@ -29,6 +33,9 @@ export class Regexer{
 
         if(typeof global !== "undefined") // check if is node
         {
+            if(this.worker_ !== undefined)
+                this.worker_.terminate();
+
             this.worker_ = new Worker(new URL("./MatchingWorker", "file:///" + path.resolve(__filename)), {
                 workerData: {
                     AST: this.AST_,
@@ -76,7 +83,7 @@ export class Regexer{
     }
 
     private nextPid : number = 0;
-    private worker_ : Worker;
+    private worker_? : Worker;
     private AST_: RegexTypes.ASTRoot;
     private NFA_: RegexTypes.NFAtype[];
 }

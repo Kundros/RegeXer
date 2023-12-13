@@ -1,10 +1,10 @@
 export { Regexer } from "@models/Regexer";
 export { RegexMatch, MatchData, MatchState, MatchAction } from "@models/RegexMatch"
+
 /*import { Regexer } from "@models/Regexer";
 
-import { writeFile } from 'fs'
-
 const test = new Regexer("a(a|b|c|d|e|f|g)+a+[a-zA-Z0-9]+");
+test.newParse("abcd");
 
 //setInterval(
     (async () => {
@@ -31,5 +31,4 @@ async function testParse(matchString : string, out: string){
         console.log(matchString.slice(res.match.start, res.match.end));
     }
     console.log(res.match);
-    writeFile(out, JSON.stringify(res), () => {});
 }*/
