@@ -76,3 +76,45 @@ body {
         content: attr(data-text);
     }
 }
+
+.group {
+    & > .group-br {
+        color: #87b071;
+    }
+
+    & > .group {
+        & > .group-br {
+            color: #7dc797;
+        }
+
+        & > .group{
+            & > .group-br {
+                color: #77c8d1;
+            }
+
+            & > .group {
+                & > .group-br {
+                    color: #537db0;
+                }
+
+                & > .group{
+                    & > .group-br{
+                        color: #3b4194;
+                    }
+
+                    & > .group{
+                        & > .group-br{
+                            color: #8745ba;
+                        }
+
+                        & > .group{
+                            & > .group-br{
+                                color: #c22f65;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

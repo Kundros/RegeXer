@@ -38,7 +38,7 @@ export class RegexVisualizer {
                 const textElement = this.regexEditor_.textInput;
 
                 const pos = getCursorPosition(textElement);
-                textElement.innerText = RegexHighlighter.highlight(textElement.innerText, this.regexData_.AST);
+                textElement.replaceChildren(...RegexHighlighter.highlight(textElement.innerText, this.regexData_.AST));
                 setCursorPosition(textElement, pos);
 
                 break;

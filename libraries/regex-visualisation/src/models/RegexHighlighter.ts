@@ -1,34 +1,68 @@
 import { RegexTypes } from "@kundros/regexer/types/models/RegexParser";
-import { ASTGroup, RegexStates } from "@kundros/regexer";
+import { AST, ASTGroup, ASTPrimitive, RegexStates } from "@kundros/regexer";
 
 export class RegexHighlighter
 {
     constructor()
     {}
 
-    public static highlight(text : string, AST: RegexTypes.ASTRoot){
-        if(AST.children && AST.children.length > 0)
+    public static highlight(text : string, AST: RegexTypes.ASTtype){
+        let elements : Node[] = [];
+        
+        
+        if((AST as AST).children)
         {
-            text = this.highlightInternal(text, AST.children[0]);
+            AST = AST as AST;
+            const childrenCount = AST.children.length;
+
+            for(let i = 0 ; i < childrenCount ; i++){
+                elements.push(...this.highlightInternal(text, AST.children[i]));
+            }
         }
 
-        return text;
+        return elements;
     }
 
     private static highlightInternal(text : string, AST: RegexTypes.ASTtype){
+        let elements : Node[] = [];
+
         if(AST.type & RegexStates.GROUP)
         {
             AST = AST as ASTGroup;
 
-            text =  "<span class='group'>" 
-                        + text.slice(AST.start, AST.start) + 
-                    "</span>" + 
-                    text.slice(AST.start + 1, AST.end - 1) + 
-                    "<span class='group-end'>" + 
-                        text.slice(AST.end, AST.end) + 
-                    "</span>";
+            const openingBracket = text.slice(AST.start, AST.start + 1);
+            const inside = text.slice(AST.start + 1, AST.end - 1);
+            const closingBracket = text.slice(AST.end - 1, AST.end);
+
+            elements.push(
+                this.wrapElement([
+                    this.wrapElement(openingBracket, "span", ["group-br"]),
+                    ...this.highlight(text, AST),
+                    this.wrapElement(closingBracket, "span", ["group-br"])
+                ], "span", ["group"])
+            )
         } 
 
-        return text;
+        if(AST.type & RegexStates.PRIMITIVE)
+        {
+            elements.push(document.createTextNode((AST as ASTPrimitive).chr));
+        }
+
+        return elements;
+    }
+
+    private static wrapElement(toWrap : string | Node[], elTag = "span", elClasses = [])
+    {
+        let element = document.createElement(elTag);
+
+        if(elClasses.length > 0)
+            element.classList.add(...elClasses);
+
+        if(typeof toWrap === "string")
+            element.innerText = toWrap;
+        else
+            element.append(...toWrap);
+
+        return element;
     }
 }
