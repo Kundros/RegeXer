@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	const visualizer = require("@kundros/regex-visualisation");
+	const visualizerHtml = require("@kundros/regex-visualisation").default;
 	console.log("regex visualizer extension is active now!");
 
 	// The command has been defined in the package.json file
@@ -24,10 +24,18 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.ViewColumn.Two, 
 			{
 				enableScripts: true,
+				localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, '..')]
 			});
 
-		console.log(visualizer.default);
-		panel.webview.html = visualizer.default;
+		let fixedPathsHtml = visualizerHtml.replace(/file:\/\/\/(.*\.js)/gm, (match : string, g1 : string) => { 
+			let rootPath = context.extensionUri.path;
+			if(rootPath[0] === '/' || rootPath[0] === '\\'){
+				rootPath = rootPath.slice(1);
+			}
+			return panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, g1.replace(rootPath, ""))).toString(); 
+		});
+			
+		panel.webview.html = fixedPathsHtml;
 	});
 
 	context.subscriptions.push(disposable);
