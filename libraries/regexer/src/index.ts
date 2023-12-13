@@ -1,5 +1,6 @@
 export { Regexer } from "@models/Regexer";
 export { RegexMatch, MatchData, MatchState, MatchAction } from "@models/RegexMatch"
+export * from "@models/parserTypes";
 
 /*import { Regexer } from "@models/Regexer";
 
