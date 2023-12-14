@@ -47,16 +47,17 @@ export function activate(context: vscode.ExtensionContext) {
 				{
 					try{
 						regexer.newParse(message.data);
+
+						const sendMessage : MessageRegexData = { type: 'regex_data', data: {
+							NFA: regexer.NFA,
+							AST: regexer.AST
+						} };
+	
+						panel.webview.postMessage(sendMessage); // post parsed data back to webview
 					}
 					catch(e)
 					{}
 
-					const sendMessage : MessageRegexData = { type: 'regex_data', data: {
-						NFA: regexer.NFA,
-						AST: regexer.AST
-					} };
-
-					panel.webview.postMessage(sendMessage); // post parsed data back to webview
 				  	return;
 				}
 			  }
