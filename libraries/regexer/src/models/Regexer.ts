@@ -34,7 +34,17 @@ export class Regexer{
         if(typeof global !== "undefined") // check if is node
         {
             if(this.worker_ !== undefined)
-                this.worker_.terminate();
+            {
+                this.worker_.postMessage(
+                    { 
+                        type: "new_data", 
+                        data: {
+                            AST: this.AST_,
+                            NFA: this.NFA_
+                        } 
+                    });
+                return;
+            }
 
             this.worker_ = new Worker(new URL("./MatchingWorker", "file:///" + path.resolve(__filename)), {
                 workerData: {
