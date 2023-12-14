@@ -6,7 +6,7 @@
   "main": "./dist/cjs/index.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "build": "npm run build_peggy && npm run build:main",
+    "build": "npm run build:peggy && npm run build:main",
     "build:peggy": "peggy ./src/models/regex.pegjs --cache --plugin ./node_modules/ts-pegjs/dist/tspegjs --extra-options-file pegconfig.json --format es --output ./src/models/regexParser.ts",
     "build:main": "npm run build:main_esm && npm run build:main_common",
     "build:main_esm": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
