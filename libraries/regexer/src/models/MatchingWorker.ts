@@ -5,8 +5,8 @@ import { NFAState, NFAStateList } from './parserTypes';
 import { MatchBuilder } from './MatchBuilder';
 import { MatchAction } from './RegexMatch';
 
-const AST: RegexTypes.ASTRoot = workerData.AST;
-const NFA: RegexTypes.NFAtype[] = workerData.NFA;
+let AST: RegexTypes.ASTRoot = workerData.AST;
+let NFA: RegexTypes.NFAtype[] = workerData.NFA;
 
 type matchingState = {transition: number, state: RegexTypes.NFAtype};
 
@@ -202,6 +202,12 @@ parentPort.on("message", (message : { type: string, pid: number, data: any }) =>
             //}
 
             break;
+        }
+        case 'new_data':
+        {
+            let newData = message.data as { AST: RegexTypes.ASTRoot, NFA: RegexTypes.NFAtype[]};
+            AST = newData.AST;
+            NFA = newData.NFA;
         }
     }
 });
