@@ -13,13 +13,8 @@ export class TextEditor{
     public bindEvent(eventName : keyof HTMLElementEventMap, callback : (event : Event, text : HTMLElement) => void) {
         this.textInput_.addEventListener(eventName, (event : InputEvent) => callback(event, this.textInput_));
     }
-
-    private registerListeners()
-    {
-        this.textInput_.addEventListener('input', (event : InputEvent) => this.updateText(event));
-    }
     
-    private updateText(event : InputEvent)
+    public updateText(event? : InputEvent)
     {
         if(this.textInput_.innerText.length > 0 && this.textInput_.hasAttribute('data-text'))
         {
@@ -34,6 +29,11 @@ export class TextEditor{
 
     public get textInput() {
         return this.textInput_;
+    }
+
+    private registerListeners()
+    {
+        this.textInput_.addEventListener('input', (event : InputEvent) => this.updateText(event));
     }
 
     private textInput_ : HTMLElement;

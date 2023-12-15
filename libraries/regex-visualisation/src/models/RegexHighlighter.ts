@@ -1,5 +1,5 @@
 import { RegexTypes } from "@kundros/regexer/types/models/RegexParser";
-import { AST, ASTGroup, ASTPrimitive, RegexStates } from "@kundros/regexer";
+import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, RegexStates } from "@kundros/regexer";
 
 export class RegexHighlighter
 {
@@ -16,7 +16,7 @@ export class RegexHighlighter
             const childrenCount = AST.children.length;
 
             for(let i = 0 ; i < childrenCount ; i++){
-                elements.push(...this.highlightInternal(text, AST.children[i]));
+                this.handleAddElement(elements, this.highlightInternal(text, AST.children[i]));
             }
         }
 
@@ -24,7 +24,6 @@ export class RegexHighlighter
     }
 
     private static highlightInternal(text : string, AST: RegexTypes.ASTtype){
-        let elements : Node[] = [];
 
         if(AST.type & RegexStates.GROUP)
         {
@@ -34,21 +33,51 @@ export class RegexHighlighter
             const inside = text.slice(AST.start + 1, AST.end - 1);
             const closingBracket = text.slice(AST.end - 1, AST.end);
 
-            elements.push(
-                this.wrapElement([
+            return this.wrapElement([
                     this.wrapElement(openingBracket, "span", ["group-br"]),
                     ...this.highlight(text, AST),
                     this.wrapElement(closingBracket, "span", ["group-br"])
-                ], "span", ["group"])
-            )
-        } 
+                ], "span", ["group"]
+            );
+        }
+
+        if(AST.type & RegexStates.OPTION)
+        {
+            const options = (AST as ASTOption).children;
+
+
+            let optionElements : Node[] = [];
+
+            options.forEach((option, idx) => {
+                let optionChoice : Node[] = [];
+                option.forEach(optionChoiceElement => {
+                    this.handleAddElement(optionChoice, this.highlightInternal(text, optionChoiceElement));
+                });
+
+                optionElements.push(
+                    this.wrapElement(optionChoice, "span", ["option-choice"])
+                );
+
+                if (idx !== options.length - 1)
+                    optionElements.push(this.wrapElement('|', "span", ['option-pipe']));
+            });
+
+            return this.wrapElement(optionElements, "span", ['option']);
+        }
 
         if(AST.type & RegexStates.PRIMITIVE)
         {
-            elements.push(document.createTextNode((AST as ASTPrimitive).chr));
+            return document.createTextNode((AST as ASTPrimitive).chr);
         }
+    }
 
-        return elements;
+    private static handleAddElement(elements: Node[], element: Node)
+    {
+        if(element instanceof Text && elements.length > 0 && elements[elements.length-1] instanceof Text){
+            (elements[elements.length-1] as Text).textContent += element.textContent;
+            return;
+        }
+        elements.push(element);
     }
 
     private static wrapElement(toWrap : string | Node[], elTag = "span", elClasses = [])

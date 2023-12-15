@@ -33,13 +33,13 @@ export class RegexVisualizer {
 
                 this.regexData_ = RegexData.data;
 
-                console.log(this.regexData_.AST);
-
                 const textElement = this.regexEditor_.textInput;
 
                 const pos = getCursorPosition(textElement);
                 textElement.replaceChildren(...RegexHighlighter.highlight(textElement.innerText, this.regexData_.AST));
                 setCursorPosition(textElement, pos);
+
+                this.regexEditor_.updateText();
 
                 break;
             }
