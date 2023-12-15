@@ -144,7 +144,9 @@ export const RegexStates = {
     OPTIONAL: 0x400,
     P_LIST: 0x800,
     N_LIST: 0x1000,
-    LIST_END: 0x2000
+    LIST_END: 0x2000,
+    START_STRING: 0x4000,
+    END_STRING: 0x8000
 } as const;
 
 export type RegexStates = typeof RegexStates[keyof typeof RegexStates];

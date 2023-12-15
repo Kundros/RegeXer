@@ -18,7 +18,9 @@
         OPTIONAL: 0x400,
         P_LIST: 0x800,
         N_LIST: 0x1000,
-        LIST_END: 0x2000
+        LIST_END: 0x2000,
+        START_STRING: 0x4000,
+        END_STRING: 0x8000
     };
     
     const Modifiers = {
@@ -67,6 +69,9 @@
             if(state & States.OPTIONAL)
             	this.handleOptionalBefore(outputElements.NFA, elements);
                 
+            if(state & (States.END_STRING | States.START_STRING))
+            	this.handleEndStartString(outputElements.NFA);
+                
             if(state & States.OPTION)
             {
             	this.handleOptionBefore(outputElements.NFA, elements);
@@ -102,6 +107,10 @@
             /*outputNFA.forEach(element => {
             	if(element != 0) element.ASTelement = undefined;
             });*/
+        }
+        
+        handleEndStartString(outputNFA){
+        	this.addTransitionToElement(outputNFA[0], null, 1);
         }
         
         handleOptionBefore(outputNFA, elements)
@@ -210,7 +219,7 @@
                 ...data
             };
         
-        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST | States.LIST_END | States.OPTION_END))
+        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST | States.LIST_END | States.OPTION_END | States.END_STRING | States.START_STRING))
         		AST.children = []
 
             if(type & ~(States.OPTION_END))
@@ -533,5 +542,24 @@ list
         );
     }
 
-EOS = '$' // end of string
-SOS = '^' // start of string
+EOS 
+	= '$' // end of string
+    {
+    	return handler.handle(
+        	{},
+            [],
+            States.END_STRING,
+            Flags.NONE
+        );
+    }
+    
+SOS 
+	= '^' // start of string
+    {
+    	return handler.handle(
+        	{},
+            [],
+            States.START_STRING,
+            Flags.NONE
+        );
+    }

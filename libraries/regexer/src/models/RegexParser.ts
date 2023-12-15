@@ -606,6 +606,30 @@ function peg$parse(input, options) {
 // @ts-ignore
             Flags.NONE
         );
+    };// @ts-ignore
+
+  var peg$f23 = function() {
+// @ts-ignore
+    	return handler.handle(
+        	{},
+            [],
+// @ts-ignore
+            States.END_STRING,
+// @ts-ignore
+            Flags.NONE
+        );
+    };// @ts-ignore
+
+  var peg$f24 = function() {
+// @ts-ignore
+    	return handler.handle(
+        	{},
+            [],
+// @ts-ignore
+            States.START_STRING,
+// @ts-ignore
+            Flags.NONE
+        );
     };
 // @ts-ignore
   var peg$currPos = 0;
@@ -3567,7 +3591,7 @@ peg$parselist() {
   function // @ts-ignore
 peg$parseEOS() {
 // @ts-ignore
-    var s0;
+    var s0, s1;
 
 // @ts-ignore
     var key = peg$currPos * 29 + 27;
@@ -3584,18 +3608,29 @@ peg$parseEOS() {
     }
 
 // @ts-ignore
+    s0 = peg$currPos;
+// @ts-ignore
     if (input.charCodeAt(peg$currPos) === 36) {
 // @ts-ignore
-      s0 = peg$c17;
+      s1 = peg$c17;
 // @ts-ignore
       peg$currPos++;
 // @ts-ignore
     } else {
 // @ts-ignore
-      s0 = peg$FAILED;
+      s1 = peg$FAILED;
 // @ts-ignore
       if (peg$silentFails === 0) { peg$fail(peg$e18); }
     }
+// @ts-ignore
+    if (s1 !== peg$FAILED) {
+// @ts-ignore
+      peg$savedPos = s0;
+// @ts-ignore
+      s1 = peg$f23();
+    }
+// @ts-ignore
+    s0 = s1;
 
 // @ts-ignore
     peg$resultsCache[key] = { nextPos: peg$currPos, result: s0 };
@@ -3608,7 +3643,7 @@ peg$parseEOS() {
   function // @ts-ignore
 peg$parseSOS() {
 // @ts-ignore
-    var s0;
+    var s0, s1;
 
 // @ts-ignore
     var key = peg$currPos * 29 + 28;
@@ -3625,18 +3660,29 @@ peg$parseSOS() {
     }
 
 // @ts-ignore
+    s0 = peg$currPos;
+// @ts-ignore
     if (input.charCodeAt(peg$currPos) === 94) {
 // @ts-ignore
-      s0 = peg$c15;
+      s1 = peg$c15;
 // @ts-ignore
       peg$currPos++;
 // @ts-ignore
     } else {
 // @ts-ignore
-      s0 = peg$FAILED;
+      s1 = peg$FAILED;
 // @ts-ignore
       if (peg$silentFails === 0) { peg$fail(peg$e16); }
     }
+// @ts-ignore
+    if (s1 !== peg$FAILED) {
+// @ts-ignore
+      peg$savedPos = s0;
+// @ts-ignore
+      s1 = peg$f24();
+    }
+// @ts-ignore
+    s0 = s1;
 
 // @ts-ignore
     peg$resultsCache[key] = { nextPos: peg$currPos, result: s0 };
@@ -3677,7 +3723,11 @@ peg$parseSOS() {
 // @ts-ignore
         N_LIST: 0x1000,
 // @ts-ignore
-        LIST_END: 0x2000
+        LIST_END: 0x2000,
+// @ts-ignore
+        START_STRING: 0x4000,
+// @ts-ignore
+        END_STRING: 0x8000
     };
     
 // @ts-ignore
@@ -3757,6 +3807,11 @@ peg$parseSOS() {
             	this.handleOptionalBefore(outputElements.NFA, elements);
                 
 // @ts-ignore
+            if(state & (States.END_STRING | States.START_STRING))
+// @ts-ignore
+            	this.handleEndStartString(outputElements.NFA);
+                
+// @ts-ignore
             if(state & States.OPTION)
             {
 // @ts-ignore
@@ -3810,6 +3865,12 @@ peg$parseSOS() {
 // @ts-ignore
             	if(element != 0) element.ASTelement = undefined;
             });*/
+        }
+        
+// @ts-ignore
+        handleEndStartString(outputNFA){
+// @ts-ignore
+        	this.addTransitionToElement(outputNFA[0], null, 1);
         }
         
 // @ts-ignore
@@ -3979,7 +4040,7 @@ peg$parseSOS() {
             };
         
 // @ts-ignore
-        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST | States.LIST_END | States.OPTION_END))
+        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST | States.LIST_END | States.OPTION_END | States.END_STRING | States.START_STRING))
 // @ts-ignore
         		AST.children = []
 
@@ -4210,5 +4271,5 @@ export type Option = RegexTypes.OptionState;
 export type Optional = RegexTypes.OptionalState;
 export type Iteration = RegexTypes.IterationState;
 export type List = RegexTypes.ListState;
-export type EOS = "$";
-export type SOS = "^";
+export type EOS = { AST: { type: any }; NFA: never[] };
+export type SOS = { AST: { type: any }; NFA: never[] };
