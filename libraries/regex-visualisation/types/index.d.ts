@@ -16,5 +16,6 @@ export type MessageRegexData = Message & {
 
 export type RegexData = {
     NFA: RegexTypes.NFAtype[],
-    AST: RegexTypes.ASTRoot
+    AST: RegexTypes.ASTRoot,
+    text: string
 }

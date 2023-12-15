@@ -23,7 +23,7 @@ export class RegexVisualizer {
         });
     }
 
-    private messageRecieve(event : MessageEvent)
+    private async messageRecieve(event : MessageEvent)
     {
         const message = event.data as Message;
 
@@ -37,7 +37,7 @@ export class RegexVisualizer {
                 const textElement = this.regexEditor_.textInput;
 
                 const pos = getCursorPosition(textElement);
-                textElement.replaceChildren(...RegexHighlighter.highlight(textElement.innerText, this.regexData_.AST));
+                textElement.replaceChildren(...RegexHighlighter.highlight(this.regexData_.text, this.regexData_.AST));
                 setCursorPosition(textElement, pos);
 
                 this.regexEditor_.updateText();
@@ -47,6 +47,7 @@ export class RegexVisualizer {
         }
     }
 
+    private wait_?: Promise<void>;
     private regexData_? : RegexData;
     private regexEditor_ : TextEditor;
     private stringEditor_ : TextEditor;
