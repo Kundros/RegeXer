@@ -153,7 +153,7 @@
                         });
                         return;
                     }
-                	this.addTransitionToElement(outputNFA[0], element, 1);
+                	outputNFA[0].transitions.add(element);
                 });
                 return;
             }
