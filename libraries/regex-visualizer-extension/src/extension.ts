@@ -50,7 +50,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 						const sendMessage : MessageRegexData = { type: 'regex_data', data: {
 							NFA: regexer.NFA,
-							AST: regexer.AST
+							AST: regexer.AST,
+							text: message.data
 						} };
 	
 						panel.webview.postMessage(sendMessage); // post parsed data back to webview
