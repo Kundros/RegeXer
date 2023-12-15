@@ -23,7 +23,8 @@ export class RegexVisualizer {
         });
     }
 
-    private messageRecieve(event : MessageEvent){
+    private messageRecieve(event : MessageEvent)
+    {
         const message = event.data as Message;
 
         switch(message.type){

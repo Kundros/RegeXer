@@ -30,6 +30,7 @@ body {
         font-size: 16px;
         font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
         font-weight: var(--vscode-editor-font-weight, 400);
+        caret-color: var(--vscode-editorCursor-foreground, white);
         letter-spacing: 1px;
 
         &:focus-visible {
@@ -119,6 +120,14 @@ body {
     }
 }
 
-.option-pipe{
+.option-pipe, .iteration-symbol{
     color: #f2581f;
+}
+
+.list-br{
+    color: #fff27d;
+}
+
+.list-neg{
+    color: #c70a29;
 }

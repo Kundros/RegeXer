@@ -21,7 +21,8 @@ export class TextEditor{
             this.textInput_.setAttribute('data-hidden-text', this.textInput_.getAttribute('data-text'));
             this.textInput_.removeAttribute('data-text');
         }
-        else if(this.textInput_.innerText.length == 0 && this.textInput_.hasAttribute('data-hidden-text')){
+        else if(this.textInput_.innerText.length == 0 && this.textInput_.hasAttribute('data-hidden-text'))
+        {
             this.textInput_.setAttribute('data-text', this.textInput_.getAttribute('data-hidden-text'));
             this.textInput_.removeAttribute('data-hidden-text');
         }

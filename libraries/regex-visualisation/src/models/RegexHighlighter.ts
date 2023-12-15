@@ -34,22 +34,20 @@ export class RegexHighlighter
             const closingBracket = text.slice(AST.end - 1, AST.end);
 
             return this.wrapElement([
-                    this.wrapElement(openingBracket, "span", ["group-br"]),
-                    ...this.highlight(text, AST),
-                    this.wrapElement(closingBracket, "span", ["group-br"])
-                ], "span", ["group"]
-            );
+                this.wrapElement(openingBracket, "span", ["group-br"]),
+                ...this.highlight(text, AST),
+                this.wrapElement(closingBracket, "span", ["group-br"])
+            ], "span", ["group"]);
         }
 
         if(AST.type & RegexStates.OPTION)
         {
             const options = (AST as ASTOption).children;
-
-
             let optionElements : Node[] = [];
 
             options.forEach((option, idx) => {
                 let optionChoice : Node[] = [];
+
                 option.forEach(optionChoiceElement => {
                     this.handleAddElement(optionChoice, this.highlightInternal(text, optionChoiceElement));
                 });
@@ -63,6 +61,39 @@ export class RegexHighlighter
             });
 
             return this.wrapElement(optionElements, "span", ['option']);
+        }
+
+        if(AST.type & (RegexStates.N_LIST | RegexStates.P_LIST))
+        {
+            let elements = [];
+
+            const openingBracket = text.slice(AST.start, AST.start + 1);
+            elements.push(this.wrapElement(openingBracket, "span", ["list-br"]));
+
+            let skipInside = 1;
+            if(AST.type & RegexStates.N_LIST)
+            {
+                skipInside++;
+                elements.push(this.wrapElement('^', "span", ["list-neg"]));
+            }
+
+            const inside = text.slice(AST.start + skipInside, AST.end - 1);
+            const closingBracket = text.slice(AST.end - 1, AST.end);
+
+            elements.push(this.wrapElement(inside, "span", ["list-inside"]));
+            elements.push(this.wrapElement(closingBracket, "span", ["list-br"]));
+
+            return this.wrapElement(elements, "span", ["list"]);
+        }
+
+        if(AST.type & (RegexStates.ITERATION_ONE | RegexStates.ITERATION_ZERO))
+        {
+            AST = AST as ASTIteration;
+
+            return this.wrapElement([
+                this.highlightInternal(text, AST.children[0]),
+                this.wrapElement(text.slice(AST.end - 1, AST.end), "span", ["iteration-symbol"])
+            ], "span", ["iteration"]);
         }
 
         if(AST.type & RegexStates.PRIMITIVE)
