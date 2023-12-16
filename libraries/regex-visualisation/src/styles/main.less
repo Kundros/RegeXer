@@ -32,6 +32,8 @@ body {
         font-weight: var(--vscode-editor-font-weight, 400);
         caret-color: var(--vscode-editorCursor-foreground, white);
         letter-spacing: 1px;
+        white-space: pre-wrap;
+        tab-size: 2;
 
         &:focus-visible {
             outline: none;
@@ -80,7 +82,7 @@ body {
 
 .group {
     & > .group-br {
-        color: #a1cf64;
+        color: #99e62c;
     }
 
     & .group {
@@ -112,6 +114,12 @@ body {
                             & > .group-br{
                                 color: #a92c71;
                             }
+
+                            & .group{
+                                & > .group-br{
+                                    color: #a6020f;
+                                }
+                            }
                         }
                     }
                 }
@@ -120,14 +128,23 @@ body {
     }
 }
 
-.option-pipe, .iteration-symbol{
+.option-pipe, .iteration-symbol, .list-neg, .EOS, .SOS{
     color: #f2581f;
 }
 
 .list-br{
-    color: #fff27d;
+    color: #fae102;
 }
 
-.list-neg{
-    color: #c70a29;
+.tab-symbol{
+    clip-path: polygon(0% 47%, 63.46% 47%, 51.46% 32.5%, 100% 50.27%, 51.46% 68.04%, 63.46% 54.04%, 0% 54.04%);
+    background-color: #5C5470;
+}
+
+body.vscode-dark .tab-symbol{
+    background-color: #424242;
+}
+
+body.vscode-light .tab-symbol{
+    background-color: #d3cdc7;
 }

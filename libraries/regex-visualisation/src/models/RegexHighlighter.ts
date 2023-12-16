@@ -23,7 +23,8 @@ export class RegexHighlighter
         return elements;
     }
 
-    private static highlightInternal(text : string, AST: RegexTypes.ASTtype){
+    private static highlightInternal(text : string, AST: RegexTypes.ASTtype) : Node | undefined
+    {
 
         if(AST.type & RegexStates.GROUP)
         {
@@ -98,12 +99,27 @@ export class RegexHighlighter
 
         if(AST.type & RegexStates.PRIMITIVE)
         {
-            return document.createTextNode((AST as ASTPrimitive).chr);
+            let char = (AST as ASTPrimitive).chr;
+
+            if(char === '\t')
+                return this.wrapElement('\t', "span", ["tab-symbol"]);
+
+            if(char === '\n')
+                return this.wrapElement([document.createTextNode('\n')], "span", ["new-line-symbol"]);
+
+            return document.createTextNode(char);
         }
+
+        if(AST.type & RegexStates.END_STRING)
+            return this.wrapElement('$', "span", ["EOS"]);
+        if(AST.type & RegexStates.START_STRING)
+            return this.wrapElement('^', "span", ["SOS"]);
     }
 
-    private static handleAddElement(elements: Node[], element: Node)
+    private static handleAddElement(elements: Node[], element: Node | undefined)
     {
+        if(element === undefined)
+            return;
         if(element instanceof Text && elements.length > 0 && elements[elements.length-1] instanceof Text){
             (elements[elements.length-1] as Text).textContent += element.textContent;
             return;

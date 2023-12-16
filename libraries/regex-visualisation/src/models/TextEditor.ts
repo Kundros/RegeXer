@@ -1,3 +1,4 @@
+import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
 
 
 export class TextEditor{
@@ -28,6 +29,32 @@ export class TextEditor{
         }
     }
 
+    public handleKeyup(event: KeyboardEvent){
+        if(event.key === "Tab"){
+            event.preventDefault();
+
+            const pos = getCursorPosition(this.textInput_);
+            const text = this.textInput_.innerText;
+
+            this.textInput_.innerText = text.substring(0, pos) + '\t' + text.substring(pos);
+            setCursorPosition(this.textInput_, pos + 1);
+
+            this.textInput_.dispatchEvent(new InputEvent('input'));
+        }
+
+        if (event.key === 'Enter') {
+            event.preventDefault();
+
+            const pos = getCursorPosition(this.textInput_);
+            const text = this.textInput_.innerText;
+
+            this.textInput_.innerHTML = text.substring(0, pos) + '&#10;' + text.substring(pos);
+            setCursorPosition(this.textInput_, pos + 1);
+
+            this.textInput_.dispatchEvent(new InputEvent('input'));
+        }
+    }
+
     public get textInput() {
         return this.textInput_;
     }
@@ -35,6 +62,7 @@ export class TextEditor{
     private registerListeners()
     {
         this.textInput_.addEventListener('input', (event : InputEvent) => this.updateText(event));
+        this.textInput_.addEventListener('keydown', (event : KeyboardEvent) => this.handleKeyup(event));
     }
 
     private textInput_ : HTMLElement;
