@@ -34,9 +34,9 @@ export class TextEditor{
             event.preventDefault();
 
             const pos = getCursorPosition(this.textInput_);
-            const text = this.textInput_.innerText;
+            const text = this.textInput_.textContent;
 
-            this.textInput_.innerText = text.substring(0, pos) + '\t' + text.substring(pos);
+            this.textInput_.textContent = text.substring(0, pos) + '\t' + text.substring(pos);
             setCursorPosition(this.textInput_, pos + 1);
 
             this.textInput_.dispatchEvent(new InputEvent('input'));
@@ -46,9 +46,9 @@ export class TextEditor{
             event.preventDefault();
 
             const pos = getCursorPosition(this.textInput_);
-            const text = this.textInput_.innerText;
+            const text = this.textInput_.textContent;
 
-            this.textInput_.innerHTML = text.substring(0, pos) + '&#10;' + text.substring(pos);
+            this.textInput_.textContent = text.substring(0, pos) + '\n' + text.substring(pos);
             setCursorPosition(this.textInput_, pos + 1);
 
             this.textInput_.dispatchEvent(new InputEvent('input'));

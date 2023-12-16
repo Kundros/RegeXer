@@ -6,7 +6,7 @@ export class RegexHighlighter
     constructor()
     {}
 
-    public static highlight(text : string, AST: RegexTypes.ASTtype){
+    public static highlight(text : string, AST: RegexTypes.ASTtype, isRoot: boolean = true){
         let elements : Node[] = [];
         
         
@@ -16,14 +16,14 @@ export class RegexHighlighter
             const childrenCount = AST.children.length;
 
             for(let i = 0 ; i < childrenCount ; i++){
-                this.handleAddElement(elements, this.highlightInternal(text, AST.children[i]));
+                this.handleAddElement(elements, this.highlightInternal(text, AST.children[i]), isRoot);
             }
         }
 
         return elements;
     }
 
-    private static highlightInternal(text : string, AST: RegexTypes.ASTtype) : Node | undefined
+    private static highlightInternal(text : string, AST: RegexTypes.ASTtype) : Node
     {
 
         if(AST.type & RegexStates.GROUP)
@@ -36,7 +36,7 @@ export class RegexHighlighter
 
             return this.wrapElement([
                 this.wrapElement(openingBracket, "span", ["group-br"]),
-                ...this.highlight(text, AST),
+                ...this.highlight(text, AST, false),
                 this.wrapElement(closingBracket, "span", ["group-br"])
             ], "span", ["group"]);
         }
@@ -50,7 +50,7 @@ export class RegexHighlighter
                 let optionChoice : Node[] = [];
 
                 option.forEach(optionChoiceElement => {
-                    this.handleAddElement(optionChoice, this.highlightInternal(text, optionChoiceElement));
+                    this.handleAddElement(optionChoice, this.highlightInternal(text, optionChoiceElement), idx === options.length - 1);
                 });
 
                 optionElements.push(
@@ -116,23 +116,58 @@ export class RegexHighlighter
             return this.wrapElement('^', "span", ["SOS"]);
     }
 
-    private static handleAddElement(elements: Node[], element: Node | undefined)
+    private static handleAddElement(elements: Node[], element?: Node, specialBr: boolean = true)
     {
         if(element === undefined)
             return;
-        if(element instanceof Text && elements.length > 0 && elements[elements.length-1] instanceof Text){
-            (elements[elements.length-1] as Text).textContent += element.textContent;
+
+        const lastNode = (elements.length > 0) ? elements[elements.length-1] : undefined;
+
+        if(element instanceof Text && lastNode instanceof Text){
+            lastNode.textContent += element.textContent;
             return;
+        } 
+
+        if(specialBr)
+        {
+            if(element instanceof HTMLElement && element.classList.contains('new-line-symbol'))
+            {
+                this.removeLastBr(lastNode);
+
+                element.appendChild(document.createElement("br"));
+                console.log("test ");
+                elements.push(element);
+
+                return;
+            }
+
+            this.removeLastBr(lastNode);
         }
+
         elements.push(element);
     }
 
-    private static wrapElement(toWrap : string | Node[], elTag = "span", elClasses = [])
+    private static removeLastBr(lastNode : Node)
+    {
+        if(lastNode instanceof HTMLElement && lastNode.classList.contains('new-line-symbol'))
+        {
+            const br = lastNode.querySelector("br");
+            if(br !== null)
+                lastNode.removeChild(br);
+        }
+    }
+
+
+    private static wrapElement(toWrap : string | Node[], elTag = "span", elClasses : string[] = [], attributes : [string, string][] = [])
     {
         let element = document.createElement(elTag);
 
         if(elClasses.length > 0)
             element.classList.add(...elClasses);
+
+            attributes.forEach(attribute => {
+                element.setAttribute(attribute[0], attribute[1]);
+            });
 
         if(typeof toWrap === "string")
             element.innerText = toWrap;

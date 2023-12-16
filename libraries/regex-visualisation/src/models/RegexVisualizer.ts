@@ -19,7 +19,7 @@ export class RegexVisualizer {
     {
         this.vscode_.postMessage({
             type: 'regex_update',
-            data: textElement.innerText
+            data: textElement.textContent
         });
     }
 
