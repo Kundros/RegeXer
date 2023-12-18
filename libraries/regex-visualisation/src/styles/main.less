@@ -25,15 +25,16 @@ body {
 
     & > div > span {
         padding: 10px;
-        background: var(--vscode-editor-foldBackground, @darker-color);
-        color: var(--vscode-editor-foreground, @light-color);
         font-size: 16px;
         font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
         font-weight: var(--vscode-editor-font-weight, 400);
-        caret-color: var(--vscode-editorCursor-foreground, white);
         letter-spacing: 1px;
-        white-space: pre-wrap;
+        white-space: break-spaces;
         tab-size: 2;
+
+        caret-color: var(--vscode-editorCursor-foreground, white);
+        color: var(--vscode-editor-foreground, @light-color);
+        background: #282e32;
 
         &:focus-visible {
             outline: none;
@@ -78,14 +79,32 @@ body {
     & [data-text]::after {
         content: attr(data-text);
     }
+
+    & .tab-symbol{
+        background-color: #525666;
+    }
+
+    & .new-line-symbol::before {
+        content: "↲";
+        font-weight: 600;
+        color: #525666;
+    }
 }
 
-body.vscode-dark #main-wrapper > div > span {
-    background: #282e32;
-}
+body.vscode-light {
+    & #main-wrapper > div > span {
+        caret-color: var(--vscode-editorCursor-foreground, #000);
+        color: var(--vscode-editor-foreground, #000);
+        background: #B9B4C7;
+    }
 
-body.vscode-light #main-wrapper > div > span {
-    background: #B9B4C7;
+    & .tab-symbol{
+        background-color: #b1aca7;
+    }
+
+    & .new-line-symbol::before {
+        color: #B9B4C7;
+    }
 }
 
 .group {
@@ -136,7 +155,7 @@ body.vscode-light #main-wrapper > div > span {
     }
 }
 
-.option-pipe, .iteration-symbol, .list-neg, .EOS, .SOS{
+.option-pipe, .iteration-symbol, .list-neg, .EOS, .SOS, .group-named, .group-nonCapturing{
     color: #f2581f;
 }
 
@@ -149,10 +168,6 @@ body.vscode-light #main-wrapper > div > span {
     background-color: #5C5470;
 }
 
-body.vscode-dark .tab-symbol{
-    background-color: #525666;
-}
-
-body.vscode-light .tab-symbol{
-    background-color: #b1aca7;
+.special-char, .group-name{
+    color: #e96cc8;
 }

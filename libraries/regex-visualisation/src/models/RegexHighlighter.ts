@@ -1,5 +1,5 @@
 import { RegexTypes } from "@kundros/regexer/types/models/RegexParser";
-import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, RegexStates } from "@kundros/regexer";
+import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, GroupTypes, RegexStates } from "@kundros/regexer";
 
 export class RegexHighlighter
 {
@@ -28,17 +28,32 @@ export class RegexHighlighter
 
         if(AST.type & RegexStates.GROUP)
         {
-            AST = AST as ASTGroup;
+            const group = AST as ASTGroup;
 
-            const openingBracket = text.slice(AST.start, AST.start + 1);
-            const inside = text.slice(AST.start + 1, AST.end - 1);
-            const closingBracket = text.slice(AST.end - 1, AST.end);
+            const openingBracket = text.slice(group.start, group.start + 1);
+            const inside = text.slice(group.start + 1, group.end - 1);
+            const closingBracket = text.slice(group.end - 1, group.end);
 
-            return this.wrapElement([
-                this.wrapElement(openingBracket, "span", ["group-br"]),
-                ...this.highlight(text, AST, false),
-                this.wrapElement(closingBracket, "span", ["group-br"])
-            ], "span", ["group"]);
+            let groupElements = [];
+
+            
+            groupElements.push(this.wrapElement(openingBracket, "span", ["group-br"]));
+
+            if(group.detailedType === GroupTypes.NON_CAPTURING){
+                groupElements.push(this.wrapElement("?:", "span", ["group-nonCapturing"]));
+            }
+            else if(group.detailedType === GroupTypes.NAMED){
+                groupElements.push(this.wrapElement([
+                    document.createTextNode("?<"), 
+                    this.wrapElement(group.name, "span", ["group-name"]), 
+                    document.createTextNode(">")
+                ], "span", ["group-named"]));
+            }
+
+            groupElements.push(...this.highlight(text, group, false));
+            groupElements.push(this.wrapElement(closingBracket, "span", ["group-br"]));
+
+            return this.wrapElement(groupElements, "span", ["group"]);
         }
 
         if(AST.type & RegexStates.OPTION)
@@ -89,17 +104,18 @@ export class RegexHighlighter
 
         if(AST.type & (RegexStates.ITERATION_ONE | RegexStates.ITERATION_ZERO))
         {
-            AST = AST as ASTIteration;
+            const iteration = AST as ASTIteration;
 
             return this.wrapElement([
-                this.highlightInternal(text, AST.children[0]),
-                this.wrapElement(text.slice(AST.end - 1, AST.end), "span", ["iteration-symbol"])
+                this.highlightInternal(text, iteration.children[0]),
+                this.wrapElement(text.slice(iteration.end - 1, iteration.end), "span", ["iteration-symbol"])
             ], "span", ["iteration"]);
         }
 
         if(AST.type & RegexStates.PRIMITIVE)
         {
-            let char = (AST as ASTPrimitive).chr;
+            const primitive = AST as ASTPrimitive;
+            const char = text.slice(primitive.start, primitive.end);
 
             if(char === '\t')
                 return this.wrapElement('\t', "span", ["tab-symbol"]);
@@ -107,6 +123,8 @@ export class RegexHighlighter
             if(char === '\n')
                 return this.wrapElement([document.createTextNode('\n')], "span", ["new-line-symbol"]);
 
+            if(char.length > 1)
+                return this.wrapElement([document.createTextNode(char)], "span", ["special-char"]);
             return document.createTextNode(char);
         }
 
