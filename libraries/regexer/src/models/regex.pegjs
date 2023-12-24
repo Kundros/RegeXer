@@ -20,7 +20,8 @@
         N_LIST: 0x1000,
         LIST_END: 0x2000,
         START_STRING: 0x4000,
-        END_STRING: 0x8000
+        END_STRING: 0x8000,
+        SPECIAL: 0x10000
     };
     
     const Modifiers = {
@@ -35,14 +36,77 @@
         d: 0x80
     }
     
-    const Flags = {
-        NONE: 0x1,
-        DEFAULT: 0x2
+    let allAscii = new Set();
+
+    for(let i = 0 ; i < 256 ; i++)
+        allAscii.add(String.fromCharCode(i));
+
+    let numbersSet = new Set(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    let nonNumbersSet = new Set(allAscii);
+    let wordSet = new Set();
+    let nonWordSet = new Set(allAscii);
+    let whiteSpaceSet = new Set(['\t', '\n', '\v', '\f', '\r', ' ', '\xA0']);
+    let nonWhiteSpaceSet = new Set(allAscii);
+
+    for(let i = 0 ; i < 10 ; i++)
+    {
+        const numChar = String.fromCharCode(i + 48);
+
+        nonNumbersSet.delete(numChar);
+        wordSet.add(numChar);
+        nonWordSet.delete(numChar);
     }
+
+    for(let i = 0 ; i < 26 ; i++)
+    {
+        const letter = String.fromCharCode(i + 97);
+        const capital = String.fromCharCode(i + 65);
+
+        wordSet.add(letter);
+        wordSet.add(capital);
+
+        nonWordSet.delete(letter);
+        nonWordSet.delete(capital);
+    }
+
+    const underscore = String.fromCharCode(95);
+    wordSet.add(underscore);
+    nonWordSet.delete(underscore);
+
+    nonWhiteSpaceSet.delete('\t');
+    nonWhiteSpaceSet.delete('\n');
+    nonWhiteSpaceSet.delete('\v');
+    nonWhiteSpaceSet.delete('\f');
+    nonWhiteSpaceSet.delete('\r');
+    nonWhiteSpaceSet.delete(' ');
+    nonWhiteSpaceSet.delete('\xA0');
     
-    
+    const noChildren = ~(
+        States.NULL | 
+        States.PRIMITIVE | 
+        States.P_LIST | 
+        States.N_LIST | 
+        States.LIST_END | 
+        States.OPTION_END | 
+        States.END_STRING | 
+        States.START_STRING | 
+        States.SPECIAL
+    );
+
+    const noDefaultTransition = ~(
+        States.NULL | 
+        States.SPECIAL | 
+        States.PRIMITIVE | 
+        States.OPTION | 
+        States.START_STRING | 
+        States.END_STRING | 
+        States.N_LIST | 
+        States.P_LIST
+    );
+
+    /// Parsing class creating creating AST + NFA structure
     class ParserHandler {
-        handle(data, elements, state, flags=Flags.DEFAULT) 
+        handle(data, elements, state) 
         {
         	let pointer = 0;
             let offset = 0;
@@ -52,15 +116,13 @@
             {
             	elements.forEach(element => {
                 	if(state & States.OPTION)
-                    {
                 		outputElements.AST.children.push([...element.map(el => el.AST)]);
-                    }
                     else 
                     	outputElements.AST.children.push(element.AST);
                 });
             }
             
-            if(flags & Flags.DEFAULT)
+            if(state & noDefaultTransition)
             	this.addTransitionToElement(outputElements.NFA[pointer], null, ++pointer);
                 
             if(state & States.PRIMITIVE)
@@ -71,6 +133,11 @@
                 
             if(state & (States.END_STRING | States.START_STRING))
             	this.handleEndStartString(outputElements.NFA);
+                
+            if(state & States.SPECIAL){
+            	this.handleSpecialBefore(outputElements.NFA, elements);
+                return outputElements;
+            }
                 
             if(state & States.OPTION)
             {
@@ -98,6 +165,10 @@
                 this.handleIterationAfter(outputElements.NFA, state);
                 
             return outputElements;
+        }
+        
+        handleSpecialBefore(outputNFA, elements){
+        	outputNFA[0].transitions = elements;
         }
         
         handleRootAfter(outputNFA){
@@ -162,33 +233,41 @@
                         });
                         return;
                     }
+                    
+                    if(typeof element === "object" && (element.AST.type & States.SPECIAL))
+                    {
+                    	element.NFA[0].transitions.forEach((str) => {
+                        	outputNFA[0].transitions.add(str);
+                        });
+                        return;
+                    }
+                    
                 	outputNFA[0].transitions.add(element);
                 });
                 return;
             }
             
-            let mapCharacters = [];
-            
             for(let i = 0; i < 256; i++)
-            	mapCharacters.push(String.fromCharCode(i));
+            	outputNFA[0].transitions.add(String.fromCharCode(i));
             
             elements.forEach(element => {
             	if(Array.isArray(element))
                 {
                     element.forEach((str) => {
-                      	const code = str.charCodeAt(0);
-                    	mapCharacters[code] = undefined;
+                    	outputNFA[0].transitions.delete(str);
                     });
                     return;
                 }
-            	const code = element.charCodeAt(0);
-                mapCharacters[code] = undefined;
-            });
-            
-            const excluded = mapCharacters.filter(x => x != undefined);
-
-            excluded.forEach((element) => {
-            	outputNFA[0].transitions.add(element);
+                
+                if(typeof element === "object" && (element.AST.type & States.SPECIAL))
+                {
+                    element.NFA[0].transitions.forEach((str) => {
+                    	outputNFA[0].transitions.delete(str);
+                    });
+                    return;
+                }
+                
+                outputNFA[0].transitions.delete(element);
             });
         }
         
@@ -219,7 +298,7 @@
                 ...data
             };
         
-        	if(type & ~(States.NULL | States.PRIMITIVE | States.P_LIST | States.N_LIST | States.LIST_END | States.OPTION_END | States.END_STRING | States.START_STRING))
+        	if(type & noChildren)
         		AST.children = []
 
             if(type & ~(States.OPTION_END))
@@ -318,13 +397,13 @@ modifiers
 /* -------------------------------------------------------- */
 
 general
-    = list / primitive / lookaround / group / EOS / SOS
+    = list / escaped_special / primitive / lookaround / group / EOS / SOS
 
 any_element 
     = option / iteration / optional / general
 
 to_iterate
-    = primitive / group / list
+    = escaped_special / primitive / group / list
 
 to_option
     = iteration / optional / general
@@ -333,7 +412,7 @@ to_optional
     = primitive / group / list
 
 to_list
-    = range_ascii / hexadecimal_ascii / [^\]\\] / is_escaped
+    = escaped_special / range_ascii / hexadecimal_ascii / [^\]\\] / is_escaped
     
 /* ----------------------- */
 /* ---- Regex grammar ---- */
@@ -341,30 +420,30 @@ to_list
 
 escaped_primitive
 	=
-    '\\' /
-    '.' /
-    '+' /
-    '*' /
-    '?' /
-    '[' /
-    '^' /
-    ']' /
-    '$' /
-    '(' /
-    ')' /
-    '{' /
-    '}' /
-    '=' /
-    '!' /
-    '<' /
-    '>' /
-    '|' /
-    ':' /
-    '-'
+    [\\\.+*?\[^\]$(){}=!<>|:-]
+    
+escaped_ascii
+	= 
+    [0tnvrf]
+    
+escaped_special
+	=
+    '\\' special:[dDwWsS]
+    { 
+    	switch(special)
+        {
+        	case 'd': return handler.handle({special: 'd'}, numbersSet, States.SPECIAL);
+            case 'D': return handler.handle({special: 'D'}, nonNumbersSet, States.SPECIAL);
+            case 'w': return handler.handle({special: 'w'}, wordSet, States.SPECIAL);
+            case 'W': return handler.handle({special: 'W'}, nonWordSet, States.SPECIAL);
+            case 's': return handler.handle({special: 's'}, whiteSpaceSet, States.SPECIAL);
+            case 'S': return handler.handle({special: 'S'}, nonWhiteSpaceSet, States.SPECIAL);
+        }
+    }
     
 null_transition 
 	= ""
-    { return handler.handle({}, [], States.NULL, Flags.NONE); }
+    { return handler.handle({}, [], States.NULL); }
 
 integer_digit
 	= digit:[0-9] { return parseInt(digit, 10); }
@@ -384,7 +463,18 @@ unreserved_character
 is_escaped
 	=
     '\\' escaped:escaped_primitive
-    { return escaped; }
+    { return escaped; } /
+    '\\' escaped:escaped_ascii 
+    { 
+    	switch(escaped){
+        	case '0': return '\0';
+            case 'n': return '\n';
+            case 't': return '\t';
+            case 'v': return '\v';
+            case 'r': return '\r';
+            case 'f': return '\f';
+        }
+    }
     
 range_ascii
 	= 
@@ -419,7 +509,7 @@ primitive
         unreserved_character
     )
     {
-    	return handler.handle({ chr: character }, [], States.PRIMITIVE, Flags.NONE);
+    	return handler.handle({ chr: character }, [], States.PRIMITIVE);
     }
     
 group 
@@ -429,9 +519,9 @@ group
         type:(
             '?:' / 
             (
-                '?<' name:[a-zA-Z]+ '>'
+                '?<' name:([_a-zA-Z][0-9a-zA-Z_]*) '>'
                 {
-                    return name.join('');
+                    return name[0] + name[1].join('');
                 }
             )
         )?
@@ -472,7 +562,7 @@ option
     = 
     elements:((to_option*) |2..,'|'|)
     {
-    	return handler.handle({}, elements, States.OPTION, Flags.NONE);
+    	return handler.handle({}, elements, States.OPTION);
     }
 
 optional 
@@ -537,8 +627,7 @@ list
     	return handler.handle(
         	{ neg: negation === '^'}, 
             elements, 
-            negation === '^' ? States.N_LIST : States.P_LIST, 
-            Flags.NONE
+            negation === '^' ? States.N_LIST : States.P_LIST
         );
     }
 
@@ -548,8 +637,7 @@ EOS
     	return handler.handle(
         	{},
             [],
-            States.END_STRING,
-            Flags.NONE
+            States.END_STRING
         );
     }
     
@@ -559,7 +647,6 @@ SOS
     	return handler.handle(
         	{},
             [],
-            States.START_STRING,
-            Flags.NONE
+            States.START_STRING
         );
     }

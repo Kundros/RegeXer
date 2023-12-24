@@ -14,6 +14,8 @@ test('empty', () => {
     expect(nfaStart[0].ASTelement).toBe(astRoot);
     expect(astRoot.children.length).toBe(0);
     expect(astRoot.modifiers).toBe(RegexTypes.Modifiers.NONE);
+
+    regexer.clear();
 });
 
 test('string of characters', () => {
@@ -41,6 +43,8 @@ test('string of characters', () => {
     expect(nfaStart[4].transitions[0]).toStrictEqual(['d', 1]);
 
     expect(nfaStart[5].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
+
+    regexer.clear();
 });
 
 test('string of characters and escaped characters', () => {
@@ -55,6 +59,8 @@ test('string of characters and escaped characters', () => {
     expect(nfaStart[2].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
     expect((nfaStart[2].ASTelement as RegexTypes.ASTPrimitive).chr).toBe("]");
     expect(nfaStart[2].transitions[0]).toStrictEqual([']', 1]);
+
+    regexer.clear();
 });
 
 test('test simple option', () => {
@@ -79,6 +85,8 @@ test('test simple option', () => {
     expect(nfaStart[7].transitions[0]).toStrictEqual([null, 1]);
 
     expect(nfaStart[8].ASTelement?.type).toStrictEqual(RegexTypes.RegexStates.END);
+
+    regexer.clear();
 });
 
 test('test complex option', () => {
@@ -100,6 +108,8 @@ test('test complex option', () => {
     expect(nfaStart[6].transitions[0]).toStrictEqual([null, 3]);
     expect(nfaStart[7].transitions[0]).toStrictEqual([null, 2]);
     expect(nfaStart[8].transitions[0]).toStrictEqual([null, 1]);
+
+    regexer.clear();
 });
 
 test('capturing group (empty)', () => {
@@ -120,6 +130,8 @@ test('capturing group (empty)', () => {
     expect(group.detailedType).toBe('C');
 
     expect(nfaStart[2].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
+
+    regexer.clear();
 });
 
 test('capturing group (nested)', () => {
@@ -149,6 +161,8 @@ test('capturing group (nested)', () => {
     expect(group3.end).toBe(10);
 
     expect(nfaStart[9].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
+
+    regexer.clear();
 });
 
 test('capturing group (combining types)', () => {
@@ -174,6 +188,8 @@ test('capturing group (combining types)', () => {
     const group3 = nfaStart[5].ASTelement as RegexTypes.ASTGroup;
     expect(group3.detailedType).toBe("C");
     expect(group3.name).toBe(undefined);
+
+    regexer.clear();
 });
 
 test('capturing group combined with option', () => {
@@ -205,6 +221,8 @@ test('capturing group combined with option', () => {
     expect(nfaStart[13].transitions[0]).toStrictEqual(['a', 1]);
 
     expect(nfaStart[15].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
+
+    regexer.clear();
 });
 
 test('iteration zero or more', () => {
@@ -220,6 +238,8 @@ test('iteration zero or more', () => {
     expect(nfaStart[1].transitions[1]).toStrictEqual([null, 3]);
     expect(nfaStart[3].transitions[0]).toStrictEqual([null, -1]);
     expect(nfaStart[3].transitions[1]).toStrictEqual([null, 1]);
+
+    regexer.clear();
 });
 
 test('iteration one or more', () => {
@@ -235,6 +255,8 @@ test('iteration one or more', () => {
     expect(nfaStart[1].transitions[1]).toStrictEqual(undefined); // without option of jumping out of bound
     expect(nfaStart[3].transitions[0]).toStrictEqual([null, -1]);
     expect(nfaStart[3].transitions[1]).toStrictEqual([null, 1]);
+
+    regexer.clear();
 });
 
 test('complex regex (iteration, group, option)', () => {
@@ -276,6 +298,8 @@ test('complex regex (iteration, group, option)', () => {
 
     expect(nfaStart[5].transitions[0]).toStrictEqual([null, 5]);
     expect(nfaStart[9].transitions[0]).toStrictEqual([null, 1]);
+
+    regexer.clear();
 });
 
 test('start end end of string (^$)', () => {
@@ -289,4 +313,6 @@ test('start end end of string (^$)', () => {
 
     expect(nfaStart[1].transitions[0]).toStrictEqual([null, 1]);
     expect(nfaStart[2].transitions[0]).toStrictEqual([null, 1]);
+
+    regexer.clear();
 });

@@ -194,12 +194,12 @@ parentPort.on("message", (message : { type: string, pid: number, data: any }) =>
 
             const matchString : string = message.data;
 
-            //try{
+            try{
                 matcher.match(matchString, message.pid);
-            //} 
-            //catch(e) {
-            //    parentPort.postMessage({type: "error", data: "Unexpected error during matching."});
-            //}
+            } 
+            catch(e) {
+                parentPort.postMessage({type: "error", data: "Unexpected error during matching."});
+            }
 
             break;
         }
@@ -208,6 +208,8 @@ parentPort.on("message", (message : { type: string, pid: number, data: any }) =>
             let newData = message.data as { AST: RegexTypes.ASTRoot, NFA: RegexTypes.NFAtype[]};
             AST = newData.AST;
             NFA = newData.NFA;
+
+            break;
         }
     }
 });

@@ -9,7 +9,10 @@ export type ASTtype
     ASTOption |
     ASTOptional |
     ASTIteration |
-    ASTList;
+    ASTList |
+    ASTEOS |
+    ASTSOS |
+    AstEscapedSpecial;
 
 export type NFAtype
     =
@@ -54,6 +57,13 @@ export type ASTOption = ASTNoChildren &
 }
 
 export type ASTOptional = AST;
+
+export type ASTEOS = ASTNoChildren;
+export type ASTSOS = ASTNoChildren;
+
+export type AstEscapedSpecial = ASTNoChildren & {
+    special: 'w' | 'W' | 'd' | 'D' | 's' | 'S'
+}
 
 export type ASTIteration = AST & 
 {
@@ -125,6 +135,24 @@ export type ListState =
     NFA: NFAStateList[]
 }
 
+export type EOSState =
+{
+    AST: ASTEOS,
+    NFA: NFAState[]
+}
+
+export type SOSState =
+{
+    AST: ASTSOS,
+    NFA: NFAState[]
+}
+
+export type EscapedSpecialState = 
+{
+    AST: AstEscapedSpecial,
+    NFA: NFAStateList[]
+}
+
 /* other */
 
 export type NFATransition = [string | null, number];
@@ -146,7 +174,8 @@ export const RegexStates = {
     N_LIST: 0x1000,
     LIST_END: 0x2000,
     START_STRING: 0x4000,
-    END_STRING: 0x8000
+    END_STRING: 0x8000,
+    SPECIAL: 0x10000
 } as const;
 
 export type RegexStates = typeof RegexStates[keyof typeof RegexStates];

@@ -30,12 +30,6 @@ regex notation.**
     ```
     *Note: set/stream of characters that must be follow each other in order.* 
 
-* **Escaped Character**
-    ```js
-    /\(\#\\/
-    ```
-    *Note: escaped character that would be otherwise evaluated as part of regex special character.*
-
 * **Option**
     ```js
     /a|b|c/
@@ -71,3 +65,56 @@ regex notation.**
     /a?/
     ```
     *Note: match element or ignore it.*
+
+* **End of string**
+    ```js
+    /$/
+    ```
+    *Note: match must be at the end of the string.*
+
+* **Start of string**
+    ```js
+    /^/
+    ```
+    *Note: match must be at the start of the string.*
+
+* **Escaped characters**
+
+    #### **Regex reserved**
+
+    ```js
+    /\(\#\\/
+    ```
+    *Note: escaped character that would be otherwise evaluated as part of regex special character.*
+
+    #### **Special**
+
+    ```js
+    /\w\W\d\D\s\S/
+    ```
+    list notation equivalent:
+    * \w = **[_0-9a-zA-Z]**
+    * \W = **[^_0-9a-zA-Z]**
+    * \d = **[0-9]**
+    * \D = **[^0-9]**
+    * \s = **[\t\n\v\f\r \xA0]**
+    * \S = **[^\t\n\v\f\r \xA0]**
+
+    *Note: matches character from its list equivalent.* 
+
+    #### **Ascii**
+
+    ```js
+    /\0\t\n\v\r\f/
+    ```
+    *Note: ascii equivalent escaped character.*
+
+    #### **Hexadecimal**
+    ```js
+    /\x00\xFF/
+    ```
+    format in regex notation:
+
+    > \\x[0-9a-fA-F]{2}
+
+    *Note: matches character from ascii table of it's coresponding number position*
