@@ -9,6 +9,9 @@
         "Option": "RegexTypes.OptionState",
         "Optional": "RegexTypes.OptionalState",
         "Iteration": "RegexTypes.IterationState",
-        "List": "RegexTypes.ListState"
+        "List": "RegexTypes.ListState",
+        "EscapedSpecial": "RegexTypes.EscapedSpecialState",
+        "SOS": "RegexTypes.SOSState",
+        "EOS": "RegexTypes.EOSState"
     }
 }

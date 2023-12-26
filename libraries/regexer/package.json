@@ -13,9 +13,9 @@
     "build:main_common": "tsc --project tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json",
     "start": "node --trace-warnings dist/cjs/index.js",
     "dev": "node --trace-warnings dist/cjs/index.js",
-    "test": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js",
-    "test:parser": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js parser",
-    "test:matcher": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js matcher"
+    "test": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js --detectOpenHandles",
+    "test:parser": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js parser --detectOpenHandles",
+    "test:matcher": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js matcher --detectOpenHandles"
   },
   "author": "Dominik Kundra, KUN0161",
   "license": "ISC",

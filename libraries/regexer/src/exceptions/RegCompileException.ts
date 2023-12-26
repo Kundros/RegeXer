@@ -1,12 +1,26 @@
 export class RegCompileException extends Error
 {
-    constructor(msg: string) {
-        super(msg);
+    constructor(from: number, to: number) {
+        super();
 
         Object.setPrototypeOf(this, RegCompileException.prototype);
     }
 
-    getMessage() {
-        return this.message;
+    getPosition() : [number, number]
+    {
+        return [this.from_, this.to_];
     }
+
+    get from() 
+    {
+        return this.from_;
+    }
+
+    get to() 
+    {
+        return this.to_;
+    }
+
+    private from_: number;
+    private to_: number;
 }
