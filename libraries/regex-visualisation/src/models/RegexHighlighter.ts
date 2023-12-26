@@ -1,5 +1,5 @@
 import { RegexTypes } from "@kundros/regexer/types/models/RegexParser";
-import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, GroupTypes, RegexStates } from "@kundros/regexer";
+import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, AstEscapedSpecial, GroupTypes, RegexStates } from "@kundros/regexer";
 
 export class RegexHighlighter
 {
@@ -9,14 +9,13 @@ export class RegexHighlighter
     public static highlight(text : string, AST: RegexTypes.ASTtype, isRoot: boolean = true){
         let elements : Node[] = [];
         
-        
         if((AST as AST).children)
         {
-            AST = AST as AST;
-            const childrenCount = AST.children.length;
+            const element = AST as AST;
+            const childrenCount = element.children.length;
 
             for(let i = 0 ; i < childrenCount ; i++){
-                this.handleAddElement(elements, this.highlightInternal(text, AST.children[i]), isRoot);
+                this.handleAddElement(elements, this.highlightInternal(text, element.children[i]), isRoot);
             }
         }
 
@@ -124,8 +123,16 @@ export class RegexHighlighter
                 return this.wrapElement([document.createTextNode('\n')], "span", ["new-line-symbol"]);
 
             if(char.length > 1)
-                return this.wrapElement([document.createTextNode(char)], "span", ["special-char"]);
+                return this.wrapElement([document.createTextNode(char)], "span", ["escaped-char"]);
+
             return document.createTextNode(char);
+        }
+
+        if(AST.type & RegexStates.SPECIAL)
+        {
+            const special = AST as AstEscapedSpecial;
+            const char = text.slice(special.start, special.end);
+            return this.wrapElement([document.createTextNode(char)], "span", ["special-char"]);
         }
 
         if(AST.type & RegexStates.END_STRING)
