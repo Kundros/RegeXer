@@ -250,6 +250,14 @@ test("\\s\\S (equivalent: [\\t\\n\\v\\f\\r \\xA0][^\\t\\n\\v\\f\\r \\xA0])", asy
     regexer.clear();
 });
 
+test("escaped ascii \\[0tnvrf]", async () => {
+    const regexer = new Regexer("\0\t\n\v\r\f");
+
+    expect((await regexer.match("\0\t\n\v\r\f")).success).toBe(true);
+
+    regexer.clear();
+});
+
 test("list", async () => {
     const regexer = new Regexer("[abc]");
 
