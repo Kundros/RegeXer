@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\libraries\\regexer\\dist\\index.js",
+            "program": "${workspaceFolder}\\libraries\\regexer\\dist\\cjs\\index.js",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]

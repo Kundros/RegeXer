@@ -1,5 +1,5 @@
 import { MatchData, RegexMatch } from "@models/RegexMatch";
-import { parse, RegexTypes } from "@models/RegexParser"
+import { parse, PeggySyntaxError, RegexTypes } from "@models/RegexParser"
 import { RegCompileException } from "@exceptions/RegCompileException";
 
 import { RegMatchException } from "@regexer/exceptions/RegMatchException";
@@ -16,8 +16,8 @@ export class Regexer{
             this.NFA_ = data?.NFA;
         }
         catch(e) {
-            console.log(e);
-            throw new RegCompileException("unable to parse regex");
+            let exception = e as PeggySyntaxError;
+            throw new RegCompileException(exception.location.start.offset, exception.location.end.offset);
         }
 
         /* DEBUG */

@@ -44,13 +44,24 @@ class Matcher
                 this.statesStack.top().transition++;
             
 
+            const astState = this.statesStack.top().state?.ASTelement?.type;
+
             /* if the state is list we transition differently */
-            if(this.statesStack.top().state?.ASTelement?.type & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST)) 
+            if(astState & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL)) 
             {
                 if(!this.handleList(matchString)) return;
                 continue;
             }
-
+            else if((astState & RegexTypes.RegexStates.END_STRING) && this.stringPosStack.top() != matchString.length) 
+            {
+                if(!this.handleBacktracking(matchString)) return;
+                continue;
+            }
+            else if((astState & RegexTypes.RegexStates.START_STRING) && this.stringPosStack.top() != 0) 
+            {
+                if(!this.handleBacktracking(matchString)) return;
+                continue;
+            }
 
             /*
                 If we have no more transitions left, we backtrack
@@ -129,9 +140,16 @@ class Matcher
         this.statesStack.pop();
         this.regexPosStack.pop();
 
+        /* If backtracking List or Special character has been processed thus we need to backtrack it too */
+        while(this.statesStack.top()?.state?.ASTelement?.type & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL))
+        {
+            this.statesStack.pop();
+            this.regexPosStack.pop();
+        }
+
         if(this.statesStack.size() === 0)
         {
-            /* no match from any position wasn't found */
+            /* match from any position wasn't found */
             if(this.stringPosStack.top() + 1 >= matchString.length)
             {
                 delete this.matchBuilder.matchData.start;
@@ -194,12 +212,12 @@ parentPort.on("message", (message : { type: string, pid: number, data: any }) =>
 
             const matchString : string = message.data;
 
-            //try{
+            try{
                 matcher.match(matchString, message.pid);
-            //} 
-            //catch(e) {
-            //    parentPort.postMessage({type: "error", data: "Unexpected error during matching."});
-            //}
+            } 
+            catch(e) {
+                parentPort.postMessage({type: "error", data: "Unexpected error during matching."});
+            }
 
             break;
         }
@@ -208,6 +226,8 @@ parentPort.on("message", (message : { type: string, pid: number, data: any }) =>
             let newData = message.data as { AST: RegexTypes.ASTRoot, NFA: RegexTypes.NFAtype[]};
             AST = newData.AST;
             NFA = newData.NFA;
+
+            break;
         }
     }
 });
