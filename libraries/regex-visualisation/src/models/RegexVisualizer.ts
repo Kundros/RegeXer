@@ -1,6 +1,6 @@
 import { WebviewApi } from "vscode-webview";
 import { TextEditor } from "./TextEditor";
-import { Message, MessageRegexData, RegexData } from "types";
+import { Message, MessageErrorRegex, MessageRegexData, RegexData } from "types";
 import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
 import { RegexHighlighter } from "./RegexHighlighter";
 
@@ -38,6 +38,23 @@ export class RegexVisualizer {
 
                 const pos = getCursorPosition(textElement);
                 textElement.replaceChildren(...RegexHighlighter.highlight(this.regexData_.text, this.regexData_.AST));
+                setCursorPosition(textElement, pos);
+
+                this.regexEditor_.updateText();
+
+                break;
+            }
+
+            case 'regex_invalid':
+            {
+                const RegexData = message as MessageErrorRegex;
+
+                const textElement = this.regexEditor_.textInput;
+
+                const pos = getCursorPosition(textElement);
+
+                textElement.innerText
+                textElement.replaceChildren(...RegexHighlighter.highlight(this.regexData_.text, this.regexData_.AST, true));
                 setCursorPosition(textElement, pos);
 
                 this.regexEditor_.updateText();

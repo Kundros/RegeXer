@@ -19,3 +19,12 @@ export type RegexData = {
     AST: RegexTypes.ASTRoot,
     text: string
 }
+
+export type MessageErrorRegex= Message & {
+    data: RegexErrorData
+}
+
+export type RegexErrorData = {
+    at: [number, number],
+    text: string
+}
