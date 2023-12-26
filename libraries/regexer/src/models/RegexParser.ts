@@ -3737,11 +3737,9 @@ peg$parseSOS() {
     }
 
 // @ts-ignore
-    const underscore = String.fromCharCode(95);
+    wordSet.add('_');
 // @ts-ignore
-    wordSet.add(underscore);
-// @ts-ignore
-    nonWordSet.delete(underscore);
+    nonWordSet.delete('_');
 
 // @ts-ignore
     nonWhiteSpaceSet.delete('\t');

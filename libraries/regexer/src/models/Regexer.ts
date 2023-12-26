@@ -24,11 +24,9 @@ export class Regexer{
 
     /** 
      * @param regexString your string to be matched against parsed regex
-     * @returns {undefined | [number, number]} 
-     * - undefined - if successfull
-     * - [number, number] - if unsuccessfull (position from-to where is possibly problem)
+     * @throws {RegCompileException} If parsing was unsuccessful
      */
-    public newParse(regexString : string = "") : undefined | [number, number]
+    public newParse(regexString : string = "")
     {
         try{
             const data = parse(regexString);
@@ -37,8 +35,7 @@ export class Regexer{
         }
         catch(e) {
             let exception = e as PeggySyntaxError;
-
-            return [exception.location.start.offset, exception.location.end.offset];
+            throw new RegCompileException(exception.location.start.offset, exception.location.end.offset);
         }
 
         /* DEBUG */
@@ -74,6 +71,9 @@ export class Regexer{
     {
         if(this.worker_ === undefined)
             this.renewWorker();
+
+        if(this.NFA_ === undefined || this.AST_ === undefined)
+            throw new RegMatchException("Can't match due to unsuccessful regex parse.");
 
         const pid = this.nextPid++;
         let external_reject : (any) => void, external_resolve : (unknown) => void;

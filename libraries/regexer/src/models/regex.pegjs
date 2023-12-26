@@ -69,9 +69,8 @@
         nonWordSet.delete(capital);
     }
 
-    const underscore = String.fromCharCode(95);
-    wordSet.add(underscore);
-    nonWordSet.delete(underscore);
+    wordSet.add('_');
+    nonWordSet.delete('_');
 
     nonWhiteSpaceSet.delete('\t');
     nonWhiteSpaceSet.delete('\n');
