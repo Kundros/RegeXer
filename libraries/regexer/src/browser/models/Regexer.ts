@@ -1,9 +1,11 @@
 import { MatchData, RegexMatch } from "@models/RegexMatch";
 import { parse, PeggySyntaxError, RegexTypes } from "@models/RegexParser"
-import { RegCompileException } from "@exceptions/RegCompileException";
-
+import { RegParseException } from "@regexer/exceptions/RegParseException";
 import { RegMatchException } from "@regexer/exceptions/RegMatchException";
+import { RegexParserErrors } from "@regexer/models/parserTypes";
+
 import * as path from "path";
+
 
 type workerReturn = {type: string, pid: number, data: unknown};
 
@@ -16,14 +18,11 @@ export class Regexer{
             this.NFA_ = data?.NFA;
         }
         catch(e) {
-            let exception = e as PeggySyntaxError;
-            throw new RegCompileException(exception.location.start.offset, exception.location.end.offset);
-        }
+            const exception = e as PeggySyntaxError;
+            const errorCode = Number.parseInt(exception.message) as RegexParserErrors;
 
-        /* DEBUG */
-        /*this.NFA_.forEach(element => {
-            console.log(element);
-        });*/
+            throw new RegParseException(exception.location.start.offset, exception.location.end.offset, errorCode);
+        }
 
         this.worker_ = new Worker(new URL("./MatchingWorker", "file:///" + path.resolve(__filename)));
         this.worker_.postMessage({
