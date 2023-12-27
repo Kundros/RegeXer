@@ -1,6 +1,6 @@
 export { Regexer } from "@models/Regexer";
 export { RegexMatch, MatchData, MatchState, MatchAction } from "@models/RegexMatch"
-export { RegParseException as RegCompileException } from "@regexer/exceptions/RegParseException"
+export { RegParseException } from "@regexer/exceptions/RegParseException"
 export { RegMatchException } from "@exceptions/RegMatchException"
 export * from "@models/parserTypes";
 
