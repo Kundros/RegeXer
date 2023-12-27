@@ -29,7 +29,8 @@
         LIST_IN: 0x2,
         GROUP_END: 0x4,
         ITERATION_OVER: 0x8,
-        OPTIONAL_OVER: 0x10
+        OPTIONAL_OVER: 0x10,
+        INVALID_RANGE: 0x20
     };
     
     const Modifiers = {
@@ -483,18 +484,33 @@ is_escaped
             case 'f': return '\f';
         }
     }
-    
+ 
+to_range 
+	=
+    hex:hexadecimal_ascii {return [hex, 4]} / 
+    chr:[^\]\\] {return [chr, 1]} / 
+    esc:is_escaped {return [esc, 2]}
+ 
 range_ascii
-	= 
-    first:(hexadecimal_ascii / [^\]\\] / is_escaped) '-' second:(hexadecimal_ascii / [^\]\\] / is_escaped) 
+	=
+    first:to_range '-' second:to_range
     &{
-    	return first.charCodeAt(0) <= second.charCodeAt(0);
+    	if(first[0].charCodeAt(0) <= second[0].charCodeAt(0)) 
+        	return true;
+            
+        const loc = location();
+        const offset = first[1] + 1 + second[1];
+        
+        loc.start.offset -= offset;
+        loc.start.column -= offset;
+            
+        error(Errors.INVALID_RANGE, loc);
     }
     {
     	let stringCharacters = [];
         
-        const start = first.charCodeAt(0);
-        const end = second.charCodeAt(0);
+        const start = first[0].charCodeAt(0);
+        const end = second[0].charCodeAt(0);
         
         for(let i = start; i <= end; i++)
             stringCharacters.push(String.fromCharCode(i));
