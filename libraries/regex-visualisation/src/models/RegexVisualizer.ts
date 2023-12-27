@@ -52,9 +52,11 @@ export class RegexVisualizer {
                 const textElement = this.regexEditor_.textInput;
 
                 const pos = getCursorPosition(textElement);
+                console.log(RegexData.data);
+                const text = RegexData.data.text;
+                const textPos = RegexData.data.exception.getPosition();
 
-                textElement.innerText
-                textElement.replaceChildren(...RegexHighlighter.highlight(this.regexData_.text, this.regexData_.AST, true));
+                textElement.replaceChildren(...RegexHighlighter.highlightError(this.regexData_.text, textPos));
                 setCursorPosition(textElement, pos);
 
                 this.regexEditor_.updateText();

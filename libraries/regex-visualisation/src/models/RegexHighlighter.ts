@@ -7,7 +7,8 @@ export class RegexHighlighter
     constructor()
     {}
 
-    public static highlight(text : string, AST: RegexTypes.ASTtype, isRoot: boolean = true){
+    public static highlight(text : string, AST: RegexTypes.ASTtype, isRoot: boolean = true)
+    {
         let elements : Node[] = [];
         
         if((AST as AST).children)
@@ -21,6 +22,15 @@ export class RegexHighlighter
         }
 
         return elements;
+    }
+
+    public static highlightError(text : string, textPos : [number, number])
+    {
+        return [
+            document.createTextNode(text.slice(0, textPos[0])),
+            this.wrapElement(text.slice(textPos[0], textPos[1]), "span", ["err-pos"]), 
+            document.createTextNode(text.slice(textPos[1], text.length-1))
+        ];
     }
 
     private static highlightInternal(text : string, AST: RegexTypes.ASTtype) : Node
