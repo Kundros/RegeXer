@@ -29,7 +29,7 @@ export class RegexHighlighter
         return [
             document.createTextNode(text.slice(0, textPos[0])),
             this.wrapElement(text.slice(textPos[0], textPos[1]), "span", ["err-pos"]), 
-            document.createTextNode(text.slice(textPos[1], text.length-1))
+            document.createTextNode(text.slice(textPos[1], text.length))
         ];
     }
 

@@ -1,4 +1,3 @@
-import { RegParseException } from "@kundros/regexer/types/exceptions/RegParseException";
 import { RegexTypes } from "@kundros/regexer/types/models/RegexParser";
 
 declare module '*.html' {
@@ -26,6 +25,9 @@ export type MessageErrorRegex= Message & {
 }
 
 export type RegexErrorData = {
-    exception: RegParseException,
+    from: number,
+    to: number,
+    errorCode: RegexTypes.RegexParserErrors,
+    errorMessage: string,
     text: string
 }
