@@ -201,3 +201,13 @@ export const GroupTypes = {
 } as const;
 
 export type GroupTypes = typeof GroupTypes[keyof typeof GroupTypes];
+
+export const RegexParserErrors = {
+    LIST_END: 0x1,
+    LIST_IN: 0x2,
+    GROUP_END: 0x4,
+    ITERATION_OVER: 0x8,
+    OPTIONAL_OVER: 0x10
+} as const;
+
+export type RegexParserErrors = typeof RegexParserErrors[keyof typeof RegexParserErrors];

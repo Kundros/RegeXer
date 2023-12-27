@@ -24,6 +24,14 @@
         SPECIAL: 0x10000
     };
     
+    const Errors = {
+    	LIST_END: 0x1,
+        LIST_IN: 0x2,
+        GROUP_END: 0x4,
+        ITERATION_OVER: 0x8,
+        OPTIONAL_OVER: 0x10
+    };
+    
     const Modifiers = {
         NONE: 0x0,
     	g: 0x1,
@@ -331,6 +339,7 @@
         }
     }
     
+    let locations = [];
     const handler = new ParserHandler();
 }
 
@@ -513,8 +522,15 @@ primitive
     
 group 
     = 
-    '(' 
-        
+    '('
+    //add new location to history
+    &{
+    	locations.push(location());
+        locations[locations.length-1].start.offset -= 1;
+        locations[locations.length-1].start.column -= 1;
+        return true;
+    }
+    //matching
         type:(
             '?:' / 
             (
@@ -523,10 +539,18 @@ group
                     return name[0] + name[1].join('');
                 }
             )
-        )?
-          
+        )?  
         elements:any_element*  
-    ')'
+    end:(')'/'')
+    //custom ERROR handle
+    &{
+    	if(end === ')'){ 
+    		locations.pop();
+        	return true;
+        }
+        error(Errors.GROUP_END, locations[locations.length-1])
+    }
+    //return handle
     {
         const detailedType = 
             type == undefined ? 'C' : 
@@ -566,14 +590,26 @@ option
 
 optional 
     = 
-    element:to_optional '?'
+    element:to_optional? '?'
+    //custom ERROR handle
+    &{
+    	if(element !== null)
+        	return true;
+            
+        const loc = location();
+        loc.start.offset -= 1;
+        loc.start.column -= 1;
+            
+        error(Errors.OPTIONAL_OVER, loc);
+    }
+    //return handle
     {
         return handler.handle({}, [element], States.OPTIONAL);
     }
 
 iteration
     = 
-    element:to_iterate 
+    element:to_iterate?
     detailedType:(
         '*' /
         '+' / 
@@ -594,6 +630,18 @@ iteration
         )
     )
    	lazy:'?'?
+    //custom ERROR handle
+    &{
+    	if(element !== null)
+        	return true;
+            
+        const loc = location();
+        loc.start.offset -= 1;
+        loc.start.column -= 1;
+            
+        error(Errors.ITERATION_OVER, loc);
+    }
+    //return handle
     {
     	const start = 
         	detailedType == '*' ? 0 :
@@ -619,9 +667,33 @@ iteration
 list
     = 
     '['
+    //add new location to history
+    &{
+    	locations.push(location());
+        locations[locations.length-1].start.offset -= 1;
+        locations[locations.length-1].start.column -= 1;
+        return true;
+    }
+    //matching
         negation:'^'? 
-        elements:to_list+
-    ']'
+        elements:to_list*   
+    end:(']'/'')
+    //custom ERROR handle
+    &{
+        if(elements.length === 0)
+        {
+        	error(Errors.LIST_IN, locations[locations.length-1]);
+        }
+        
+    	if(end === ']'){ 
+    		locations.pop();
+        	return true;
+        }
+        
+        
+        error(Errors.LIST_END, locations[locations.length-1]);
+    }
+    //return handle
     {
     	return handler.handle(
         	{ neg: negation === '^'}, 
