@@ -61,7 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
 						const exception = e as RegCompileException;
 
 						const sendMessage = { type: 'regex_invalid', data: {
-							excpetion: exception,
+							exception: exception,
 							text: message.data
 						} };
 						
