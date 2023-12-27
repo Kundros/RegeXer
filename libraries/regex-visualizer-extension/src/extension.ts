@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { Regexer, RegCompileException } from "@kundros/regexer";
+import { Regexer, RegParseException } from "@kundros/regexer";
 import { MessageRegexData } from '@kundros/regex-visualisation/types';
 
 // This method is called when your extension is activated
@@ -58,10 +58,13 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 					catch(e)
 					{
-						const exception = e as RegCompileException;
+						const exception = e as RegParseException;
 
 						const sendMessage = { type: 'regex_invalid', data: {
-							exception: exception,
+							from: exception.from,
+							to: exception.to,
+							errorCode: exception.errorCode,
+							errorMessage: exception.message,
 							text: message.data
 						} };
 						
