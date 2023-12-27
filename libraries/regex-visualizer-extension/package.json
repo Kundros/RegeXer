@@ -16,8 +16,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "regex-visualizer-extension.helloWorld",
-        "title": "Hello World"
+        "command": "regex-visualizer-extension.regexvisualizer",
+        "title": "Open Regex Visualizer & Debuger"
       }
     ]
   },
