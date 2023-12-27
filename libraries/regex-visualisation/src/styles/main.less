@@ -177,3 +177,51 @@ body.vscode-light {
     background-color: red;
     color: white;
 }
+
+.match-sign{
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    bottom: 10px;
+    right: 10px;
+    transition: background .2s;
+
+    & > div:first-child, > div:last-child {
+        background: white;
+        position: absolute;
+        transition: all .2s;
+    }
+
+    &.unsuccess{
+        background: #CC0000;
+
+        & > div:first-child{
+            width: 12px;
+            height: 2px;
+            transform: translate(3px, 8px) rotate(45deg);
+        }
+
+        & > div:last-child{
+            width: 12px;
+            height: 2px;
+            transform: translate(3px, 8px) rotate(-45deg);
+        }
+    }
+
+    &.success{
+        background: #1a911a;
+
+        & > div:first-child{
+            width: 6px;
+            height: 2px;
+            transform: translate(3px, 10px) rotate(45deg);
+        }
+
+        & > div:last-child{    
+            width: 10px;
+            height: 2px;
+            transform: translate(6px, 8px) rotate(-45deg);
+        }
+    }
+}

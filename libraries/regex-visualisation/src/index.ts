@@ -1,4 +1,5 @@
 import { RegexVisualizer } from "./models/RegexVisualizer";
+import { StringMatchEditor } from "./models/StringMatchEditor";
 import { TextEditor } from "./models/TextEditor";
 
 import './styles/main.less';
@@ -9,7 +10,7 @@ import './styles/main.less';
 
     const regexVisualizer = new RegexVisualizer(
         new TextEditor(document.querySelector("#regex-wrapper > span"), document.querySelector("#regex-wrapper > canvas")),
-        new TextEditor(document.querySelector("#match-wrapper > span"), document.querySelector("#match-wrapper > canvas")),
+        new StringMatchEditor(document.querySelector("#match-wrapper > span"), document.querySelector("#match-wrapper > canvas")),
         vscode
     );
 }());
