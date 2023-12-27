@@ -1,19 +1,21 @@
 import { MatchData, RegexMatch } from "@models/RegexMatch";
 import { parse, PeggySyntaxError, RegexTypes } from "@models/RegexParser"
-import { RegCompileException } from "@exceptions/RegCompileException";
+import { RegParseException } from "@regexer/exceptions/RegParseException";
+import { RegMatchException } from "@regexer/exceptions/RegMatchException";
+import { RegexParserErrors } from "./parserTypes";
 
 import { Worker } from 'worker_threads';
-import { RegMatchException } from "@regexer/exceptions/RegMatchException";
 import { URL } from 'url';
 import * as path from "path";
+
 
 type workerReturn = {type: string, pid: number, data: unknown};
 
 
 /**
  * @classdesc 
- * Parsing class that uses workers and creates match data 
- * on given input that can be used for further debug or other usages
+ * Parsing class that creates match structure of matching history 
+ * on given input string that can be used for further debug or other usages
  * @class
  */
 export class Regexer{
@@ -24,7 +26,7 @@ export class Regexer{
 
     /** 
      * @param regexString your string to be matched against parsed regex
-     * @throws {RegCompileException} If parsing was unsuccessful
+     * @throws {RegParseException} If parsing was unsuccessful
      */
     public newParse(regexString : string = "")
     {
@@ -34,14 +36,11 @@ export class Regexer{
             this.NFA_ = data?.NFA;
         }
         catch(e) {
-            let exception = e as PeggySyntaxError;
-            throw new RegCompileException(exception.location.start.offset, exception.location.end.offset);
-        }
+            const exception = e as PeggySyntaxError;
+            const errorCode = Number.parseInt(exception.message) as RegexParserErrors;
 
-        /* DEBUG */
-        /*this.NFA_.forEach(element => {
-            console.log(element);
-        });*/
+            throw new RegParseException(exception.location.start.offset, exception.location.end.offset, errorCode);
+        }
 
         if(typeof global !== "undefined") // check if is node
         {
