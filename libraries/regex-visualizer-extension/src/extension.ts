@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { Regexer, RegParseException } from "@kundros/regexer";
+import { Regexer, RegMatchException, RegParseException } from "@kundros/regexer";
 import { MessageRegexData } from '@kundros/regex-visualisation/types';
 
 // This method is called when your extension is activated
@@ -16,7 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('regex-visualizer-extension.helloWorld', async () => {
+	let disposable = vscode.commands.registerCommand('regex-visualizer-extension.regexvisualizer', async () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		let panel = vscode.window.createWebviewPanel(
@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		// Handle messages from the webview
 		panel.webview.onDidReceiveMessage(
-			message => {
+			async message => {
 			  switch (message.type) {
 				case 'regex_update':
 				{
@@ -68,10 +68,38 @@ export function activate(context: vscode.ExtensionContext) {
 							text: message.data
 						} };
 						
-						panel.webview.postMessage(sendMessage); // post parsed data back to webview
+						panel.webview.postMessage(sendMessage); // post error to webview
 					}
 
 				  	return;
+				}
+
+				case 'regex_match_string':
+				{
+					try{
+						const matchData = await regexer.match(message.data);
+
+						const sendMessage = { type: 'regex_match_data', data: {
+							success: matchData.success,
+							match: matchData.match,
+							text: message.data
+						} };
+	
+						panel.webview.postMessage(sendMessage); // post match data back to webview
+					}
+					catch(e)
+					{
+						const exception = e as RegMatchException;
+
+						const sendMessage = { type: 'regex_match_error', data: {
+							errorMessage: exception.message,
+							text: message.data
+						} };
+						
+						panel.webview.postMessage(sendMessage); // post error to webview
+					}
+
+					return;
 				}
 			  }
 			},
