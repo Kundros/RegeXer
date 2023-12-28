@@ -9,14 +9,23 @@ export class StringMatchEditor extends TextEditor
         this.matchSign_ = textInput.parentNode.querySelector(".match-sign");
     }
 
-    public updateSuccess(success: boolean)
+    public setSignIdle()
     {
-        if(this.matchSign_.classList.contains("success") && !success)
+        this.matchSign_.classList.remove("success");
+        this.matchSign_.classList.remove("unsuccess");
+        this.matchSign_.classList.add("idle");
+    }
+
+    public updateSignSuccess(success: boolean)
+    {
+        this.matchSign_.classList.remove("idle");
+
+        if(!this.matchSign_.classList.contains("unsuccess") && !success)
         {
             this.matchSign_.classList.remove("success");
             this.matchSign_.classList.add("unsuccess");
         }
-        else if(this.matchSign_.classList.contains("unsuccess") && success)
+        else if(!this.matchSign_.classList.contains("success") && success)
         {
             this.matchSign_.classList.remove("unsuccess");
             this.matchSign_.classList.add("success");

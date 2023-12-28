@@ -72,6 +72,7 @@ export class RegexVisualizer {
                 textElement.replaceChildren(...RegexHighlighter.highlightError(RegexData.data.text, [RegexData.data.from, RegexData.data.to]));
                 setCursorPosition(textElement, pos);
 
+                this.stringMatchEditor_.setSignIdle();
                 this.regexEditor_.updateText();
 
                 break;
@@ -83,7 +84,7 @@ export class RegexVisualizer {
 
                 Object.setPrototypeOf(RegexData.data.match, RegexMatch.prototype);
 
-                this.stringMatchEditor_.updateSuccess(RegexData.data.success);
+                this.stringMatchEditor_.updateSignSuccess(RegexData.data.success);
 
                 break;
             }
