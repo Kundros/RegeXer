@@ -2,12 +2,12 @@ import { WebviewApi } from "vscode-webview";
 import { TextEditor } from "./TextEditor";
 import { Message, MessageErrorRegex, MessageMatchData, MessageRegexData, RegexData } from "types";
 import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
-import { RegexHighlighter } from "./RegexHighlighter";
+import { RegexEditor } from "./RegexEditor";
 import { RegexMatch } from "@kundros/regexer";
 import { StringMatchEditor } from "./StringMatchEditor";
 
 export class RegexVisualizer {
-    constructor(regexEditor : TextEditor, stringMatchEditor : StringMatchEditor, vscode : WebviewApi<unknown>)
+    constructor(regexEditor : RegexEditor, stringMatchEditor : StringMatchEditor, vscode : WebviewApi<unknown>)
     {
         this.regexEditor_ = regexEditor;
         this.stringMatchEditor_ = stringMatchEditor;
@@ -44,14 +44,7 @@ export class RegexVisualizer {
                 const RegexData = message as MessageRegexData;
 
                 this.regexData_ = RegexData.data;
-
-                const textElement = this.regexEditor_.textInput;
-
-                const pos = getCursorPosition(textElement);
-                textElement.replaceChildren(...RegexHighlighter.highlight(this.regexData_.text, this.regexData_.AST));
-                setCursorPosition(textElement, pos);
-
-                this.regexEditor_.updateText();
+                this.regexEditor_.highlight(this.regexData_.AST);
 
                 /* --- update match --- */
                 this.vscode_.postMessage({
@@ -66,14 +59,8 @@ export class RegexVisualizer {
             {
                 const RegexData = message as MessageErrorRegex;
 
-                const textElement = this.regexEditor_.textInput;
-
-                const pos = getCursorPosition(textElement);
-                textElement.replaceChildren(...RegexHighlighter.highlightError(RegexData.data.text, [RegexData.data.from, RegexData.data.to]));
-                setCursorPosition(textElement, pos);
-
+                this.regexEditor_.highlightError([RegexData.data.from, RegexData.data.to]);
                 this.stringMatchEditor_.setSignIdle();
-                this.regexEditor_.updateText();
 
                 break;
             }
@@ -83,17 +70,15 @@ export class RegexVisualizer {
                 const RegexData = message as MessageMatchData;
 
                 Object.setPrototypeOf(RegexData.data.match, RegexMatch.prototype);
-
                 this.stringMatchEditor_.updateSignSuccess(RegexData.data.success);
 
                 break;
             }
         }
     }
-
-    private wait_?: Promise<void>;
+    
     private regexData_? : RegexData;
-    private regexEditor_ : TextEditor;
+    private regexEditor_ : RegexEditor;
     private stringMatchEditor_ : StringMatchEditor;
     private vscode_ : WebviewApi<unknown>;
 }

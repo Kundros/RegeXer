@@ -39,6 +39,7 @@ export function getCursorPosition(parent : HTMLElement | ChildNode) {
   export function setCursorPosition(parent : HTMLElement | ChildNode, pos : number) 
   {
     const sel = window.getSelection();
+
     sel.removeAllRanges();
     
     const range = internalSetCursor(parent, document.createRange(), { pos, done: false });

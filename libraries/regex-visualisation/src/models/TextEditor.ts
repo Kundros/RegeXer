@@ -33,36 +33,22 @@ export class TextEditor{
         }
     }
 
-    private handleHistory(event : InputEvent)
+    public get textInput() {
+        return this.textInput_;
+    }
+    
+    protected handleHistory(event : InputEvent)
     {
-        if(event.inputType === 'historyUndo')
-        {
-            if(this.historyAt_ > 0)
-            {
-                const newCurrent = this.inputHistory_[--this.historyAt_];
-
-                this.textInput_.innerText = newCurrent[0]; //return to history text
-                setCursorPosition(this.textInput_, newCurrent[1]); //return to history pointer
-
-                this.textInput_.dispatchEvent(new InputEvent('input'));
-                return;
-            }
-        }
-        else if(event.inputType === 'historyRedo')
-        {
-            if(this.historyAt_ < this.inputHistory_.length - 1)
-            {
-                const newCurrent = this.inputHistory_[++this.historyAt_];
-
-                this.textInput_.innerText = newCurrent[0]; //return to history text
-                setCursorPosition(this.textInput_, newCurrent[1]); //return to history pointer
-
-                this.textInput_.dispatchEvent(new InputEvent('input'));
-                return;
-            }
-        }
-
         const historyCurrent = this.inputHistory_[this.historyAt_];
+        
+        if(event.inputType === 'historyUndo' || event.inputType === 'historyRedo')
+        {
+            const historyCurrent = this.inputHistory_[this.historyAt_];
+            this.textInput_.textContent = historyCurrent[0];
+            setCursorPosition(this.textInput_, historyCurrent[1]);
+            this.updateText();
+        }
+
         if(historyCurrent[0] != this.textInput_.textContent)
         {
             while(this.historyAt_ < this.inputHistory_.length - 1)
@@ -76,12 +62,41 @@ export class TextEditor{
 
             this.inputHistory_.push([this.textInput_.textContent, getCursorPosition(this.textInput_)]);
             this.historyAt_++;
-
-            console.log(this.inputHistory_);
         }
     }
 
-    public handleKeyup(event: KeyboardEvent){
+    protected handleUndoRedo(event : KeyboardEvent)
+    {
+        if((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'Z')
+        {
+            if(this.historyAt_ < this.inputHistory_.length - 1)
+            {
+                const newCurrent = this.inputHistory_[++this.historyAt_];
+
+                this.textInput_.textContent = newCurrent[0]; //return to history text
+                setCursorPosition(this.textInput_, newCurrent[1]); //return to history pointer
+
+                this.textInput_.dispatchEvent(new InputEvent('input'));
+                return;
+            }
+        }
+        else if((event.ctrlKey || event.metaKey) && event.key === 'z')
+        {
+            if(this.historyAt_ > 0)
+            {
+                const newCurrent = this.inputHistory_[--this.historyAt_];
+
+                this.textInput_.textContent = newCurrent[0]; //return to history text
+                setCursorPosition(this.textInput_, newCurrent[1]); //return to history pointer
+
+                this.textInput_.dispatchEvent(new InputEvent('input'));
+                return;
+            }
+        }
+    }
+
+    protected handleKeydown(event: KeyboardEvent)
+    {
         if(event.key === "Tab"){
             event.preventDefault();
 
@@ -107,22 +122,37 @@ export class TextEditor{
         }
     }
 
-    public get textInput() {
-        return this.textInput_;
-    }
-
     private registerListeners()
     {
+        this.textInput_.addEventListener('focus', (event : FocusEvent) => {
+            // @ts-ignore
+            if(event.sourceCapabilities !== null)
+            {
+                document.querySelectorAll(".focused-editable").forEach(element => {
+                    element.classList.remove("focused-editable");
+                });
+                this.textInput_.classList.add("focused-editable");
+            }
+            else if(!this.textInput_.classList.contains("focused-editable"))
+            {
+                (document.querySelector(".focused-editable") as HTMLElement).focus();
+            }
+            else{
+                const historyCurrent = this.inputHistory_[this.historyAt_];
+                setCursorPosition(this.textInput_, historyCurrent[1]);
+            }
+        });
+        this.textInput_.addEventListener('keydown', (event : KeyboardEvent) => this.handleKeydown(event));
         this.textInput_.addEventListener('input', (event : InputEvent) => this.updateText(event));
         this.textInput_.addEventListener('input', (event : InputEvent) => this.handleHistory(event));
-        this.textInput_.addEventListener('keydown', (event : KeyboardEvent) => this.handleKeyup(event));
+        this.textInput_.addEventListener('keydown', (event : KeyboardEvent) => this.handleUndoRedo(event));
     }
 
     public historyLimit : number;
-    private inputHistory_ : [string, number][]; // text, cursor
-    private historyAt_ : number;
+    protected inputHistory_ : [string, number][]; // text, cursor
+    protected historyAt_ : number;
 
-    private textInput_ : HTMLElement;
-    private canvas_ : HTMLCanvasElement;
-    private context_ : CanvasRenderingContext2D;
+    protected textInput_ : HTMLElement;
+    protected canvas_ : HTMLCanvasElement;
+    protected context_ : CanvasRenderingContext2D;
 }

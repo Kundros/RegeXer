@@ -2,9 +2,9 @@ import { TextEditor } from "./TextEditor";
 
 export class StringMatchEditor extends TextEditor
 {
-    constructor(textInput : HTMLElement, canvas : HTMLCanvasElement)
+    constructor(textInput : HTMLElement, canvas : HTMLCanvasElement, historyLimit = 100)
     {
-        super(textInput, canvas);
+        super(textInput, canvas, historyLimit);
 
         this.matchSign_ = textInput.parentNode.querySelector(".match-sign");
     }
