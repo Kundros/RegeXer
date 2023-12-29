@@ -21,7 +21,7 @@ export class RegexEditor extends TextEditor
             const childrenCount = element.children.length;
 
             for(let i = 0 ; i < childrenCount ; i++){
-                this.handleAddElement(elements, this.highlightInternal(element.children[i]), isRoot);
+                ElementHelper.handleAddElement(elements, this.highlightInternal(element.children[i]), isRoot);
             }
         }
 
@@ -63,7 +63,6 @@ export class RegexEditor extends TextEditor
             const group = AST as ASTGroup;
 
             const openingBracket = text.slice(group.start, group.start + 1);
-            const inside = text.slice(group.start + 1, group.end - 1);
             const closingBracket = text.slice(group.end - 1, group.end);
 
             let groupElements = [];
@@ -96,7 +95,7 @@ export class RegexEditor extends TextEditor
                 let optionChoice : Node[] = [];
 
                 option.forEach(optionChoiceElement => {
-                    this.handleAddElement(optionChoice, this.highlightInternal(optionChoiceElement), idx === options.length - 1);
+                    ElementHelper.handleAddElement(optionChoice, this.highlightInternal(optionChoiceElement), idx === options.length - 1);
                 });
 
                 optionElements.push(
@@ -171,23 +170,5 @@ export class RegexEditor extends TextEditor
             return ElementHelper.wrapElement('$', "span", ["EOS"]);
         if(AST.type & RegexStates.START_STRING)
             return ElementHelper.wrapElement('^', "span", ["SOS"]);
-    }
-
-    private handleAddElement(elements: Node[], element?: Node, specialBr: boolean = true)
-    {
-        if(element === undefined)
-            return;
-
-        const lastNode = (elements.length > 0) ? elements[elements.length-1] : undefined;
-
-        if(element instanceof Text && lastNode instanceof Text){
-            lastNode.textContent += element.textContent;
-            return;
-        } 
-
-        if(specialBr)
-            ElementHelper.addNewBr(elements, element);
-
-        elements.push(element);
     }
 }

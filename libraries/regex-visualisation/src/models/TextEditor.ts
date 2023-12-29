@@ -67,7 +67,7 @@ export class TextEditor{
 
     protected handleUndoRedo(event : KeyboardEvent)
     {
-        if((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'Z')
+        if((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'z' || event.key === 'Z'))
         {
             if(this.historyAt_ < this.inputHistory_.length - 1)
             {
@@ -80,7 +80,7 @@ export class TextEditor{
                 return;
             }
         }
-        else if((event.ctrlKey || event.metaKey) && event.key === 'z')
+        else if((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'Z'))
         {
             if(this.historyAt_ > 0)
             {
@@ -122,26 +122,30 @@ export class TextEditor{
         }
     }
 
+    protected handleFocus(event : FocusEvent)
+    {
+        if(!this.textInput_.classList.contains("focused-editable"))
+        {
+            (document.querySelector(".focused-editable") as HTMLElement).focus();
+        }
+        else{
+            const historyCurrent = this.inputHistory_[this.historyAt_];
+            setCursorPosition(this.textInput_, historyCurrent[1]);
+        }
+    }
+
+    protected handleMousedown(event: MouseEvent)
+    {
+        document.querySelectorAll(".focused-editable").forEach(element => {
+            element.classList.remove("focused-editable");
+        });
+        this.textInput_.classList.add("focused-editable");
+    }
+
     private registerListeners()
     {
-        this.textInput_.addEventListener('focus', (event : FocusEvent) => {
-            // @ts-ignore
-            if(event.sourceCapabilities !== null)
-            {
-                document.querySelectorAll(".focused-editable").forEach(element => {
-                    element.classList.remove("focused-editable");
-                });
-                this.textInput_.classList.add("focused-editable");
-            }
-            else if(!this.textInput_.classList.contains("focused-editable"))
-            {
-                (document.querySelector(".focused-editable") as HTMLElement).focus();
-            }
-            else{
-                const historyCurrent = this.inputHistory_[this.historyAt_];
-                setCursorPosition(this.textInput_, historyCurrent[1]);
-            }
-        });
+        this.textInput_.addEventListener('mousedown', (event: MouseEvent) => this.handleMousedown(event));
+        this.textInput_.addEventListener('focus', (event : FocusEvent) => this.handleFocus(event));
         this.textInput_.addEventListener('keydown', (event : KeyboardEvent) => this.handleKeydown(event));
         this.textInput_.addEventListener('input', (event : InputEvent) => this.updateText(event));
         this.textInput_.addEventListener('input', (event : InputEvent) => this.handleHistory(event));
