@@ -11,6 +11,10 @@ import './styles/main.less';
     const regexVisualizer = new RegexVisualizer(
         new RegexEditor(document.querySelector("#regex-wrapper > span"), document.querySelector("#regex-wrapper > canvas")),
         new StringMatchEditor(document.querySelector("#match-wrapper > span"), document.querySelector("#match-wrapper > canvas")),
-        vscode
+        vscode,
+        {
+            regexWait: 300,
+            matchWait: 500
+        }
     );
 }());

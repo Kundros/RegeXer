@@ -1,14 +1,14 @@
 import { RegexTypes } from "@kundros/regexer/types/models/RegexParser";
 import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, AstEscapedSpecial, GroupTypes, RegexStates } from "@kundros/regexer";
-import { TextEditor } from "./TextEditor";
+import { TextEditor, TextEditorOptions } from "./TextEditor";
 import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
 import { ElementHelper } from "./other/ElementHelper";
 
 export class RegexEditor extends TextEditor
 {
-    constructor(textInput : HTMLElement, canvas : HTMLCanvasElement, historyLimit = 100)
+    constructor(textInput : HTMLElement, canvas : HTMLCanvasElement, options?: TextEditorOptions)
     {
-        super(textInput, canvas, historyLimit);
+        super(textInput, canvas, options);
     }
 
     public highlight(AST: RegexTypes.ASTtype, isRoot: boolean = true) : Node[] | null
@@ -69,10 +69,12 @@ export class RegexEditor extends TextEditor
             
             groupElements.push(ElementHelper.wrapElement(openingBracket, "span", ["group-br"]));
 
-            if(group.detailedType === GroupTypes.NON_CAPTURING){
+            if(group.detailedType === GroupTypes.NON_CAPTURING)
+            {
                 groupElements.push(ElementHelper.wrapElement("?:", "span", ["group-nonCapturing"]));
             }
-            else if(group.detailedType === GroupTypes.NAMED){
+            else if(group.detailedType === GroupTypes.NAMED)
+            {
                 groupElements.push(ElementHelper.wrapElement([
                     document.createTextNode("?<"), 
                     ElementHelper.wrapElement(group.name, "span", ["group-name"]), 
@@ -103,7 +105,9 @@ export class RegexEditor extends TextEditor
                 );
 
                 if (idx !== options.length - 1)
+                {
                     optionElements.push(ElementHelper.wrapElement('|', "span", ['option-pipe']));
+                }
             });
 
             return ElementHelper.wrapElement(optionElements, "span", ['option']);

@@ -22,9 +22,11 @@ body {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
+    margin-top: 20px;
 
     & > div > span {
-        padding: 10px;
+        overflow-y: auto;
+        position: relative;
         font-size: 16px;
         font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
         font-weight: var(--vscode-editor-font-weight, 400);
@@ -35,7 +37,6 @@ body {
 
         caret-color: var(--vscode-editorCursor-foreground, white);
         color: var(--vscode-editor-foreground, @light-color);
-        background: #282e32;
 
         &:focus-visible {
             outline: none;
@@ -51,6 +52,9 @@ body {
         position: relative;
         display: flex;
         max-width: 100%;
+        padding: 10px;
+        background: #00000044;
+        border-radius: 10px;
 
         & canvas {
             position: absolute;
@@ -64,13 +68,15 @@ body {
         height: 60vh;
 
         & > span {
-            overflow-y: auto;
             resize: none;
             width: 100%;
         }
     }
 
     & #regex-wrapper {
+        margin-bottom: 20px;
+        max-height: 140px;
+
         & > span {
             resize: none;
             width: -webkit-fill-available;
@@ -83,6 +89,13 @@ body {
 
     & .tab-symbol{
         background-color: #525666;
+    }
+
+    & .new-line-symbol{
+        pointer-events: none;
+        display: inline;
+        position: relative;
+        padding-right: .5rem;
     }
 
     & .new-line-symbol::before {

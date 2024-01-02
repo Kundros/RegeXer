@@ -6,12 +6,21 @@ import { RegexEditor } from "./RegexEditor";
 import { RegexMatch } from "@kundros/regexer";
 import { StringMatchEditor } from "./StringMatchEditor";
 
+export type RegexVisualizerOptions = {
+    regexWait?: number,
+    matchWait?: number,
+}
+
 export class RegexVisualizer {
-    constructor(regexEditor : RegexEditor, stringMatchEditor : StringMatchEditor, vscode : WebviewApi<unknown>)
+    constructor(regexEditor : RegexEditor, stringMatchEditor : StringMatchEditor, vscode : WebviewApi<unknown>, options? : RegexVisualizerOptions)
     {
         this.regexEditor_ = regexEditor;
         this.stringMatchEditor_ = stringMatchEditor;
         this.vscode_ = vscode;
+
+        this.options_ = {};
+        this.options_.matchWait = options?.matchWait ?? 500;
+        this.options_.regexWait = options?.regexWait ?? 500;
 
         this.regexEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.regexTextCallback(event, textElement));
         this.stringMatchEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.matchTextCallback(event, textElement));
@@ -20,18 +29,28 @@ export class RegexVisualizer {
 
     private regexTextCallback(event : InputEvent, textElement : HTMLElement) 
     {
-        this.vscode_.postMessage({
-            type: 'regex_update',
-            data: textElement.textContent
-        });
+        if(this.regexWait_ != undefined)
+            clearTimeout(this.regexWait_);
+
+        this.regexWait_ = setTimeout(() => {
+            this.vscode_.postMessage({
+                type: 'regex_update',
+                data: textElement.textContent
+            });
+        }, this.options_.regexWait);
     }
 
     private matchTextCallback(event : InputEvent, textElement : HTMLElement)
     {
-        this.vscode_.postMessage({
-            type: 'regex_match_string',
-            data: textElement.textContent
-        });
+        if(this.matchWait_ != undefined)
+            clearTimeout(this.matchWait_);
+
+        this.matchWait_ = setTimeout(() => {
+            this.vscode_.postMessage({
+                type: 'regex_match_string',
+                data: textElement.textContent
+            });
+        }, this.options_.matchWait);
     }
 
     private async messageRecieve(event : MessageEvent)
@@ -77,6 +96,9 @@ export class RegexVisualizer {
         }
     }
     
+    private options_ : RegexVisualizerOptions;
+    private matchWait_? : NodeJS.Timeout;
+    private regexWait_? : NodeJS.Timeout;
     private regexData_? : RegexData;
     private regexEditor_ : RegexEditor;
     private stringMatchEditor_ : StringMatchEditor;

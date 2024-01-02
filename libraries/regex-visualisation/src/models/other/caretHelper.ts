@@ -46,6 +46,30 @@ export function getCursorPosition(parent : HTMLElement | ChildNode) {
 
     range.collapse(true);
     sel.addRange(range);
+
+    const tempElement = document.createElement('br');
+
+    const caretBound = range.getBoundingClientRect();
+    const parentBound = document.activeElement.getBoundingClientRect();
+
+    if(caretBound.y - parentBound.y > parentBound.height - caretBound.height*2 || caretBound.y - parentBound.y < 0)
+    {
+      range.cloneRange().insertNode(tempElement);
+
+      if(caretBound.y - parentBound.y - caretBound.height < 0)
+      {
+        tempElement.scrollIntoView({
+          block: 'start',
+        });
+        document.activeElement.scrollBy(0, caretBound.height);
+      }
+      else
+        tempElement.scrollIntoView({
+          block: 'end',
+        });
+
+        tempElement.remove();
+    }
   }
 
   function internalSetCursor(parent : HTMLElement | ChildNode, range : Range, stat : CursorStat){
@@ -65,4 +89,35 @@ export function getCursorPosition(parent : HTMLElement | ChildNode) {
       }
     }
     return range;
+  }
+
+export function getPositionInNode(parent : HTMLElement | ChildNode)
+  {
+    const sel = window.getSelection();
+    const node = sel.focusNode;
+    const offset = sel.focusOffset;
+  
+    const { pos } = internalGetPositionInNode(parent, node, offset, { pos: 0, done: false});
+
+    return pos;
+  }
+
+  function internalGetPositionInNode(parent : HTMLElement | ChildNode, node : Node, offset : number, stat : CursorStat)
+  {
+    if (stat.done) return stat;
+  
+    let currentNode = null;
+    if (parent.childNodes.length == 0) {
+      stat.pos += parent.textContent.length;
+    } else {
+      for (let i = 0; i < parent.childNodes.length && !stat.done; i++) {
+        currentNode = parent.childNodes[i];
+        if (currentNode === node) {
+          stat.pos += offset;
+          stat.done = true;
+          return stat;
+        } else internalGetCursor(currentNode, node, offset, stat);
+      }
+    }
+    return stat;
   }
