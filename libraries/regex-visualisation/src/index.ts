@@ -9,11 +9,11 @@ import './styles/main.less';
     const vscode = acquireVsCodeApi();
 
     const regexVisualizer = new RegexVisualizer(
-        new RegexEditor(document.querySelector("#regex-wrapper > span"), document.querySelector("#regex-wrapper > canvas")),
-        new StringMatchEditor(document.querySelector("#match-wrapper > span"), document.querySelector("#match-wrapper > canvas")),
+        new RegexEditor(document.querySelector("#regex-wrapper > span")),
+        new StringMatchEditor(document.querySelector("#match-wrapper > span")),
         vscode,
         {
-            regexWait: 300,
+            regexWait: 0,
             matchWait: 500
         }
     );

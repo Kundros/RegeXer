@@ -4,33 +4,45 @@ import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
 
 export class StringMatchEditor extends TextEditor
 {
-    constructor(textInput : HTMLElement, canvas : HTMLCanvasElement, options?: TextEditorOptions)
+    constructor(textInput : HTMLElement, options?: TextEditorOptions)
     {
-        super(textInput, canvas, options);
+        super(textInput, options);
 
         this.matchSign_ = textInput.parentNode.querySelector(".match-sign");
     }
 
+    public setLoading()
+    {
+        if(this.matchSign_.classList.contains("match-loading"))
+            return;
+        this.matchSign_.classList.remove("match-success", "match-unsuccess", "match-idle");
+        this.matchSign_.classList.add("match-loading");
+    }
+
+    public get isIdle()
+    {
+        return this.matchSign_.classList.contains("match-idle");
+    }
+
     public setSignIdle()
     {
-        this.matchSign_.classList.remove("success");
-        this.matchSign_.classList.remove("unsuccess");
-        this.matchSign_.classList.add("idle");
+        if(this.matchSign_.classList.contains("match-idle"))
+            return;
+        this.matchSign_.classList.remove("match-success", "match-unsuccess", "match-loading");
+        this.matchSign_.classList.add("match-idle");
     }
 
     public updateSignSuccess(success: boolean)
     {
-        this.matchSign_.classList.remove("idle");
-
-        if(!this.matchSign_.classList.contains("unsuccess") && !success)
+        if(!this.matchSign_.classList.contains("match-unsuccess") && !success)
         {
-            this.matchSign_.classList.remove("success");
-            this.matchSign_.classList.add("unsuccess");
+            this.matchSign_.classList.remove("match-success", "match-idle", "match-loading");
+            this.matchSign_.classList.add("match-unsuccess");
         }
-        else if(!this.matchSign_.classList.contains("success") && success)
+        else if(!this.matchSign_.classList.contains("match-success") && success)
         {
-            this.matchSign_.classList.remove("unsuccess");
-            this.matchSign_.classList.add("success");
+            this.matchSign_.classList.remove("match-unsuccess", "match-idle", "match-loading");
+            this.matchSign_.classList.add("match-success");
         }
     }
 

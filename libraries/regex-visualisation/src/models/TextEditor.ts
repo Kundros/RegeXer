@@ -6,11 +6,9 @@ export type TextEditorOptions = {
 }
 
 export class TextEditor{
-    constructor(textInput : HTMLElement, canvas : HTMLCanvasElement, options?: TextEditorOptions)
+    constructor(textInput : HTMLElement, options?: TextEditorOptions)
     {
         this.textInput_ = textInput;
-        this.canvas_ = canvas;
-        this.context_ = canvas.getContext('2d');
 
         this.options_ = {};
         this.options_.historyLimit = options?.historyLimit ?? 100;
@@ -225,6 +223,4 @@ export class TextEditor{
     protected historyAt_ : number;
 
     protected textInput_ : HTMLElement;
-    protected canvas_ : HTMLCanvasElement;
-    protected context_ : CanvasRenderingContext2D;
 }

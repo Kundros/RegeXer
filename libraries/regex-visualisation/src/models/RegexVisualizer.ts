@@ -32,25 +32,51 @@ export class RegexVisualizer {
         if(this.regexWait_ != undefined)
             clearTimeout(this.regexWait_);
 
-        this.regexWait_ = setTimeout(() => {
+        this.stringMatchEditor_.setLoading();
+        if(this.options_.regexWait > 0)
+        {
+            this.regexWait_ = setTimeout(() => {
+                this.vscode_.postMessage({
+                    type: 'regex_update',
+                    data: textElement.textContent
+                });
+            }, this.options_.regexWait);
+        }
+        else
+        {
             this.vscode_.postMessage({
                 type: 'regex_update',
                 data: textElement.textContent
             });
-        }, this.options_.regexWait);
+        }
     }
 
     private matchTextCallback(event : InputEvent, textElement : HTMLElement)
     {
+        if(this.stringMatchEditor_.isIdle)
+            return;
+
         if(this.matchWait_ != undefined)
             clearTimeout(this.matchWait_);
 
-        this.matchWait_ = setTimeout(() => {
+        this.stringMatchEditor_.setLoading();
+        if(this.options_.matchWait > 0)
+        {
+            this.stringMatchEditor_.setLoading();
+            this.matchWait_ = setTimeout(() => {
+                this.vscode_.postMessage({
+                    type: 'regex_match_string',
+                    data: textElement.textContent
+                });
+            }, this.options_.matchWait);
+        }
+        else
+        {
             this.vscode_.postMessage({
                 type: 'regex_match_string',
                 data: textElement.textContent
             });
-        }, this.options_.matchWait);
+        }
     }
 
     private async messageRecieve(event : MessageEvent)
@@ -89,6 +115,9 @@ export class RegexVisualizer {
                 const RegexData = message as MessageMatchData;
 
                 Object.setPrototypeOf(RegexData.data.match, RegexMatch.prototype);
+                
+                const match = RegexData.data.match;
+
                 this.stringMatchEditor_.updateSignSuccess(RegexData.data.success);
 
                 break;

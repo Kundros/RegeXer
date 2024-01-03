@@ -6,9 +6,9 @@ import { ElementHelper } from "./other/ElementHelper";
 
 export class RegexEditor extends TextEditor
 {
-    constructor(textInput : HTMLElement, canvas : HTMLCanvasElement, options?: TextEditorOptions)
+    constructor(textInput : HTMLElement, options?: TextEditorOptions)
     {
-        super(textInput, canvas, options);
+        super(textInput, options);
     }
 
     public highlight(AST: RegexTypes.ASTtype, isRoot: boolean = true) : Node[] | null
