@@ -4,6 +4,7 @@ import { Stack } from '@regexer/structures/Stack';
 import { NFAState, NFAStateList } from './parserTypes';
 import { MatchBuilder } from './MatchBuilder';
 import { MatchAction } from './RegexMatch';
+import { MatchComplete, NewData, NewMessage, ReturnErrorMessage, ReturnMessage } from './MatchWorkerTypes';
 
 let AST: RegexTypes.ASTRoot = workerData.AST;
 let NFA: RegexTypes.NFAtype[] = workerData.NFA;
@@ -116,7 +117,7 @@ class Matcher
 
         this.matchBuilder.matchData.end = this.stringPosStack.top();
 
-        parentPort.postMessage({ type: "succeded", pid: this.pid, data: this.matchBuilder.finalize() });
+        parentPort.postMessage(<ReturnMessage>{ type: "succeded", pid: this.pid, data: [this.matchBuilder.finalize()] });
     }
 
     private handleList(matchString : string)
@@ -154,7 +155,7 @@ class Matcher
             {
                 delete this.matchBuilder.matchData.start;
                 delete this.matchBuilder.matchData.end;
-                parentPort.postMessage({ type: "failed", pid: this.pid, data: this.matchBuilder.finalize() });
+                parentPort.postMessage(<ReturnMessage>{ type: "failed", pid: this.pid, data: [this.matchBuilder.finalize()] });
 
                 return false;
             }
@@ -199,14 +200,14 @@ class Matcher
 
 const matcher = new Matcher();
 
-parentPort.on("message", (message : { type: string, pid: number, data: any }) => {
+parentPort.on("message", (message : NewMessage) => {
     switch(message.type)
     {
         case 'match':
         {
             if(typeof message.data !== "string")
             {
-                parentPort.postMessage({type: "error", pid: message.pid, data: "Unexpected error during matching."});
+                parentPort.postMessage(<ReturnErrorMessage>{type: "error", pid: message.pid, data: "Unexpected error during matching."});
                 return;
             }
 
@@ -216,14 +217,14 @@ parentPort.on("message", (message : { type: string, pid: number, data: any }) =>
                 matcher.match(matchString, message.pid);
             } 
             catch(e) {
-                parentPort.postMessage({type: "error", data: "Unexpected error during matching."});
+                parentPort.postMessage(<ReturnErrorMessage>{type: "error", pid: message.pid, data: "Unexpected error during matching."});
             }
 
             break;
         }
         case 'new_data':
         {
-            let newData = message.data as { AST: RegexTypes.ASTRoot, NFA: RegexTypes.NFAtype[]};
+            let newData = message.data as NewData;
             AST = newData.AST;
             NFA = newData.NFA;
 
