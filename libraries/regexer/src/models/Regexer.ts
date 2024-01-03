@@ -7,10 +7,7 @@ import { RegexParserErrors } from "./parserTypes";
 import { Worker } from 'worker_threads';
 import { URL } from 'url';
 import * as path from "path";
-
-
-type workerReturn = {type: string, pid: number, data: unknown};
-
+import { MatchComplete, NewMessage, ReturnMessage } from "./MatchWorkerTypes";
 
 /**
  * @classdesc 
@@ -66,7 +63,7 @@ export class Regexer{
      * @returns {Promise<{success: boolean, match: RegexMatch}>}
      * @throws {RegMatchException} If some unexpacted error occured
      */
-    public async match(matchString : string) : Promise<{success: boolean, match: RegexMatch}>
+    public async match(matchString : string) : Promise<MatchComplete>
     {
         if(this.worker_ === undefined)
             this.renewWorker();
@@ -78,17 +75,17 @@ export class Regexer{
         let external_reject : (any) => void, external_resolve : (unknown) => void;
 
         const result = await new Promise((resolve, reject) => {
-            this.worker_.postMessage({ type: "match", pid, data: matchString });
+            this.worker_.postMessage(<NewMessage>{ type: "match", pid, data: matchString });
 
             external_reject = (reason?: any) => {
-                const returned = reason as workerReturn;
+                const returned = reason as ReturnMessage;
 
                 if(returned.pid === pid)
                     reject(reason);
             }
 
             external_resolve = (value: unknown) => {
-                const returned = value as workerReturn;
+                const returned = value as ReturnMessage;
 
                 if(returned.pid === pid)
                     resolve(value);
@@ -101,12 +98,19 @@ export class Regexer{
         this.worker_.removeListener('error', external_reject);
         this.worker_.removeListener('message', external_resolve);
 
-        const returned = result as workerReturn;
+        const returned = result as NewMessage;
 
         if(returned.type === 'error')
             throw new RegMatchException(returned.data as string);
 
-        return {success: returned.type === 'succeded', match: new RegexMatch(returned.data as MatchData)};
+        let data = returned.data as MatchData[];
+        let lengthData = data.length;
+        const matches : RegexMatch[] = [];
+
+        for(let i = 0 ; i < lengthData ; i++)
+            matches.push(new RegexMatch(data[i]));
+
+        return {success: returned.type === 'succeded', matches} as MatchComplete;
     }
 
     /** @returns NFA-like (non deterministic finite automata) structure of parsed regex. */
