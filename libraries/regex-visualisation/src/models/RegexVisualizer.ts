@@ -113,10 +113,18 @@ export class RegexVisualizer {
             case 'regex_match_data':
             {
                 const RegexData = message as MessageMatchData;
+                const matchesData = RegexData.data.matches;
+                const matchesDataLength = matchesData.length;
 
-                Object.setPrototypeOf(RegexData.data.match, RegexMatch.prototype);
-                
-                const match = RegexData.data.match;
+                const matches : RegexMatch[] = [];
+
+                for(let i = 0 ; i < matchesDataLength ; i++)
+                {
+                    Object.setPrototypeOf(matchesData[i], RegexMatch.prototype);
+                    matches.push(matchesData[i]);
+                }
+
+                console.log(matches);
 
                 this.stringMatchEditor_.updateSignSuccess(RegexData.data.success);
 

@@ -41,7 +41,7 @@ export type RegexErrorData = {
 
 export type MatchData = {
     success: boolean,
-    match: RegexMatch,
+    matches: RegexMatch[],
     text: string
 }
 
