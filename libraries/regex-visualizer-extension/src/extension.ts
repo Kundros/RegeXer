@@ -81,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 						const sendMessage = { type: 'regex_match_data', data: {
 							success: matchData.success,
-							match: matchData.matches,
+							matches: matchData.matches,
 							text: message.data
 						} };
 	
