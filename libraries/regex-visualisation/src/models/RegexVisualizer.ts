@@ -25,6 +25,11 @@ export class RegexVisualizer {
         this.regexEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.regexTextCallback(event, textElement));
         this.stringMatchEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.matchTextCallback(event, textElement));
         window.addEventListener('message', (event : MessageEvent) => this.messageRecieve(event));
+
+        this.vscode_.postMessage({
+            type: 'regex_match_string',
+            data: ''
+        });
     }
 
     private regexTextCallback(event : InputEvent, textElement : HTMLElement) 

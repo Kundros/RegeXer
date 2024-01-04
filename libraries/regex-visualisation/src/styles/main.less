@@ -100,6 +100,15 @@ body {
         pointer-events: none;
         position: absolute;
     }
+
+    & .debug-icon{
+        cursor: pointer;
+        filter: invert(65%) sepia(1%) saturate(0%) hue-rotate(352deg) brightness(94%) contrast(89%);
+    }
+
+    & .debug-icon:hover{
+        filter: invert(37%) sepia(100%) saturate(2181%) hue-rotate(78deg) brightness(98%) contrast(95%);
+    }
 }
 
 body.vscode-light {
@@ -115,6 +124,10 @@ body.vscode-light {
 
     & .new-line-symbol::before {
         color: #B9B4C7;
+    }
+
+    & .debug-icon{
+        filter: none;
     }
 }
 

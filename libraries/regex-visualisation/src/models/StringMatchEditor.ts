@@ -34,6 +34,8 @@ export class StringMatchEditor extends TextEditor
     {
         if(this.matchSign_.classList.contains("match-idle"))
             return;
+
+        this.matchSteps_.replaceChildren();
         this.matchSign_.classList.remove("match-success", "match-unsuccess", "match-loading");
         this.matchSign_.classList.add("match-idle");
     }
