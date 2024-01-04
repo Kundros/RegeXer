@@ -65,7 +65,7 @@ const extensionConfig = {
                 strictMath: true,
               },
             },
-          }
+          },
         ]
       },
       {
@@ -75,6 +75,10 @@ const extensionConfig = {
             loader: path.resolve('loaders/url-path-loader.js')
           }
         ],
+      },
+      {
+        test: /\.(html)$/,
+        use: ['html-loader']
       }
     ]
   },

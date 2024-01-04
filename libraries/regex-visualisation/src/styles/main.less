@@ -187,12 +187,39 @@ body.vscode-light {
     background-color: red;
     color: white;
 }
+
+.debug-icon{
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+}
+
 .match-info
 {
     position: absolute;
     bottom: 0;
     right: 0;
     display: flex;
+
+    & > .match-steps{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        color: var(--vscode-editorCodeLens-foreground, @lighter-color);
+        font-size: 13px;
+
+        & > .match-num-matches, > .match-num-steps{
+            margin-right: .3rem;
+            color: var(--vscode-editor-foreground, @light-color);
+        }
+
+        & > .match-label-matches{
+            margin-right: .6rem;
+        }
+    }
 
     & > .match-sign{
         width: 20px;

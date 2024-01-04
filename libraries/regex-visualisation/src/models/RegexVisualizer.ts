@@ -117,15 +117,18 @@ export class RegexVisualizer {
                 const matchesDataLength = matchesData.length;
 
                 const matches : RegexMatch[] = [];
+                let steps = 0;
 
                 for(let i = 0 ; i < matchesDataLength ; i++)
                 {
                     Object.setPrototypeOf(matchesData[i], RegexMatch.prototype);
                     matches.push(matchesData[i]);
+                    steps += matchesData[i].statesLength;
                 }
 
                 console.log(matches);
 
+                this.stringMatchEditor_.updateMatchStatesMessage(steps, RegexData.data.success ? matchesDataLength : 0);
                 this.stringMatchEditor_.updateSignSuccess(RegexData.data.success);
 
                 break;

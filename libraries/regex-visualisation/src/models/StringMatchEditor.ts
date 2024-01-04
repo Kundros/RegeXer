@@ -9,6 +9,17 @@ export class StringMatchEditor extends TextEditor
         super(textInput, options);
 
         this.matchSign_ = textInput.parentNode.querySelector(".match-sign");
+        this.matchSteps_ = textInput.parentNode.querySelector(".match-steps");
+    }
+
+    public updateMatchStatesMessage(steps: number, matches : number)
+    {
+        this.matchSteps_.replaceChildren(
+            ElementHelper.wrapElement(matches.toString(), "span", ['match-num-matches']),
+            ElementHelper.wrapElement(matches == 1 ? "match" : "matches", "span", ['match-label-matches']),
+            ElementHelper.wrapElement(steps.toString(), "span", ['match-num-steps']),
+            ElementHelper.wrapElement(steps == 1 ? "step" : "steps", "span", ['match-label-steps'])
+        );
     }
 
     public setLoading()
@@ -17,11 +28,6 @@ export class StringMatchEditor extends TextEditor
             return;
         this.matchSign_.classList.remove("match-success", "match-unsuccess", "match-idle");
         this.matchSign_.classList.add("match-loading");
-    }
-
-    public get isIdle()
-    {
-        return this.matchSign_.classList.contains("match-idle");
     }
 
     public setSignIdle()
@@ -46,5 +52,11 @@ export class StringMatchEditor extends TextEditor
         }
     }
 
+    public get isIdle()
+    {
+        return this.matchSign_.classList.contains("match-idle");
+    }
+
     private matchSign_ : Element;
+    private matchSteps_ : Element;
 }
