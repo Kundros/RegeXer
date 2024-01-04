@@ -29,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
 			});
 
 		/* workaround replacing paths to vscode plugin paths */
-		let fixedPathsHtml = visualizerHtml.replace(/file:\/\/\/(.*\.js)/gm, (match : string, g1 : string) => { 
+		let fixedPathsHtml = visualizerHtml.replace(/file:\/\/\/(.*?\.(js|svg|png|jpg))/gm, (match : string, g1 : string) => { 
 			let rootPath = context.extensionUri.path;
 			if(rootPath[0] === '/' || rootPath[0] === '\\'){
 				rootPath = rootPath.slice(1);
