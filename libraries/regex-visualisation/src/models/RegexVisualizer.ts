@@ -1,10 +1,10 @@
 import { WebviewApi } from "vscode-webview";
-import { TextEditor } from "./TextEditor";
 import { Message, MessageErrorRegex, MessageMatchData, MessageRegexData, RegexData } from "types";
-import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
 import { RegexEditor } from "./RegexEditor";
 import { RegexMatch } from "@kundros/regexer";
 import { StringMatchEditor } from "./StringMatchEditor";
+import { RegexDebugger } from "./RegexDebugger";
+import { Slider } from "./Slider";
 
 export type RegexVisualizerOptions = {
     regexWait?: number,
@@ -12,11 +12,13 @@ export type RegexVisualizerOptions = {
 }
 
 export class RegexVisualizer {
-    constructor(regexEditor : RegexEditor, stringMatchEditor : StringMatchEditor, vscode : WebviewApi<unknown>, options? : RegexVisualizerOptions)
+    constructor(regexEditor : RegexEditor, stringMatchEditor : StringMatchEditor, debuggerWindow: RegexDebugger, slider: Slider, vscode : WebviewApi<unknown>, options? : RegexVisualizerOptions)
     {
         this.regexEditor_ = regexEditor;
         this.stringMatchEditor_ = stringMatchEditor;
         this.vscode_ = vscode;
+        this.slider_ = slider;
+        this.debuggerWindow_ = debuggerWindow;
 
         this.options_ = {};
         this.options_.matchWait = options?.matchWait ?? 500;
@@ -131,7 +133,8 @@ export class RegexVisualizer {
                     steps += matchesData[i].statesLength;
                 }
 
-                console.log(matches);
+                this.slider_.max = steps;
+                this.slider_.value = 1;
 
                 this.stringMatchEditor_.updateMatchStatesMessage(steps, RegexData.data.success ? matchesDataLength : 0);
                 this.stringMatchEditor_.updateSignSuccess(RegexData.data.success);
@@ -145,7 +148,11 @@ export class RegexVisualizer {
     private matchWait_? : NodeJS.Timeout;
     private regexWait_? : NodeJS.Timeout;
     private regexData_? : RegexData;
+
+    private slider_ : Slider;
     private regexEditor_ : RegexEditor;
     private stringMatchEditor_ : StringMatchEditor;
+    private debuggerWindow_ : RegexDebugger;
+
     private vscode_ : WebviewApi<unknown>;
 }

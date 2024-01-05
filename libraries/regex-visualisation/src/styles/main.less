@@ -43,7 +43,7 @@ body {
         }
 
         &[data-text]::after {
-            color: var(--vscode-editorCodeLens-foreground, @lighter-color);
+            color: #999999;
             pointer-events: none;
         }
     }
@@ -103,10 +103,12 @@ body {
 
     & .debug-icon{
         cursor: pointer;
+        transition: transform 1s;
         filter: invert(65%) sepia(1%) saturate(0%) hue-rotate(352deg) brightness(94%) contrast(89%);
     }
 
     & .debug-icon:hover{
+        transform: scale(1.1);
         filter: invert(37%) sepia(100%) saturate(2181%) hue-rotate(78deg) brightness(98%) contrast(95%);
     }
 }
@@ -221,7 +223,7 @@ body.vscode-light {
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        color: var(--vscode-editorCodeLens-foreground, @lighter-color);
+        color: #999999;
         font-size: 13px;
 
         & > .match-num-matches, > .match-num-steps{
@@ -309,17 +311,17 @@ body.vscode-light {
                 }
 
                 66%, 100% {
-                    transform: translate(8px, 8px) rotate(-270deg) translate(5px);
+                    transform: translate(8px, 8px) rotate(450deg) translate(5px);
                 }
             }
 
             @keyframes loading-dot2 {
                 0%, 12% {
-                transform: translate(8px, 8px) rotate(90deg) translate(5px); 
+                    transform: translate(8px, 8px) rotate(90deg) translate(5px); 
                 }
 
                 72%, 100% {
-                    transform: translate(8px, 8px) rotate(-270deg) translate(5px);
+                    transform: translate(8px, 8px) rotate(450deg) translate(5px);
                 }
 
                 0% {
@@ -345,11 +347,11 @@ body.vscode-light {
 
             @keyframes loading-dot3 {
                 0%, 18% {
-                transform: translate(8px, 8px) rotate(90deg) translate(5px); 
+                    transform: translate(8px, 8px) rotate(90deg) translate(5px); 
                 }
 
                 78%, 100% {
-                    transform: translate(8px, 8px) rotate(-270deg) translate(5px);
+                    transform: translate(8px, 8px) rotate(450deg) translate(5px);
                 }
 
                 0% {
@@ -375,11 +377,11 @@ body.vscode-light {
 
             @keyframes loading-dot4 {
                 0%, 24% {
-                transform: translate(8px, 8px) rotate(90deg) translate(5px); 
+                    transform: translate(8px, 8px) rotate(90deg) translate(5px); 
                 }
 
                 84%, 100% {
-                    transform: translate(8px, 8px) rotate(-270deg) translate(5px);
+                    transform: translate(8px, 8px) rotate(450deg) translate(5px);
                 }
 
                 0% {
@@ -405,11 +407,11 @@ body.vscode-light {
 
             @keyframes loading-dot5 {
                 0%, 30% {
-                transform: translate(8px, 8px) rotate(90deg) translate(5px); 
+                    transform: translate(8px, 8px) rotate(90deg) translate(5px); 
                 }
 
                 90%, 100% {
-                    transform: translate(8px, 8px) rotate(-270deg) translate(5px);
+                    transform: translate(8px, 8px) rotate(450deg) translate(5px);
                 }
 
                 0% {

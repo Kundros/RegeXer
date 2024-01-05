@@ -1,0 +1,93 @@
+@base-color: #352F44;
+@darker-color: #5C5470;
+@light-color: #B9B4C7;
+@lighter-color: #FAF0E6;
+
+@gray-color: #1f1f1f;
+
+#regex-debugger-overlay {
+    &.hidden{
+        display: none;
+    }
+
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    background: #000000CC;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+    & .regex-debugger-window{
+        width: 90%;
+        height: 80%;
+        border-radius: 10px;
+        background: #1d1e20;
+        padding: 10px;
+
+        & .regex-debugger-header{
+            width: 100%;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ffffff22;
+            padding-bottom: 5px;
+            margin-top: -5px;
+
+            h2{
+                font-weight: 200;
+                font-size: 18px;
+                color: #999999;
+            }
+
+            & .exit-debug{
+                width: 14px;
+                height: 14px;
+                margin-left: auto;
+                position: relative;
+                cursor: pointer;
+                transition: all 1s;
+
+                & > div{
+                    position: absolute;
+                    width: 100%;
+                    top: 50%;
+                    height: 2px;
+                    transition: all 1s;
+                    background-color: #999999;
+                }
+
+                & > div:first-child{
+                    transform: rotate(45deg);
+                }
+
+                & > div:last-child{
+                    transform: rotate(-45deg);
+                }
+            }
+
+            & .exit-debug:hover{
+                transform: rotate(90deg);
+                & > div{
+                    background-color: red;
+                }
+            }
+        }
+
+        & .regex-debugger-timeline{
+
+            & .timeline-range{
+                width: 100%;
+            }
+        }
+    }
+}
+
+body.vscode-light {
+    & .regex-debugger-window{
+        background: rgb(204, 207, 209);
+    }
+}

@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;400&display=swap');
+
+.cslider-wrapper
+{
+    display: flex;
+    flex-direction: column;
+
+    & .cslider-track{
+        width: calc(100% - 10px);
+        position: relative;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        pointer-events: all;
+        margin: 0 5px;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    
+        & .cslider-thumb{
+            cursor: pointer;
+            pointer-events: all;
+            background: black;
+            position: absolute;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            z-index: 2;
+        }
+        
+        & .cslider-progress{
+            position: absolute;
+            cursor: pointer;
+            pointer-events: all;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    }
+
+    & .cslider-canvas{
+        height: 100%;
+        width: 100%;
+    }
+}

@@ -7,26 +7,43 @@
   </head>
   <body>
     <div id="main-wrapper">
-        <div id="regex-wrapper">
-            <span contenteditable="true" data-text="Write here your regex"></span>
+      <div id="regex-wrapper">
+        <span contenteditable="true" data-text="Write here your regex"></span>
+      </div>
+      <div id="match-wrapper">
+        <span contenteditable="true" data-text="Write here your string to match"></span>
+        <img src="../assets/svg/debug.svg" alt="debug" class="debug-icon">
+        <div class="match-info">
+          <span class="match-steps">
+          </span>
+          <span class="match-sign match-idle">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </span>
         </div>
-        <div id="match-wrapper">
-            <span contenteditable="true" data-text="Write here your string to match"></span>
-            <img src="../assets/svg/debug.svg" alt="debug" class="debug-icon">
-            <div class="match-info">
-              <span class="match-steps">
-              </span>
-              <span class="match-sign match-idle">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-              </span>
-            </div>
+      </div>
+    </div>
+    <div id="regex-debugger-overlay" class="hidden">
+      <div class="regex-debugger-window">
+        <div class="regex-debugger-header">
+          <h2>Regex Debbuger</h2>
+          <span class="exit-debug">
+            <div></div>
+            <div></div>
+          </span>
         </div>
-    </form>
+        <div class="regex-debugger-timeline">
+        </div>
+        <div class="regex-debugger-visualisation">
+          <div class="regex-debugger-regex"></div>
+          <div class="regex-debugger-string"></div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
