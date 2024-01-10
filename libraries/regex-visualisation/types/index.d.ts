@@ -6,6 +6,11 @@ declare module '*.html' {
     export default content;
 }
 
+declare module '*.svg' {
+    const content: string;
+    export default content;
+}
+
 /* Message types */
 export type Message = {
     type: string,

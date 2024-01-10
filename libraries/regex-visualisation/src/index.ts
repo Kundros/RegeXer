@@ -32,9 +32,44 @@ import { Slider } from "./models/Slider";
             color: "#b04beb"
         },
         segments: { 
-            devideNumber: 10,
+            devideNumber: 12,
             color: "#a3a3a3",
             labels: true
+        },
+        actionBtns: {
+            fwdBwd: true,
+            endBegin: true,
+            autoplay: true,
+            margin: "18px 0 25px 0",
+            icon: {
+                color: "#a3a3a3",
+                size: "80%"
+            },
+            wrapper: {
+                background: "#44474d",
+                padding: "5px",
+                radius: "40px",
+                maxWidth: "250px"
+            }
+        },
+        durationOptions: {
+            defaultDuration: 10,
+            durationInput: true,
+            background: "#44474d",
+            textColor: "white",
+            iconColor: "#a3a3a3",
+            radius: "40px",
+            padding: "5px 10px",
+            maxWidth: "150px",
+            info: true
+        },
+        editPositionBox: {
+            background: "#44474d",
+            textColor: "white",
+            radius: "40px",
+            padding: "5px 10px",
+            maxWidth: "150px",
+            info: true
         }
     });
 

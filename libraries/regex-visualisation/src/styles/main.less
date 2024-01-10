@@ -103,13 +103,13 @@ body {
 
     & .debug-icon{
         cursor: pointer;
-        transition: transform 1s;
-        filter: invert(65%) sepia(1%) saturate(0%) hue-rotate(352deg) brightness(94%) contrast(89%);
+        fill: #999999;
+        transition: all 1s;
     }
 
     & .debug-icon:hover{
         transform: scale(1.1);
-        filter: invert(37%) sepia(100%) saturate(2181%) hue-rotate(78deg) brightness(98%) contrast(95%);
+        fill: #35a314;
     }
 }
 
@@ -129,7 +129,7 @@ body.vscode-light {
     }
 
     & .debug-icon{
-        filter: none;
+        fill: black;
     }
 }
 

@@ -79,6 +79,16 @@ const extensionConfig = {
       {
         test: /\.(html)$/,
         use: ['html-loader']
+      },
+      {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader',
+        options: {
+          removeTags: true,
+          removingTags: ["fill"],
+          removeSVGTagAttrs: true,
+          removingTagAttrs: ["fill"]
+        }
       }
     ]
   },
