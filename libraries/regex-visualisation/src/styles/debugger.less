@@ -70,9 +70,16 @@
             }
 
             & .exit-debug:hover{
-                transform: rotate(90deg);
                 & > div{
-                    background-color: red;
+                    background-color: white;
+                }
+
+                & > div:first-child{
+                    transform: rotate(135deg);
+                }
+
+                & > div:last-child{
+                    transform: rotate(45deg);
                 }
             }
         }
@@ -81,6 +88,28 @@
 
             & .timeline-range{
                 width: 100%;
+            }
+        }
+
+        & .regex-debugger-visualisation{
+            & .regex-debugger-regex{
+                min-height: 41px;
+                font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
+                background: #00000044;
+                padding: 10px;
+                border-radius: 10px;    
+                box-sizing: border-box;
+                word-break: break-word;
+                letter-spacing: 1px;
+                white-space: break-spaces;  
+                line-height: 21px;
+                font-size: 16px;
+
+                & > span{
+                    max-height: 127px;
+                    display: block;
+                    overflow-y: scroll;
+                }
             }
         }
     }

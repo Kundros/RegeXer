@@ -113,19 +113,20 @@
 
         & .cslider-custom-speed{
             grid-column: 3 / 3;
+            justify-self: left;
         }
 
         & .cslider-edit-position-wrapper{
             grid-column: 1 / 1;
+            justify-self: right;
             z-index: 5;
         }
 
         & .cslider-custom-speed, & .cslider-edit-position-wrapper
         {
-            width: 80%;
+            width: 100%;
             box-sizing: border-box;
             display: flex;
-            justify-self: center;
             position: relative;
             container-type: size;
 
@@ -136,10 +137,10 @@
                 display: flex;
                 height: min-content;
                 align-self: center;
-                margin-left: 5px;
                 -webkit-user-modify: read-write-plaintext-only;
                 box-sizing: border-box;
                 margin-top: -1px;
+                padding: 0 11%;
 
                 &:focus{
                     border: none;
@@ -168,6 +169,7 @@
                 flex-wrap: wrap;
                 justify-content: center;
                 align-items: center;
+                margin-right: 6%;
 
                 & > svg{
                     height: 50%;

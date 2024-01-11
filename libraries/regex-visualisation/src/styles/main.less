@@ -50,10 +50,11 @@ body {
 
     & #regex-wrapper, #match-wrapper{
         position: relative;
+        box-sizing: border-box;
         display: flex;
         max-width: 100%;
         padding: 10px;
-        background: #00000044;
+        background: #00000066;
         border-radius: 10px;
     }
 
@@ -62,7 +63,6 @@ body {
         padding: 10px 10px 40px 10px;
 
         & > span {
-            resize: none;
             width: 100%;
             border-bottom: 1px solid #BBBBFF30;
         }
@@ -70,10 +70,9 @@ body {
 
     & #regex-wrapper {
         margin-bottom: 20px;
-        max-height: 140px;
+        max-height: 148px;
 
         & > span {
-            resize: none;
             width: -webkit-fill-available;
         }
     }

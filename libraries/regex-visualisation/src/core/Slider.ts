@@ -21,9 +21,15 @@ export type SliderOptions = {
     track?: TrackOptions,
     progress?: ProgressOptions,
     segments?: SegmentsOptions,
-    actionBtns?: ActionBtnsOptions,
-    durationOptions?: DurationOptions,
-    editPositionBox?: EditPositionBox
+    editable?: {
+        grid?: [string | undefined, string | undefined, string | undefined],
+        gap?: string,
+        margin?: string
+
+        actionBtns?: ActionBtnsOptions,
+        durationOptions?: DurationOptions,
+        editPositionBox?: EditPositionBox
+    }
 };
 
 export type EditPositionBox = {
@@ -56,9 +62,7 @@ export type DurationOptions = {
 export type ActionBtnsOptions = {
     autoplay?: boolean,
     fwdBwd?: boolean,
-    endBegin?: boolean,
-    width?: string,
-    margin?: string
+    endBegin?: boolean
 
     icon?: {
         color?: string,
@@ -106,6 +110,12 @@ export type SegmentsOptions = {
     marginTop?: string,
     labels?: boolean,
     labelGap?: number
+}
+
+export type SliderEvent = Event & {
+    readonly detail : {
+        readonly value : number;
+    }
 }
 
 export class Slider{
@@ -216,6 +226,12 @@ export class Slider{
             this.positionEditInput_.textContent = this.value_.toString();
         }
 
+        this.container_.dispatchEvent(new CustomEvent("cslider", <SliderEvent>{ 
+            detail: {
+                value: this.value_
+            }
+        }));
+
         this.updateProgress();
         this.updateThumb();
     }
@@ -252,7 +268,7 @@ export class Slider{
 
     public set autoplayDuration(val: number)
     {
-        const durationOptions = this.options_?.durationOptions;
+        const durationOptions = this.options_?.editable?.durationOptions;
         let min = durationOptions?.min ?? 1;
         let max = durationOptions?.max ?? 1000;
         min = min < 0 ? 0 : min;
@@ -263,6 +279,31 @@ export class Slider{
 
         this.autoplayDuration_ = val;
         this.durationInput_.textContent = this.autoplayDuration_.toString();
+    }
+
+    public get parent()
+    {
+        return this.container_;
+    }
+
+    public get value()
+    {
+        return this.value_;
+    }
+
+    public get min()
+    {
+        return this.min_;
+    }
+
+    public get max()
+    {
+        return this.max_;
+    }
+
+    public get autoplayDuration()
+    {
+        return this.autoplayDuration_;
     }
 
 
@@ -280,16 +321,15 @@ export class Slider{
             this.track_
         ], "div", ["cslider-wrapper"]);
 
-        this.container_.append(this.wrapper_);
-
+        this.editableContainer_ = ElementHelper.wrapElement([], "div", ["cslider-manipulation"]);
+        
         this.renderSegmentsContainer();
-
-        this.manipulationAction_ = ElementHelper.wrapElement([], "div", ["cslider-manipulation"]);
-        this.wrapper_.append(this.manipulationAction_);
-
         this.renderEditPositionBox();
         this.renderActionBtns();
         this.renderDuration();
+
+        this.container_.append(this.wrapper_);
+        this.wrapper_.append(this.editableContainer_);
 
         this.thumb_.style.width = this.options_?.thumb?.width ?? "10px";
         this.thumb_.style.height = this.options_?.thumb?.height ?? "10px";
@@ -309,15 +349,18 @@ export class Slider{
         this.wrapper_.style.marginTop = this.options_?.marginTop ?? "0px";
         this.wrapper_.style.marginBottom = this.options_?.marginTop ?? "0px";
 
-        const labels = this.options_?.segments?.labels ?? false;
-        const canvasHeight = this.options_?.segments?.height ?? "5px";
+        this.editableContainer_.style.gridTemplateColumns = 
+            (this.options_?.editable?.grid[0] ?? "1fr") + " " + 
+            (this.options_?.editable?.grid[1] ?? "40%") + " " +
+            (this.options_?.editable?.grid[2] ?? "1fr");
+        this.editableContainer_.style.margin = this.options_?.editable?.margin ?? "5px 0";
+        this.editableContainer_.style.gap = this.options_?.editable?.gap ?? "0";
 
-        if(labels)
-            this.canvas_.style.height = "calc(" + canvasHeight + " + 12px)";
-        else
-            this.canvas_.style.height = canvasHeight;
+        const labels = this.options_?.segments?.labels ?? false;
+        const canvasHeight = this.options_?.segments?.height ?? "5px"
 
         this.canvas_.style.marginTop = this.options_?.segments?.marginTop ?? "4px";
+        this.canvas_.style.height = (labels) ? ("calc(" + canvasHeight + " + 12px)") : canvasHeight;;
 
         this.updateThumb();
         this.updateProgress();
@@ -372,15 +415,13 @@ export class Slider{
 
     private renderActionBtns()
     {
-        if(this.options_?.actionBtns === undefined || this.manipulationAction_ === undefined) return;
+        const actionBtnsOptions = this.options_?.editable?.actionBtns;
+        if(actionBtnsOptions === undefined || this.editableContainer_ === undefined) return;
 
         this.actionBtnsContainer_ = ElementHelper.wrapElement([], "div", ["cslider-action-btns"]);
-        this.manipulationAction_.append(this.actionBtnsContainer_);
+        this.editableContainer_.append(this.actionBtnsContainer_);
 
-        this.manipulationAction_.style.gridTemplateColumns = "1fr " + (this.options_?.actionBtns?.width ?? "40%") + " 1fr";
-        this.manipulationAction_.style.margin = this.options_?.actionBtns?.margin ?? "5px 0";
-
-        if(this.options_?.actionBtns?.endBegin)
+        if(actionBtnsOptions?.endBegin)
         {
             const beginElement = ElementHelper.wrapElement([], "div", ["cslider-action-begin"]);
             beginElement.innerHTML = beginSvg;
@@ -390,7 +431,7 @@ export class Slider{
             });
         }
 
-        if(this.options_?.actionBtns?.fwdBwd)
+        if(actionBtnsOptions?.fwdBwd)
         {
             const backwardElement = ElementHelper.wrapElement([], "div", ["cslider-action-backward"]);
             backwardElement.innerHTML = arrowLeftSvg;
@@ -400,7 +441,7 @@ export class Slider{
             });
         }
 
-        if(this.options_?.actionBtns?.autoplay)
+        if(actionBtnsOptions?.autoplay)
         {
             const autoplay = ElementHelper.wrapElement([], "div", ["cslider-action-autoplay"]);
             autoplay.innerHTML = playSvg + pauseSvg;
@@ -410,7 +451,7 @@ export class Slider{
             
         }
 
-        if(this.options_?.actionBtns?.fwdBwd)
+        if(actionBtnsOptions?.fwdBwd)
         {
             const forwardElement = ElementHelper.wrapElement([], "div", ["cslider-action-forward"]);
             forwardElement.innerHTML = arrowLeftSvg;
@@ -420,7 +461,7 @@ export class Slider{
             });
         }
 
-        if(this.options_?.actionBtns?.endBegin)
+        if(actionBtnsOptions?.endBegin)
         {
             const endElement = ElementHelper.wrapElement([], "div", ["cslider-action-end"]);
             endElement.innerHTML = beginSvg;
@@ -430,7 +471,7 @@ export class Slider{
             });
         }
 
-        const iconOptions = this.options_?.actionBtns?.icon;
+        const iconOptions = actionBtnsOptions?.icon;
 
         if(iconOptions)
         {
@@ -455,7 +496,7 @@ export class Slider{
             });
         }
 
-        const wrapperOptions = this.options_?.actionBtns?.wrapper;
+        const wrapperOptions = actionBtnsOptions?.wrapper;
 
         if(wrapperOptions?.background || wrapperOptions?.radius || wrapperOptions?.width || wrapperOptions?.padding)
         {
@@ -475,9 +516,10 @@ export class Slider{
 
     private renderDuration()
     {
-        if(this.options_?.durationOptions?.durationInput === undefined || this.manipulationAction_ === undefined)
+        const durationOptions = this.options_?.editable?.durationOptions;
+        if(durationOptions?.durationInput === undefined || this.editableContainer_ === undefined)
         {
-            this.autoplayDuration = this.options_?.durationOptions?.defaultDuration ?? 1;
+            this.autoplayDuration = durationOptions?.defaultDuration ?? 1;
             return;
         }
 
@@ -492,9 +534,7 @@ export class Slider{
             arrows
         ], "div", ["cslider-custom-speed"]);
 
-        this.manipulationAction_.append(this.durationInputWrapper_);
-
-        const durationOptions = this.options_?.durationOptions;
+        this.editableContainer_.append(this.durationInputWrapper_);
 
         this.durationInputWrapper_.style.background = durationOptions.background ?? "none";
         this.durationInputWrapper_.style.borderRadius = durationOptions.radius ?? "0px";
@@ -503,7 +543,7 @@ export class Slider{
 
         this.durationInput_.style.color = durationOptions.textColor ?? "black";
         this.durationInput_.style.fontSize = durationOptions.fontSize ?? "min(1.3rem, 60cqh)";
-        this.durationInput_.textContent = this.options_?.durationOptions.defaultDuration.toString();
+        this.durationInput_.textContent = durationOptions.defaultDuration.toString();
 
         if(durationOptions.info)
         {
@@ -522,7 +562,7 @@ export class Slider{
             });
         }
 
-        this.autoplayDuration = this.options_?.durationOptions.defaultDuration;
+        this.autoplayDuration = durationOptions.defaultDuration;
 
         const up = arrows.querySelector("svg:first-child");
         const down = arrows.querySelector("svg:last-child");
@@ -551,8 +591,8 @@ export class Slider{
 
     private renderEditPositionBox()
     {
-        const editPositionOptions = this.options_?.editPositionBox;
-        if(editPositionOptions === undefined || this.manipulationAction_ === undefined) return;
+        const editPositionOptions = this.options_?.editable?.editPositionBox;
+        if(editPositionOptions === undefined || this.editableContainer_ === undefined) return;
 
         this.positionEditInput_ = ElementHelper.wrapElement(this.min_.toString(), "span", ["cslider-edit-position"], [["content-editable", "true"]]); 
         this.positionEditInputWrapper_ = ElementHelper.wrapElement(
@@ -560,7 +600,7 @@ export class Slider{
                 this.positionEditInput_
             ], "div", ["cslider-edit-position-wrapper"]);
 
-        this.manipulationAction_.append(this.positionEditInputWrapper_);
+        this.editableContainer_.append(this.positionEditInputWrapper_);
 
         this.positionEditInputWrapper_.style.borderRadius = editPositionOptions?.radius ?? "0px";
         this.positionEditInputWrapper_.style.padding = editPositionOptions?.padding ?? "0";
@@ -689,7 +729,7 @@ export class Slider{
     private context_? : CanvasRenderingContext2D;
     private canvas_? : HTMLCanvasElement;
     private actionBtnsContainer_? : HTMLElement;
-    private manipulationAction_? : HTMLElement;
+    private editableContainer_? : HTMLElement;
     private durationInputWrapper_? : HTMLElement;
     private durationInput_? : HTMLElement;
     private positionEditInput_? : HTMLElement;
