@@ -702,7 +702,7 @@ export class Slider{
         document.addEventListener("mousemove", (event : MouseEvent) => this.hadnleMousemove(event));
         document.addEventListener("mouseup", (event : MouseEvent) => this.hadnleMouseup(event));
         
-        let observer = new ResizeObserver((entries) => {
+        const observer = new ResizeObserver((entries) => {
             entries.forEach((entry) => {
                 this.updateThumb();
                 this.updateProgress();

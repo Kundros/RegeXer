@@ -93,22 +93,37 @@
 
         & .regex-debugger-visualisation{
             & .regex-debugger-regex{
+                position: relative;
                 min-height: 41px;
                 font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
                 background: #00000044;
                 padding: 10px;
                 border-radius: 10px;    
                 box-sizing: border-box;
-                word-break: break-word;
-                letter-spacing: 1px;
-                white-space: break-spaces;  
-                line-height: 21px;
-                font-size: 16px;
 
                 & > span{
                     max-height: 127px;
                     display: block;
-                    overflow-y: scroll;
+                    line-height: 21px;
+                    font-size: 16px;
+                    letter-spacing: 1px;
+                    overflow-y: auto;
+                    box-sizing: border-box;
+                    word-break: break-word;
+                    white-space: break-spaces;
+                    position: relative;  
+                    z-index: 2;
+                }
+
+                & > .regex-debugger-regex-canvas{
+                    position: absolute;
+                    height: -webkit-fill-available;
+                    width: -webkit-fill-available;
+                    left: 0;
+                    pointer-events: none;
+                    top: 0;    
+                    margin: 10px;
+                    box-sizing: border-box;
                 }
             }
         }

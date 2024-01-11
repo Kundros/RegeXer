@@ -13,7 +13,11 @@ import { RegexDebugger } from "./core/RegexDebugger";
     new RegexVisualizer(
         new RegexEditor(document.querySelector("#regex-wrapper > span")),
         new StringMatchEditor(document.querySelector("#match-wrapper > span")),
-        new RegexDebugger(document.querySelector("#regex-debugger-overlay"), document.querySelector(".debug-icon")),
+        new RegexDebugger(document.querySelector("#regex-debugger-overlay"), document.querySelector(".debug-icon"), { 
+            regexHighlighting: {
+                positionColor: "#095c32"
+            }
+        }),
         vscode,
         {
             regexWait: 0,
