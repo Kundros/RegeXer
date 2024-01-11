@@ -1,5 +1,5 @@
-import { MatchData, RegexMatch } from "@models/RegexMatch";
-import { parse, PeggySyntaxError, RegexTypes } from "@models/RegexParser"
+import { MatchData, RegexMatch } from "@core/RegexMatch";
+import { parse, PeggySyntaxError, RegexTypes } from "@core/RegexParser"
 import { RegParseException } from "@regexer/exceptions/RegParseException";
 import { RegMatchException } from "@regexer/exceptions/RegMatchException";
 import { RegexParserErrors } from "./parserTypes";

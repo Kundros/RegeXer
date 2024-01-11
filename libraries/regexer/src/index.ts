@@ -1,8 +1,8 @@
-export { Regexer } from "@models/Regexer";
-export { RegexMatch, MatchData, MatchState, MatchAction } from "@models/RegexMatch"
+export { Regexer } from "@core/Regexer";
+export { RegexMatch, MatchData, MatchState, MatchAction } from "@core/RegexMatch"
 export { RegParseException } from "@regexer/exceptions/RegParseException"
 export { RegMatchException } from "@exceptions/RegMatchException"
-export * from "@models/parserTypes";
+export * from "@core/parserTypes";
 
 /*import { Regexer } from "@models/Regexer";
 

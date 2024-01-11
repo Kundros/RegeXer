@@ -1,8 +1,8 @@
-import { MatchData, RegexMatch } from "@models/RegexMatch";
-import { parse, PeggySyntaxError, RegexTypes } from "@models/RegexParser"
-import { RegParseException } from "@regexer/exceptions/RegParseException";
-import { RegMatchException } from "@regexer/exceptions/RegMatchException";
-import { RegexParserErrors } from "@regexer/models/parserTypes";
+import { MatchData, RegexMatch } from "@core/RegexMatch";
+import { parse, PeggySyntaxError, RegexTypes } from "@core/RegexParser"
+import { RegParseException } from "@exceptions/RegParseException";
+import { RegMatchException } from "@exceptions/RegMatchException";
+import { RegexParserErrors } from "@core/parserTypes";
 
 import * as path from "path";
 
