@@ -1,3 +1,3 @@
-export { Regexer } from "@browser/models/Regexer";
-export { RegexMatch, MatchData, MatchState, MatchAction } from "@models/RegexMatch"
-export * from "@models/parserTypes";
+export { Regexer } from "@browser/core/Regexer";
+export { RegexMatch, MatchData, MatchState, MatchAction } from "@core/RegexMatch"
+export * from "@core/parserTypes";

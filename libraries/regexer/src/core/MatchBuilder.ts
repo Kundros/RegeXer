@@ -1,4 +1,4 @@
-import { MatchData, MatchState, RegexMatch } from "./RegexMatch";
+import { MatchData, MatchState } from "./RegexMatch";
 
 export class MatchBuilder
 {
