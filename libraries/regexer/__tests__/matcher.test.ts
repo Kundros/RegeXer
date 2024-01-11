@@ -1,7 +1,7 @@
 import { test, expect } from '@jest/globals';
 
-import { Regexer } from '../src/models/Regexer';
-import { RegexTypes } from "../src/models/RegexParser"
+import { Regexer } from '../src/core/Regexer';
+import { RegexTypes } from "../src/core/RegexParser"
 
 global.__filename = "dist/cjs/models/Regexer";
 

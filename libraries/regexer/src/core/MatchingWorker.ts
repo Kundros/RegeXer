@@ -1,10 +1,10 @@
 import { workerData, parentPort } from 'worker_threads';
-import { RegexTypes } from '@models/RegexParser';
+import { RegexTypes } from '@core/RegexParser';
 import { Stack } from '@regexer/structures/Stack';
 import { NFAState, NFAStateList } from './parserTypes';
 import { MatchBuilder } from './MatchBuilder';
 import { MatchAction } from './RegexMatch';
-import { MatchComplete, NewData, NewMessage, ReturnErrorMessage, ReturnMessage } from './MatchWorkerTypes';
+import { NewData, NewMessage, ReturnErrorMessage, ReturnMessage } from './MatchWorkerTypes';
 
 let AST: RegexTypes.ASTRoot = workerData.AST;
 let NFA: RegexTypes.NFAtype[] = workerData.NFA;

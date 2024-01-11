@@ -1,8 +1,8 @@
-import { RegexTypes } from '@models/RegexParser';
-import { Stack } from '@regexer/structures/Stack';
-import { NFAState, NFAStateList } from '@models/parserTypes';
-import { MatchBuilder } from '@models/MatchBuilder';
-import { MatchAction } from '@models/RegexMatch';
+import { RegexTypes } from '@core/RegexParser';
+import { Stack } from '@structures/Stack';
+import { NFAState, NFAStateList } from '@core/parserTypes';
+import { MatchBuilder } from '@core/MatchBuilder';
+import { MatchAction } from '@core/RegexMatch';
 
 let AST: RegexTypes.ASTRoot;
 let NFA: RegexTypes.NFAtype[];

@@ -11,7 +11,7 @@
     "declarationDir": "./types",
     "paths": {
       "@regexer/*": ["./src/*"],
-      "@models/*": ["./src/models/*"],
+      "@core/*": ["./src/core/*"],
       "@exceptions/*": ["./src/exceptions/*"],
       "@structures/*": ["./src/structures/*"],
       "@helpers/*": ["./src/helpers/*"],

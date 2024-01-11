@@ -7,17 +7,33 @@ export class RegexMatch
           this.matchData_ = matchData;
      }
 
-     public moveForward() : null | MatchState
+     public moveForward(num?: number) : null | MatchState
      {
-          this.at_++;
+          this.at_+= num !== undefined ? num : 1;
+          if(this.at_ >= this.statesLength)
+               this.at_ = this.statesLength;
           if(this.at_ < 0 || this.at_ >= this.statesLength)
                return null;
           return this.matchData_.states[this.at_];
      }
 
-     public moveBackward() : null | MatchState
+     public moveBackward(num?: number) : null | MatchState
      {
-          this.at_--;
+          this.at_-= num !== undefined ? num : 1;
+          if(this.at_ < 0)
+               this.at_ = -1;
+          if(this.at_ < 0 || this.at_ >= this.statesLength)
+               return null;
+          return this.matchData_.states[this.at_];
+     }
+
+     public moveTo(num: number) : null | MatchState
+     {
+          this.at_= num;
+          if(this.at_ < 0)
+               this.at_ = -1;
+          if(this.at_ >= this.statesLength)
+               this.at_ = this.statesLength;
           if(this.at_ < 0 || this.at_ >= this.statesLength)
                return null;
           return this.matchData_.states[this.at_];
