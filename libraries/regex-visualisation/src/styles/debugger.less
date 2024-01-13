@@ -49,14 +49,13 @@
                 margin-left: auto;
                 position: relative;
                 cursor: pointer;
-                transition: all 1s;
 
                 & > div{
                     position: absolute;
                     width: 100%;
                     top: 50%;
                     height: 2px;
-                    transition: all 1s;
+                    transition: all .3s;
                     background-color: #999999;
                 }
 
@@ -75,11 +74,11 @@
                 }
 
                 & > div:first-child{
-                    transform: rotate(135deg);
+                    transform: rotate(135deg) scale(1.2);
                 }
 
                 & > div:last-child{
-                    transform: rotate(45deg);
+                    transform: rotate(45deg) scale(1.2);
                 }
             }
         }
