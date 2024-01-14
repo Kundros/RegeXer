@@ -2,7 +2,7 @@ export { Regexer } from "@core/Regexer";
 export { RegexMatch, MatchData, MatchState, MatchAction } from "@core/RegexMatch"
 export { RegParseException } from "@regexer/exceptions/RegParseException"
 export { RegMatchException } from "@exceptions/RegMatchException"
-export * from "@core/parserTypes";
+export * from "@regexer/coreTypes/parserTypes";
 
 /*import { Regexer } from "@models/Regexer";
 

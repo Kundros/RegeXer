@@ -1,13 +1,14 @@
 import { workerData, parentPort } from 'worker_threads';
 import { RegexTypes } from '@core/RegexParser';
 import { Stack } from '@regexer/structures/Stack';
-import { NFAState, NFAStateList } from './parserTypes';
+import { ASTGroup, ASTtype, NFAState, NFAStateList, NFAtype, RegexStates } from '../coreTypes/parserTypes';
 import { MatchBuilder } from './MatchBuilder';
-import { MatchAction } from './RegexMatch';
-import { NewData, NewMessage, ReturnErrorMessage, ReturnMessage } from './MatchWorkerTypes';
+import { MatchAction, MatchFlags } from './RegexMatch';
+import { NewData, NewFlags, NewMessage, ReturnErrorMessage, ReturnMessage } from '../coreTypes/MatchWorkerTypes';
 
 let AST: RegexTypes.ASTRoot = workerData.AST;
 let NFA: RegexTypes.NFAtype[] = workerData.NFA;
+let flags : number | MatchFlags | undefined = workerData?.flags;
 
 type matchingState = {transition: number, state: RegexTypes.NFAtype};
 
@@ -22,12 +23,13 @@ class Matcher
         this.regexPosStack = new Stack<number>([0]);
         this.stringPosStack = new Stack<number>([0]);
         this.statesStack = new Stack<matchingState>();
-        this.matchBuilder = new MatchBuilder();
+        this.matchBuilder = new MatchBuilder(flags);
         this.matchBuilder.matchData.start = 0;
+        this.groups = new Stack<ASTGroup>();
 
         while(true) 
         {
-            const nfaState = NFA[this.regexPosStack.top()] as NFAState;
+            const nfaState = NFA[this.regexPosStack.top()] as NFAtype;
 
             /* If we are at the last nfa node aka. END we're done matching */
             if(nfaState?.ASTelement?.type === RegexTypes.RegexStates.END)
@@ -64,17 +66,19 @@ class Matcher
                 continue;
             }
 
+            if(nfaState.transitions instanceof Set) 
+                continue;
+
             /*
                 If we have no more transitions left, we backtrack
                 + if we tried all paths and failed exit matching and send error message
-            */  
-            const transitions = nfaState.transitions;
+            */ 
+            const transitions = (nfaState as NFAState).transitions;
             if(transitions.length <= this.statesStack.top().transition)
             {
                 if(!this.handleBacktracking(matchString)) return;
                 continue;
             }
-
 
             /* --- ------------------- --- */
             /* --- applying transition --- */
@@ -88,7 +92,17 @@ class Matcher
                 this.regexPosStack.push(this.regexPosStack.top() + transition[1]);
                 this.stringPosStack.push(this.stringPosStack.top());
 
-                if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION_END)
+                if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP)
+                    this.groups.push(<ASTGroup>nfaState?.ASTelement);
+
+                let canAddToMatch = nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION_END;
+
+                if(~flags & MatchFlags.IGNORE_GROUP_ENTERS)
+                    canAddToMatch |= nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP;
+                if((~flags & MatchFlags.IGNORE_GROUP_LEAVES))
+                    canAddToMatch |= nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END;
+
+                if(canAddToMatch)
                 {
                     this.matchBuilder.addState({
                         type: nfaState.ASTelement.type, 
@@ -196,6 +210,7 @@ class Matcher
     private regexPosStack : Stack<number>;
     private statesStack : Stack<matchingState>;
     private matchBuilder : MatchBuilder;
+    private groups : Stack<ASTGroup>;
 }
 
 const matcher = new Matcher();
@@ -227,6 +242,14 @@ parentPort.on("message", (message : NewMessage) => {
             let newData = message.data as NewData;
             AST = newData.AST;
             NFA = newData.NFA;
+            flags = newData.flags
+
+            break;
+        }
+        case 'new_flags':
+        {
+            let newData = message.data as NewFlags;
+            flags = newData.flags
 
             break;
         }

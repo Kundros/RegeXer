@@ -1,7 +1,7 @@
 /* eslint-disable */
 
-import * as RegexTypes from "./parserTypes"
-export * as RegexTypes from "./parserTypes"
+import * as RegexTypes from "../coreTypes/parserTypes"
+export * as RegexTypes from "../coreTypes/parserTypes"
 
 
 
@@ -3930,7 +3930,9 @@ peg$parseSOS() {
 // @ts-ignore
         END_STRING: 0x8000,
 // @ts-ignore
-        SPECIAL: 0x10000
+        SPECIAL: 0x10000,
+// @ts-ignore
+        GROUP_END: 0x20000
     };
     
 // @ts-ignore
@@ -4374,7 +4376,13 @@ peg$parseSOS() {
         handleGroupAfter(outputNFA)
         {
 // @ts-ignore
-        	outputNFA[0].ASTelement.endNFA = outputNFA.length - 1;
+        	outputNFA[0].ASTelement.endNFA = outputNFA.length;
+// @ts-ignore
+            outputNFA.push(this.buildElement(States.GROUP_END, {}, [[null, 1]]).NFA[0]);
+// @ts-ignore
+            const topAST = outputNFA[outputNFA.length-1].ASTelement;
+// @ts-ignore
+            topAST.start = topAST.end-1; // trim to just ending bracket
         }
 
 // @ts-ignore
@@ -4421,7 +4429,7 @@ peg$parseSOS() {
         buildNFAwhithoutASTref(type, transitions = [])
         {
 // @ts-ignore
-        	return { transitions };
+        	return { type,  transitions };
         }
         
 // @ts-ignore

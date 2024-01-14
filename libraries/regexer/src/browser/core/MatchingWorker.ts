@@ -1,6 +1,6 @@
 import { RegexTypes } from '@core/RegexParser';
 import { Stack } from '@structures/Stack';
-import { NFAState, NFAStateList } from '@core/parserTypes';
+import { NFAState, NFAStateList } from '@regexer/coreTypes/parserTypes';
 import { MatchBuilder } from '@core/MatchBuilder';
 import { MatchAction } from '@core/RegexMatch';
 
@@ -104,7 +104,7 @@ class Matcher
 
         this.matchBuilder.matchData.end = this.stringPosStack.top();
 
-        postMessage({ type: "succeded", pid: this.pid, data: this.matchBuilder.finalize() });
+        postMessage({ type: "succeded", pid: this.pid, data: this.matchBuilder.finalize(AST[0].end) });
     }
 
     private handleList(matchString : string)

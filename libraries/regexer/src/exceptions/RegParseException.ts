@@ -1,4 +1,4 @@
-import { RegexParserErrors } from "@core/parserTypes";
+import { RegexParserErrors } from "@regexer/coreTypes/parserTypes";
 
 export class RegParseException extends Error
 {

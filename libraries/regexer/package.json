@@ -14,8 +14,9 @@
     "start": "node --trace-warnings dist/cjs/index.js",
     "dev": "node --trace-warnings dist/cjs/index.js",
     "test": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js --detectOpenHandles",
-    "test:parser": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js parser --detectOpenHandles",
-    "test:matcher": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js matcher --detectOpenHandles"
+    "test:parser": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js parser.test --detectOpenHandles",
+    "test:matcher": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js matcher.test --detectOpenHandles",
+    "test:match": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js match.test --detectOpenHandles"
   },
   "author": "Dominik Kundra, KUN0161",
   "license": "ISC",
