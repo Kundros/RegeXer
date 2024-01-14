@@ -21,7 +21,8 @@
         LIST_END: 0x2000,
         START_STRING: 0x4000,
         END_STRING: 0x8000,
-        SPECIAL: 0x10000
+        SPECIAL: 0x10000,
+        GROUP_END: 0x20000
     };
     
     const Errors = {
@@ -296,7 +297,10 @@
         
         handleGroupAfter(outputNFA)
         {
-        	outputNFA[0].ASTelement.endNFA = outputNFA.length - 1;
+        	outputNFA[0].ASTelement.endNFA = outputNFA.length;
+            outputNFA.push(this.buildElement(States.GROUP_END, {}, [[null, 1]]).NFA[0]);
+            const topAST = outputNFA[outputNFA.length-1].ASTelement;
+            topAST.start = topAST.end-1; // trim to just ending bracket
         }
 
         buildElement(type, data={}, transitions = []) 
@@ -327,7 +331,7 @@
         
         buildNFAwhithoutASTref(type, transitions = [])
         {
-        	return { transitions };
+        	return { type,  transitions };
         }
         
         addTransitionToElement(element, input, by){

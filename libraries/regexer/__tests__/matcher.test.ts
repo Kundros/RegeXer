@@ -1,9 +1,8 @@
 import { test, expect } from '@jest/globals';
 
 import { Regexer } from '../src/core/Regexer';
-import { RegexTypes } from "../src/core/RegexParser"
 
-global.__filename = "dist/cjs/models/Regexer";
+global.__filename = "dist/cjs/core/Regexer";
 
 test("empty", async () => {
     const regexer = new Regexer();

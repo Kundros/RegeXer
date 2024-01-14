@@ -1,13 +1,13 @@
-import { MatchData, RegexMatch } from "@core/RegexMatch";
+import { MatchData, MatchFlags, RegexMatch } from "@core/RegexMatch";
 import { parse, PeggySyntaxError, RegexTypes } from "@core/RegexParser"
 import { RegParseException } from "@regexer/exceptions/RegParseException";
 import { RegMatchException } from "@regexer/exceptions/RegMatchException";
-import { RegexParserErrors } from "./parserTypes";
+import { RegexParserErrors } from "../coreTypes/parserTypes";
 
 import { Worker } from 'worker_threads';
 import { URL } from 'url';
 import * as path from "path";
-import { MatchComplete, NewMessage, ReturnMessage } from "./MatchWorkerTypes";
+import { MatchComplete, NewData, NewFlags, NewMessage, ReturnMessage } from "../coreTypes/MatchWorkerTypes";
 
 /**
  * @classdesc 
@@ -16,8 +16,9 @@ import { MatchComplete, NewMessage, ReturnMessage } from "./MatchWorkerTypes";
  * @class
  */
 export class Regexer{
-    constructor(regexString : string = "")
+    constructor(regexString : string = "", matchFlags?: number | MatchFlags)
     {
+        this.matchFlags_ = matchFlags;
         this.newParse(regexString);
     }
 
@@ -46,10 +47,11 @@ export class Regexer{
                 this.worker_.postMessage(
                     { 
                         type: "new_data", 
-                        data: {
+                        data: <NewData>{
                             AST: this.AST_,
-                            NFA: this.NFA_
-                        } 
+                            NFA: this.NFA_,
+                            flags: this.matchFlags_
+                        }
                     });
                 return;
             }
@@ -113,6 +115,22 @@ export class Regexer{
         return {success: returned.type === 'succeded', matches} as MatchComplete;
     }
 
+    /** 
+     *  @description changes match flags to new one
+     *  @param matchFlags flags determinates how final match structure will look like 
+     */
+    public changeFlags(matchFlags?: number | MatchFlags)
+    {
+        this.matchFlags_ = matchFlags;
+        this.worker_.postMessage(
+        { 
+            type: "new_data", 
+            data: <NewFlags>{
+                flags: this.matchFlags_
+            }
+        });
+    }
+
     /** @returns NFA-like (non deterministic finite automata) structure of parsed regex. */
     public get NFA()
     {
@@ -144,9 +162,10 @@ export class Regexer{
 
         // renew it
         this.worker_ = new Worker(new URL("./MatchingWorker", "file:///" + path.resolve(__filename)), {
-            workerData: {
+            workerData: <NewData>{
                 AST: this.AST_,
-                NFA: this.NFA_
+                NFA: this.NFA_,
+                flags: this.matchFlags_
             }
         });
     }
@@ -155,4 +174,5 @@ export class Regexer{
     private worker_? : Worker;
     private AST_?: RegexTypes.ASTRoot;
     private NFA_?: RegexTypes.NFAtype[];
+    private matchFlags_ ?: number | MatchFlags;
 }
