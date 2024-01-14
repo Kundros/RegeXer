@@ -1,8 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { Regexer, RegMatchException, RegParseException } from "@kundros/regexer";
+import { Regexer, RegexMatch, RegMatchException, RegParseException } from "@kundros/regexer";
 import { MessageRegexData } from '@kundros/regex-visualisation/types';
+import { MatchFlags } from 'regexer/core/RegexMatch';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -37,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 			return panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, g1.replace(rootPath, ""))).toString(); 
 		});
 
-		let regexer : Regexer = new Regexer();
+		let regexer : Regexer = new Regexer("", MatchFlags.SHORTEN_BACKTRACKING | MatchFlags.BACKTRACKED_FROM_EXACT);
 
 		// Handle messages from the webview
 		panel.webview.onDidReceiveMessage(
