@@ -175,7 +175,8 @@ export const RegexStates = {
     LIST_END: 0x2000,
     START_STRING: 0x4000,
     END_STRING: 0x8000,
-    SPECIAL: 0x10000
+    SPECIAL: 0x10000,
+    GROUP_END: 0x20000
 } as const;
 
 export type RegexStates = typeof RegexStates[keyof typeof RegexStates];

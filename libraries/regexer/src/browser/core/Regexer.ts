@@ -2,7 +2,7 @@ import { MatchData, RegexMatch } from "@core/RegexMatch";
 import { parse, PeggySyntaxError, RegexTypes } from "@core/RegexParser"
 import { RegParseException } from "@exceptions/RegParseException";
 import { RegMatchException } from "@exceptions/RegMatchException";
-import { RegexParserErrors } from "@core/parserTypes";
+import { RegexParserErrors } from "@regexer/coreTypes/parserTypes";
 
 import * as path from "path";
 

@@ -3,7 +3,7 @@ import { test, expect } from '@jest/globals';
 import { Regexer } from '../src/core/Regexer';
 import { RegexTypes } from "../src/core/RegexParser"
 
-global.__filename = "dist/cjs/models/Regexer";
+global.__filename = "dist/cjs/core/Regexer";
 
 test('empty', () => {
     const regexer = new Regexer();
@@ -129,7 +129,8 @@ test('capturing group (empty)', () => {
     expect(group.name).toBe(undefined);
     expect(group.detailedType).toBe('C');
 
-    expect(nfaStart[2].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
+    expect(nfaStart[2].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP_END);
+    expect(nfaStart[3].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
 
     regexer.clear();
 });
@@ -145,22 +146,26 @@ test('capturing group (nested)', () => {
     ]);
 
     const group1 = astRoot.children[0] as RegexTypes.ASTGroup;
+    expect(nfaStart[11].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP_END);
     expect(group1.end).toBe(11);
 
     expect(nfaStart[2].transitions[0]).toStrictEqual(['a', 1]);
     expect(nfaStart[3].transitions[0]).toStrictEqual(['b', 1]);
 
     expect(nfaStart[4].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
+    expect(nfaStart[7].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP_END);
     const group2 = nfaStart[4].ASTelement as RegexTypes.ASTGroup;
     expect(group2.end).toBe(7);
 
-    expect(nfaStart[7].transitions[0]).toStrictEqual(['e', 1]);
+    expect(nfaStart[8].transitions[0]).toStrictEqual(['e', 1]);
 
-    expect(nfaStart[8].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
-    const group3 = nfaStart[8].ASTelement as RegexTypes.ASTGroup;
+    expect(nfaStart[9].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
+    expect(nfaStart[10].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP_END);
+    const group3 = nfaStart[9].ASTelement as RegexTypes.ASTGroup;
     expect(group3.end).toBe(10);
 
-    expect(nfaStart[9].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
+
+    expect(nfaStart[12].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
 
     regexer.clear();
 });
@@ -184,8 +189,8 @@ test('capturing group (combining types)', () => {
     expect(group2.detailedType).toBe("N");
     expect(group2.name).toBe("myName");
 
-    expect(nfaStart[5].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
-    const group3 = nfaStart[5].ASTelement as RegexTypes.ASTGroup;
+    expect(nfaStart[7].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
+    const group3 = nfaStart[7].ASTelement as RegexTypes.ASTGroup;
     expect(group3.detailedType).toBe("C");
     expect(group3.name).toBe(undefined);
 
@@ -201,26 +206,28 @@ test('capturing group combined with option', () => {
     expect(nfaStart[1].transitions).toStrictEqual([
         [null, 1],
         [null, 3],
-        [null, 8]
+        [null, 10]
     ]);
 
     expect(nfaStart[2].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
     expect(nfaStart[4].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
-    expect(nfaStart[9].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
+    expect(nfaStart[11].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
+    expect(nfaStart[8].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP_END);
+    expect(nfaStart[9].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP_END);
 
     expect(nfaStart[7].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
 
     // on end of each option we need to jump to end of option
-    expect(nfaStart[3].transitions[0]).toStrictEqual([null, 12]);
-    expect(nfaStart[8].transitions[0]).toStrictEqual([null, 7]);
-    expect(nfaStart[14].transitions[0]).toStrictEqual([null, 1]);
+    expect(nfaStart[3].transitions[0]).toStrictEqual([null, 15]);
+    expect(nfaStart[10].transitions[0]).toStrictEqual([null, 8]);
+    expect(nfaStart[17].transitions[0]).toStrictEqual([null, 1]);
 
-    expect(nfaStart[12].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
+    expect(nfaStart[15].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
 
-    expect(nfaStart[12].transitions[0]).toStrictEqual(['a', 1]);
-    expect(nfaStart[13].transitions[0]).toStrictEqual(['a', 1]);
+    expect(nfaStart[15].transitions[0]).toStrictEqual(['a', 1]);
+    expect(nfaStart[16].transitions[0]).toStrictEqual(['a', 1]);
 
-    expect(nfaStart[15].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
+    expect(nfaStart[18].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
 
     regexer.clear();
 });
@@ -275,20 +282,21 @@ test('complex regex (iteration, group, option)', () => {
     expect(nfaStart[4].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
     expect(nfaStart[5].ASTelement?.type).toBe(RegexTypes.RegexStates.OPTION_END);
 
-    // b+)
+    // b+)*
     expect(nfaStart[6].ASTelement?.type).toBe(RegexTypes.RegexStates.ITERATION_ONE);
     expect(nfaStart[7].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
     expect(nfaStart[8].ASTelement?.type).toBe(undefined); // nfa iteration end
     expect(nfaStart[9].ASTelement?.type).toBe(RegexTypes.RegexStates.OPTION_END);
     
-    expect(nfaStart[10].ASTelement?.type).toBe(undefined); // nfa iteration end
+    
+    expect(nfaStart[10].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP_END); // nfa group end
+    expect(nfaStart[11].ASTelement?.type).toBe(undefined); // nfa iteration end
 
     // END
-    expect(nfaStart[11].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
-
+    expect(nfaStart[12].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
     
     expect(nfaStart[1].transitions[0]).toStrictEqual([null, 1]);
-    expect(nfaStart[1].transitions[1]).toStrictEqual([null, 10]);
+    expect(nfaStart[1].transitions[1]).toStrictEqual([null, 11]);
 
     expect(nfaStart[6].transitions[0]).toStrictEqual([null, 1]);
     expect(nfaStart[6].transitions[1]).toStrictEqual(undefined);
