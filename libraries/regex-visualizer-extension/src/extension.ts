@@ -37,7 +37,11 @@ export function activate(context: vscode.ExtensionContext) {
 			return panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, g1.replace(rootPath, ""))).toString(); 
 		});
 
-		let regexer : Regexer = new Regexer("", MatchFlags.SHORTEN_BACKTRACKING | MatchFlags.BACKTRACKED_FROM_EXACT);
+		let regexer : Regexer = new Regexer("", 
+			MatchFlags.SHORTEN_BACKTRACKING | 
+			MatchFlags.BACKTRACKED_FROM_EXACT |
+			MatchFlags.BACKTRACK_TRIM_POSITION
+		);
 
 		// Handle messages from the webview
 		panel.webview.onDidReceiveMessage(
