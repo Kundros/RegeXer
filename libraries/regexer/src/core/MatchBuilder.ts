@@ -27,6 +27,9 @@ export class MatchBuilder
             this.matchData.statesCount--;
         }
 
+        if((this.flags_ & MatchFlags.BACKTRACK_TRIM_POSITION) && state?.action === MatchAction.BACKTRACKING)
+            state.regAt[1] = state.regAt[0];
+        
         this.matchData.states.push(state);
 
         return this;
