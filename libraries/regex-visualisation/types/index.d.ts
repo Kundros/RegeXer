@@ -1,5 +1,5 @@
 import { RegexMatch } from "@kundros/regexer";
-import { RegexTypes } from "@kundros/regexer/types/models/RegexParser";
+import { RegexTypes } from "@kundros/regexer/types/core/RegexParser";
 
 declare module '*.html' {
     const content: string;

@@ -74,6 +74,7 @@ export class RegexDebugger {
         this.regexContext_.save();
 
         this.highlightPosition(state.regAt);
+        console.log(this.matches_[0].currentState);
 
         // handle backtracking
         if((state.action & MatchAction.BACKTRACKING) && state.fromExact)
@@ -115,8 +116,15 @@ export class RegexDebugger {
         this.regexContext_.fillStyle = regexOptions?.backtrackingDirectionColor ?? "#FF0000";
         const dimensions = this.getLettersSpanDimentions(from, to);
 
+        if(dimensions.length === 0)
+            return;
+
         // arrow rect
         this.regexContext_.fillRect(dimensions[0][0] + 4, dimensions[0][1] + 2, dimensions[0][2] - 4, 2);
+        for(let i = 1 ; i < dimensions.length ; i++)
+        {
+            this.regexContext_.fillRect(dimensions[i][0], dimensions[i][1] + 2, dimensions[i][2], 2);
+        }
 
         // arrow head
         this.regexContext_.beginPath();
@@ -147,38 +155,53 @@ export class RegexDebugger {
         const letterHeight = letterMeasure.fontBoundingBoxDescent + letterMeasure.fontBoundingBoxAscent;
 
         const textBounding = this.regexText_.getBoundingClientRect();
-        const maxLineCharacters = Math.floor(textBounding.width/(letterWidth+spacingWidth));
-
-        this.regexContext_.restore();
-
+        const maxLineSize = textBounding.width;
 
         let outputRows = [];
 
-        let tempEnd = maxLineCharacters; 
-        let yOffset = Math.floor(from/maxLineCharacters);
+        let yOffset = 0;
+        
 
-        from %= maxLineCharacters;
-        to -= yOffset * maxLineCharacters;
+        let lastRowSize = 0;
+        let currentRowSize = 0;
 
-        while(tempEnd < to)
+        for(let i = 0 ; i < textLength ; i++)
         {
-            const selection = to - from;
+            if(i > to || maxLineSize <= 1)
+                break;
 
-            let startX = from * (letterWidth + spacingWidth) + spacingWidth;
-            let endX = selection * letterWidth + (selection-1) * spacingWidth;
-            outputRows.push([startX, yOffset * lineHeight, endX, letterHeight]);
+            lastRowSize = currentRowSize;
+            currentRowSize += letterWidth + spacingWidth;
 
-            from = 0;
-            to -= maxLineCharacters;
-            yOffset++;
-            tempEnd = maxLineCharacters;
+            if(currentRowSize > maxLineSize)
+            {
+                i--;
+                currentRowSize = 0;
+                yOffset++;
+                continue;
+            }
+
+            if(i >= from && i < to)
+            {
+                const selection = to - from;
+                if(outputRows.length === 0 || outputRows[outputRows.length-1][1] < yOffset * lineHeight) 
+                {
+                    outputRows.push([lastRowSize, yOffset * lineHeight, currentRowSize - lastRowSize, letterHeight]);
+                }
+                else
+                {
+                    outputRows[outputRows.length-1][2] = currentRowSize - outputRows[outputRows.length-1][0];
+                }
+            }
+
+            if(text[i] === '\n')
+            {
+                currentRowSize = 0;
+                yOffset++;
+            }
         }
 
-        const selection = to - from;
-
-        let startX = from * (letterWidth + spacingWidth) + spacingWidth;
-        let endX = selection * letterWidth + (selection-1) * spacingWidth;
-        outputRows.push([startX, yOffset * lineHeight, endX, letterHeight]);
+        this.regexContext_.restore();
 
         return outputRows;
     }

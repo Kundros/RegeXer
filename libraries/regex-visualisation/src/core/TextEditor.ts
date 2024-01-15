@@ -207,7 +207,7 @@ export class TextEditor{
         const copyText = await navigator.clipboard.readText();
 
         this.textInput_.textContent = text.slice(0, pos) + copyText + text.slice(pos);
-        setCursorPosition(this.textInput_, pos + copyText.length - copyText.match(/\n/g).length);
+        setCursorPosition(this.textInput_, pos + copyText.length - (copyText.match(/\n/g) ?? []).length);
 
         this.textInput_.dispatchEvent(new InputEvent('input'));
     }
