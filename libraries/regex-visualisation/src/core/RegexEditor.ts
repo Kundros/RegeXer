@@ -1,4 +1,4 @@
-import { RegexTypes } from "@kundros/regexer/types/models/RegexParser";
+import { RegexTypes } from "@kundros/regexer/types/core/RegexParser";
 import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, AstEscapedSpecial, GroupTypes, RegexStates } from "@kundros/regexer";
 import { TextEditor, TextEditorOptions } from "./TextEditor";
 import { getCursorPosition, setCursorPosition } from "./other/caretHelper";

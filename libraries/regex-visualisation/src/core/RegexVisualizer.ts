@@ -136,7 +136,7 @@ export class RegexVisualizer {
                 {
                     Object.setPrototypeOf(matchesData[i], RegexMatch.prototype);
                     matches.push(matchesData[i]);
-                    steps += matchesData[i].statesLength;
+                    steps += matchesData[i].statesCount;
                 }
 
                 this.debuggerWindow_.matches = matches; 

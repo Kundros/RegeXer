@@ -40,9 +40,20 @@ export function getCursorPosition(parent : HTMLElement | ChildNode) {
   {
     const sel = window.getSelection();
 
+    let saveRange : Range | undefined;
+    if(sel.rangeCount > 0)
+      saveRange = sel.getRangeAt(0).cloneRange();
     sel.removeAllRanges();
     
-    const range = internalSetCursor(parent, document.createRange(), { pos, done: false });
+    let stat = { pos, done: false };
+    const range = internalSetCursor(parent, document.createRange(), stat);
+
+    if(!stat.done)
+    {
+      if(saveRange !== undefined)
+        sel.addRange(saveRange);
+      return;
+    }
 
     range.collapse(true);
     sel.addRange(range);

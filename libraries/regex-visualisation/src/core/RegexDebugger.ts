@@ -1,10 +1,12 @@
-import { RegexMatch } from "@kundros/regexer";
+import { MatchAction, RegexMatch } from "@kundros/regexer";
 import { Slider, SliderEvent } from "./Slider";
 import { sliderSettings } from "./settings/SliderSettings";
 
 export type DebuggerOptions = {
     regexHighlighting?: {
-        positionColor?: string
+        positionColor?: string,
+        backtrackingPositionColor?: string,
+        backtrackingDirectionColor?: string
     }
 }
 
@@ -56,35 +58,129 @@ export class RegexDebugger {
         this.slider_.value = 1;
     }
 
-    private visualizeStep(step: number)
+    private visualizeStep(step: number, isErr: boolean = false)
     {
         if(this.matches_ === undefined || this.matches_.length === 0) return;
 
         const state = this.matches_[0].moveTo(step-1);
         const bounding = this.regexCanvas_.getBoundingClientRect();
-        const regexOptions = this.debuggerOptions_?.regexHighlighting;
 
         if(state === null) return;;
 
+        this.regexContext_.clearRect(0, 0, bounding.width, bounding.height);
         this.regexCanvas_.width = bounding.width;
         this.regexCanvas_.height = bounding.height;
 
         this.regexContext_.save();
-        this.regexContext_.fillStyle = regexOptions?.positionColor ?? "#FF0000";
-        this.regexContext_.font = window.getComputedStyle( this.regexText_, null ).getPropertyValue( "font" );
 
-        const spacing = window.getComputedStyle( this.regexText_, null ).getPropertyValue( "letter-spacing" );
-        const spacingNumber = Number.parseInt(spacing.replace("px", ""));
-        const letterMeasure = this.regexContext_.measureText("i");
-        const letterWidth = letterMeasure.width + spacingNumber;
-        const letterHeight = letterMeasure.fontBoundingBoxDescent + letterMeasure.fontBoundingBoxAscent;
+        this.highlightPosition(state.regAt);
 
-        this.regexContext_.clearRect(0, 0, bounding.width, bounding.height);
-        
-        this.regexContext_.fillRect(state.regAt[0] * letterWidth, 0, (state.regAt[1] - state.regAt[0]) * letterWidth, letterHeight);
+        // handle backtracking
+        if((state.action & MatchAction.BACKTRACKING) && state.fromExact)
+        {
+            this.highlightPosition(state.fromExact, true);
+            this.drawBacktracking(state.regAt[0], state.fromExact[1]);
+        }
+    }
+
+    private highlightPosition(position : [number, number], isErr: boolean = false)
+    {
+        const regexOptions = this.debuggerOptions_?.regexHighlighting;
+
+        this.regexContext_.save();
+
+        if(isErr)
+            this.regexContext_.fillStyle = regexOptions?.backtrackingPositionColor ?? "#FF0000";
+        else
+            this.regexContext_.fillStyle = regexOptions?.positionColor ?? "#00FF00";
+
+        const dimensions = this.getLettersSpanDimentions(position[0], position[1]);
+
+        // offset the highlight 2 pixels down
+        for(let i = 0 ; i < dimensions.length ; i++)
+        {
+            this.regexContext_.fillRect(dimensions[i][0], dimensions[i][1] + 2, dimensions[i][2], dimensions[i][3]);
+        }
         this.regexContext_.stroke();
 
         this.regexContext_.restore();
+    }
+
+    private drawBacktracking(from : number, to : number)
+    {
+        const regexOptions = this.debuggerOptions_?.regexHighlighting;
+
+        this.regexContext_.save();
+
+        this.regexContext_.fillStyle = regexOptions?.backtrackingDirectionColor ?? "#FF0000";
+        const dimensions = this.getLettersSpanDimentions(from, to);
+
+        // arrow rect
+        this.regexContext_.fillRect(dimensions[0][0] + 4, dimensions[0][1] + 2, dimensions[0][2] - 4, 2);
+
+        // arrow head
+        this.regexContext_.beginPath();
+        this.regexContext_.moveTo(dimensions[0][0], dimensions[0][1] + 3)
+        this.regexContext_.lineTo(dimensions[0][0] + 8, dimensions[0][1] + 6);
+        this.regexContext_.lineTo(dimensions[0][0] + 8, dimensions[0][1]);
+        this.regexContext_.closePath();
+        this.regexContext_.fill();
+        
+        this.regexContext_.restore();
+    }
+
+    private getLettersSpanDimentions(from: number, to: number) : [number, number, number, number][] // x, y, width, height
+    {
+        this.regexContext_.save();
+        this.regexContext_.font = window.getComputedStyle( this.regexText_, null ).getPropertyValue( "font" );
+
+        const text = this.regexText_.textContent;
+        const textLength = text.length;
+
+        // compute letter measurements
+        const spacing = window.getComputedStyle( this.regexText_, null ).getPropertyValue( "letter-spacing" );
+        const lineHeightStr = window.getComputedStyle( this.regexText_, null ).getPropertyValue( "line-height" );
+        const spacingWidth = Number.parseInt(spacing.replace("px", ""));
+        const lineHeight = Number.parseInt(lineHeightStr.replace("px", ""));
+        const letterMeasure = this.regexContext_.measureText("i");
+        const letterWidth = letterMeasure.width ;
+        const letterHeight = letterMeasure.fontBoundingBoxDescent + letterMeasure.fontBoundingBoxAscent;
+
+        const textBounding = this.regexText_.getBoundingClientRect();
+        const maxLineCharacters = Math.floor(textBounding.width/(letterWidth+spacingWidth));
+
+        this.regexContext_.restore();
+
+
+        let outputRows = [];
+
+        let tempEnd = maxLineCharacters; 
+        let yOffset = Math.floor(from/maxLineCharacters);
+
+        from %= maxLineCharacters;
+        to -= yOffset * maxLineCharacters;
+
+        while(tempEnd < to)
+        {
+            const selection = to - from;
+
+            let startX = from * (letterWidth + spacingWidth) + spacingWidth;
+            let endX = selection * letterWidth + (selection-1) * spacingWidth;
+            outputRows.push([startX, yOffset * lineHeight, endX, letterHeight]);
+
+            from = 0;
+            to -= maxLineCharacters;
+            yOffset++;
+            tempEnd = maxLineCharacters;
+        }
+
+        const selection = to - from;
+
+        let startX = from * (letterWidth + spacingWidth) + spacingWidth;
+        let endX = selection * letterWidth + (selection-1) * spacingWidth;
+        outputRows.push([startX, yOffset * lineHeight, endX, letterHeight]);
+
+        return outputRows;
     }
 
     private registerListeners()

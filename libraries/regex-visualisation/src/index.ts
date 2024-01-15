@@ -15,7 +15,9 @@ import { RegexDebugger } from "./core/RegexDebugger";
         new StringMatchEditor(document.querySelector("#match-wrapper > span")),
         new RegexDebugger(document.querySelector("#regex-debugger-overlay"), document.querySelector(".debug-icon"), { 
             regexHighlighting: {
-                positionColor: "#095c32"
+                positionColor: "#095c32",
+                backtrackingPositionColor: "#9e7f1b",
+                backtrackingDirectionColor: "#bd090d"
             }
         }),
         vscode,

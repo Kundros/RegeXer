@@ -139,12 +139,18 @@ export class TextEditor{
         const tab = ElementHelper.wrapElement('\t', "span", ["tab-symbol"]);
 
         let lastAt = 0;
-        const newLineReg = /\n|\t/gm;
+        const newLineReg = /\r\n|\n|\t/gm;
+        let countCarriageReturns = 0;
+
         let match : RegExpExecArray | null;
         while ((match = newLineReg.exec(chars)) !== null) {
             if(lastAt <  newLineReg.lastIndex - 1)
-                this.textInput_.append(chars.slice(lastAt, newLineReg.lastIndex - 1));
-            if(match[0] === '\n')
+                this.textInput_.append(chars.slice(lastAt, newLineReg.lastIndex - match[0].length));
+            if(match[0] === '\r\n'){
+                countCarriageReturns++;
+                this.textInput_.append(newLine.cloneNode(true));
+            }
+            else if(match[0] === '\n')
                 this.textInput_.append(newLine.cloneNode(true));
             else
                 this.textInput_.append(tab.cloneNode(true));
@@ -163,6 +169,7 @@ export class TextEditor{
         setCursorPosition(this.textInput_, pos);
 
         this.updateText();
+        return countCarriageReturns;
     }
 
     protected handleFocus()
@@ -200,9 +207,8 @@ export class TextEditor{
         const copyText = await navigator.clipboard.readText();
 
         this.textInput_.textContent = text.slice(0, pos) + copyText + text.slice(pos);
-        setCursorPosition(this.textInput_, pos + copyText.length);
+        setCursorPosition(this.textInput_, pos + copyText.length - copyText.match(/\n/g).length);
 
-        this.handleFormating();
         this.textInput_.dispatchEvent(new InputEvent('input'));
     }
 
