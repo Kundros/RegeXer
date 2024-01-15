@@ -239,7 +239,7 @@ test('iteration zero or more', () => {
 
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.ITERATION_ZERO);
     expect(nfaStart[2].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
-    expect(nfaStart[3].ASTelement?.type).toBe(undefined); //just transition in nfa
+    expect(nfaStart[3].ASTelement?.type).toBe(RegexTypes.RegexStates.ITERATION_END);
 
     expect(nfaStart[1].transitions[0]).toStrictEqual([null, 1]);
     expect(nfaStart[1].transitions[1]).toStrictEqual([null, 3]);
@@ -256,7 +256,7 @@ test('iteration one or more', () => {
 
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.ITERATION_ONE);
     expect(nfaStart[2].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
-    expect(nfaStart[3].ASTelement?.type).toBe(undefined); //just transition in nfa
+    expect(nfaStart[3].ASTelement?.type).toBe(RegexTypes.RegexStates.ITERATION_END);
 
     expect(nfaStart[1].transitions[0]).toStrictEqual([null, 1]);
     expect(nfaStart[1].transitions[1]).toStrictEqual(undefined); // without option of jumping out of bound
@@ -285,12 +285,12 @@ test('complex regex (iteration, group, option)', () => {
     // b+)*
     expect(nfaStart[6].ASTelement?.type).toBe(RegexTypes.RegexStates.ITERATION_ONE);
     expect(nfaStart[7].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
-    expect(nfaStart[8].ASTelement?.type).toBe(undefined); // nfa iteration end
+    expect(nfaStart[8].ASTelement?.type).toBe(RegexTypes.RegexStates.ITERATION_END);
     expect(nfaStart[9].ASTelement?.type).toBe(RegexTypes.RegexStates.OPTION_END);
     
     
     expect(nfaStart[10].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP_END); // nfa group end
-    expect(nfaStart[11].ASTelement?.type).toBe(undefined); // nfa iteration end
+    expect(nfaStart[11].ASTelement?.type).toBe(RegexTypes.RegexStates.ITERATION_END);
 
     // END
     expect(nfaStart[12].ASTelement?.type).toBe(RegexTypes.RegexStates.END);
