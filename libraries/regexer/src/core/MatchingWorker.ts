@@ -95,12 +95,14 @@ class Matcher
                 if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP)
                     this.groups.push(<ASTGroup>nfaState?.ASTelement);
 
-                let canAddToMatch = nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION_END;
 
-                if(~flags & MatchFlags.IGNORE_GROUP_ENTERS)
-                    canAddToMatch |= nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP;
-                if((~flags & MatchFlags.IGNORE_GROUP_LEAVES))
-                    canAddToMatch |= nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END;
+                let canAddToMatch = false;
+                if((~flags & MatchFlags.IGNORE_OPTION_LEAVES) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION_END))
+                    canAddToMatch = true;
+                else if((~flags & MatchFlags.IGNORE_GROUP_ENTERS) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP))
+                    canAddToMatch = true;
+                else if((~flags & MatchFlags.IGNORE_GROUP_LEAVES) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END))
+                    canAddToMatch = true;
 
                 if(canAddToMatch)
                 {
@@ -131,7 +133,7 @@ class Matcher
 
         this.matchBuilder.matchData.end = this.stringPosStack.top();
 
-        parentPort.postMessage(<ReturnMessage>{ type: "succeded", pid: this.pid, data: [this.matchBuilder.finalize()] });
+        parentPort.postMessage(<ReturnMessage>{ type: "succeded", pid: this.pid, data: [this.matchBuilder.finalize((NFA[0] as NFAState)?.ASTelement?.end ?? 0)] });
     }
 
     private handleList(matchString : string)
@@ -179,12 +181,13 @@ class Matcher
 
             this.matchBuilder.matchData.start = this.stringPosStack.top();
 
-            if(nfaState?.ASTelement?.type !== undefined && this.statesStack.top()?.state?.ASTelement?.type & ~RegexTypes.RegexStates.OPTION)
+            if(nfaState?.ASTelement?.type !== undefined && !(nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION) && !(flags & MatchFlags.IGNORE_STR_START_POSITION_CHANGE))
             {
                 this.matchBuilder.addState({
                     type: nfaState.ASTelement.type, 
-                    regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
-                    action: MatchAction.BACKTRACKING
+                    regAt: [0, 0],
+                    strAt: [this.matchBuilder.matchData.start ?? 0 ,this.stringPosStack.top()],
+                    action: MatchAction.FORWARD_START
                 });
             }
 
@@ -193,11 +196,12 @@ class Matcher
 
         this.stringPosStack.pop();
 
-        if(nfaState?.ASTelement?.type !== undefined && this.statesStack.top()?.state?.ASTelement?.type !== RegexTypes.RegexStates.OPTION)
+        if(nfaState?.ASTelement?.type !== undefined && !(nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION))
         {
             this.matchBuilder.addState({
                 type: nfaState.ASTelement.type, 
                 regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
+                strAt: [this.matchBuilder.matchData.start ?? 0 ,this.stringPosStack.top()],
                 action: MatchAction.BACKTRACKING
             });
         }

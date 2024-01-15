@@ -4066,7 +4066,11 @@ peg$parseSOS() {
 // @ts-ignore
         States.START_STRING | 
 // @ts-ignore
-        States.SPECIAL
+        States.SPECIAL|
+// @ts-ignore
+        States.GROUP_END |
+// @ts-ignore
+        States.ITERATION_END
     );
 
 // @ts-ignore
@@ -4249,7 +4253,17 @@ peg$parseSOS() {
                 toEnd++;
                 
 // @ts-ignore
-                outputNFA.push(this.buildElement(States.OPTION_END, {}, [
+                const lastEnd = outputNFA[outputNFA.length-1].ASTelement.end;
+// @ts-ignore
+                const borderEnd = range().end;
+                
+// @ts-ignore
+                outputNFA.push(this.buildElement(States.OPTION_END, {
+// @ts-ignore
+                  start: lastEnd,
+// @ts-ignore
+                  end: ((lastEnd >= borderEnd) ? (borderEnd) : (lastEnd + 1))
+                }, [
 // @ts-ignore
                     [null, toEnd]
 // @ts-ignore
@@ -4358,12 +4372,13 @@ peg$parseSOS() {
 // @ts-ignore
         	outputNFA.push(
 // @ts-ignore
-                this.buildNFAwhithoutASTref(States.ITERATION_END, [
+                this.buildElement(States.ITERATION_END, {}, [
 // @ts-ignore
                     [null, -dataLength + 1],
 // @ts-ignore
                     [null, 1]
-                ])
+// @ts-ignore
+                ]).NFA[0]
             );
 
 // @ts-ignore
@@ -4423,13 +4438,6 @@ peg$parseSOS() {
             
 // @ts-ignore
             return element;
-        }
-        
-// @ts-ignore
-        buildNFAwhithoutASTref(type, transitions = [])
-        {
-// @ts-ignore
-        	return { type,  transitions };
         }
         
 // @ts-ignore

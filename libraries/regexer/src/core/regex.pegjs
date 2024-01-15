@@ -99,7 +99,9 @@
         States.OPTION_END | 
         States.END_STRING | 
         States.START_STRING | 
-        States.SPECIAL
+        States.SPECIAL|
+        States.GROUP_END |
+        States.ITERATION_END
     );
 
     const noDefaultTransition = ~(
@@ -213,7 +215,13 @@
                 offset++;
                 toEnd++;
                 
-                outputNFA.push(this.buildElement(States.OPTION_END, {}, [
+                const lastEnd = outputNFA[outputNFA.length-1].ASTelement.end;
+                const borderEnd = range().end;
+                
+                outputNFA.push(this.buildElement(States.OPTION_END, {
+                  start: lastEnd,
+                  end: ((lastEnd >= borderEnd) ? (borderEnd) : (lastEnd + 1))
+                }, [
                     [null, toEnd]
                 ]).NFA[0]);
             });
@@ -285,10 +293,10 @@
         	const dataLength = outputNFA.length;
         
         	outputNFA.push(
-                this.buildNFAwhithoutASTref(States.ITERATION_END, [
+                this.buildElement(States.ITERATION_END, {}, [
                     [null, -dataLength + 1],
                     [null, 1]
-                ])
+                ]).NFA[0]
             );
 
             if(state & States.ITERATION_ZERO)
@@ -327,11 +335,6 @@
             element.NFA.push({ASTelement: element.AST, transitions});
             
             return element;
-        }
-        
-        buildNFAwhithoutASTref(type, transitions = [])
-        {
-        	return { type,  transitions };
         }
         
         addTransitionToElement(element, input, by){

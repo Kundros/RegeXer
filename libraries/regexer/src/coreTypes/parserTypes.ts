@@ -48,7 +48,9 @@ export type ASTGroup = AST &
 {
     detailedType: GroupTypes,
     name: string | undefined,
-    end: number
+    start: number,
+    end: number,
+    endNFA?: number
 }
 
 export type ASTOption = ASTNoChildren & 
