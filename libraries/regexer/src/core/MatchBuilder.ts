@@ -18,7 +18,7 @@ export class MatchBuilder
 
         this.matchData.statesCount++;
 
-        if((this.flags_ & MatchFlags.SHORTEN_BACKTRACKING) && top?.action === MatchAction.BACKTRACKING && state?.action === MatchAction.BACKTRACKING)
+        if((this.flags_ & MatchFlags.SHORTEN_BACKTRACKING) && (top?.action & MatchAction.BACKTRACKING) && (state?.action & MatchAction.BACKTRACKING))
         {
             if(this.flags_ & MatchFlags.BACKTRACKED_FROM_EXACT)
                 state.fromExact = top.fromExact ?? top.regAt;
@@ -27,8 +27,8 @@ export class MatchBuilder
             this.matchData.statesCount--;
         }
 
-        if((this.flags_ & MatchFlags.BACKTRACK_TRIM_POSITION) && state?.action === MatchAction.BACKTRACKING)
-            state.regAt[1] = state.regAt[0];
+        if((this.flags_ & MatchFlags.BACKTRACK_TRIM_POSITION) && (top?.action & MatchAction.BACKTRACKING) && (state?.action & ~MatchAction.BACKTRACKING))
+            top.regAt[1] = top.regAt[0];
         
         this.matchData.states.push(state);
 
