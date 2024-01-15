@@ -65,7 +65,7 @@ export class RegexDebugger {
         const state = this.matches_[0].moveTo(step-1);
         const bounding = this.regexCanvas_.getBoundingClientRect();
 
-        if(state === null) return;;
+        if(state === null) return;
 
         this.regexContext_.clearRect(0, 0, bounding.width, bounding.height);
         this.regexCanvas_.width = bounding.width;
@@ -74,7 +74,6 @@ export class RegexDebugger {
         this.regexContext_.save();
 
         this.highlightPosition(state.regAt);
-        console.log(this.matches_[0].currentState);
 
         // handle backtracking
         if((state.action & MatchAction.BACKTRACKING) && state.fromExact)
@@ -158,14 +157,11 @@ export class RegexDebugger {
         const maxLineSize = textBounding.width;
 
         let outputRows = [];
-
         let yOffset = 0;
-        
-
         let lastRowSize = 0;
         let currentRowSize = 0;
 
-        for(let i = 0 ; i < textLength ; i++)
+        for(let i = 0 ; i <= textLength ; i++)
         {
             if(i > to || maxLineSize <= 1)
                 break;
@@ -183,16 +179,14 @@ export class RegexDebugger {
 
             if(i >= from && i < to)
             {
-                const selection = to - from;
                 if(outputRows.length === 0 || outputRows[outputRows.length-1][1] < yOffset * lineHeight) 
-                {
                     outputRows.push([lastRowSize, yOffset * lineHeight, currentRowSize - lastRowSize, letterHeight]);
-                }
                 else
-                {
                     outputRows[outputRows.length-1][2] = currentRowSize - outputRows[outputRows.length-1][0];
-                }
             }
+
+            if(i === to && i === from)
+                outputRows.push([lastRowSize, yOffset * lineHeight, spacingWidth, letterHeight]);
 
             if(text[i] === '\n')
             {
