@@ -40,7 +40,9 @@ export function activate(context: vscode.ExtensionContext) {
 		let regexer : Regexer = new Regexer("", 
 			MatchFlags.SHORTEN_BACKTRACKING | 
 			MatchFlags.BACKTRACKED_FROM_EXACT |
-			MatchFlags.BACKTRACK_TRIM_POSITION
+			MatchFlags.BACKTRACK_TRIM_POSITION |
+			MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
+			MatchFlags.OPTION_SHOW_FIRST_ENTER
 		);
 
 		// Handle messages from the webview
