@@ -49,3 +49,23 @@ test("match setting (SHORTEN_BACKTRACKING + BACKTRACKED_FROM_EXACT)", async () =
 
     regexer.clear();
 });
+
+test("-", async () => {
+    const regexer = new Regexer("a|b|c|d",
+        MatchFlags.SHORTEN_BACKTRACKING | 
+        MatchFlags.BACKTRACKED_FROM_EXACT |
+        MatchFlags.BACKTRACK_TRIM_POSITION |
+        MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
+        MatchFlags.OPTION_SHOW_FIRST_ENTER
+    );
+
+    const matches = (await regexer.match("d")).matches;
+
+    while(matches[0].currentState !== null)
+    {
+        console.log(matches[0].currentState);
+        matches[0].moveForward();
+    }
+
+    regexer.clear();
+});

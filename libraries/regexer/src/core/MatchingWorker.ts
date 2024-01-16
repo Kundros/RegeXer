@@ -1,7 +1,7 @@
 import { workerData, parentPort } from 'worker_threads';
 import { RegexTypes } from '@core/RegexParser';
 import { Stack } from '@regexer/structures/Stack';
-import { ASTGroup, ASTtype, NFAState, NFAStateList, NFAtype, RegexStates } from '../coreTypes/parserTypes';
+import { ASTGroup, ASTOption, ASTtype, NFAState, NFAStateList, NFAtype, RegexStates } from '../coreTypes/parserTypes';
 import { MatchBuilder } from './MatchBuilder';
 import { MatchAction, MatchFlags } from './RegexMatch';
 import { NewData, NewFlags, NewMessage, ReturnErrorMessage, ReturnMessage } from '../coreTypes/MatchWorkerTypes';
@@ -97,6 +97,9 @@ class Matcher
 
 
                 let canAddToMatch = false;
+
+                if((~flags & MatchFlags.IGNORE_OPTION_ENTERS) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION))
+                    canAddToMatch = true;
                 if((~flags & MatchFlags.IGNORE_OPTION_LEAVES) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION_END))
                     canAddToMatch = true;
                 else if((~flags & MatchFlags.IGNORE_GROUP_ENTERS) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP))
@@ -104,11 +107,27 @@ class Matcher
                 else if((~flags & MatchFlags.IGNORE_GROUP_LEAVES) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END))
                     canAddToMatch = true;
 
+                let regAt : [number, number] = [nfaState.ASTelement.start, nfaState.ASTelement.end];
+
+                if((flags & MatchFlags.OPTION_ENTERS_SHOW_ACTIVE) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION))
+                {
+                    const span = this.handleSingleOptionSpan(nfaState);
+                    if(span != null)
+                    {
+                        if((flags & MatchFlags.OPTION_SHOW_FIRST_ENTER) && this.statesStack.top()?.transition === 0)
+                            this.matchBuilder.addState({
+                                type: nfaState.ASTelement.type, 
+                                regAt
+                            });
+                        regAt = span;
+                    }
+                }
+
                 if(canAddToMatch)
                 {
                     this.matchBuilder.addState({
                         type: nfaState.ASTelement.type, 
-                        regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end]
+                        regAt
                     });
                 }
 
@@ -134,6 +153,25 @@ class Matcher
         this.matchBuilder.matchData.end = this.stringPosStack.top();
 
         parentPort.postMessage(<ReturnMessage>{ type: "succeded", pid: this.pid, data: [this.matchBuilder.finalize((NFA[0] as NFAState)?.ASTelement?.end ?? 0)] });
+    }
+
+    private handleSingleOptionSpan(nfaState : NFAtype) : null | [number, number]
+    {
+        const currentOption = nfaState?.ASTelement as ASTOption;
+        const topState = this.statesStack.top();
+
+        if(topState?.state !== nfaState)
+            return null;
+
+        if(topState.transition >= currentOption.children.length && topState.transition < 0)
+            return null;
+
+        const optionSelectedArr = currentOption.children[topState.transition];
+
+        if(optionSelectedArr.length <= 0)
+            return null;
+
+        return [optionSelectedArr[0].start, optionSelectedArr[optionSelectedArr.length-1].end];
     }
 
     private handleList(matchString : string)
@@ -181,30 +219,30 @@ class Matcher
 
             this.matchBuilder.matchData.start = this.stringPosStack.top();
 
-            if(nfaState?.ASTelement?.type !== undefined && !(nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION) && !(flags & MatchFlags.IGNORE_STR_START_POSITION_CHANGE))
-            {
-                this.matchBuilder.addState({
-                    type: nfaState.ASTelement.type, 
-                    regAt: [0, 0],
-                    strAt: [this.matchBuilder.matchData.start ?? 0 ,this.stringPosStack.top()],
-                    action: MatchAction.FORWARD_START
-                });
-            }
+            if(flags & MatchFlags.IGNORE_STR_START_POSITION_CHANGE || nfaState?.ASTelement?.type === undefined || nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION)
+                return true;
+
+            this.matchBuilder.addState({
+                type: nfaState.ASTelement.type, 
+                regAt: [0, 0],
+                strAt: [this.matchBuilder.matchData.start ?? 0 ,this.stringPosStack.top()],
+                action: MatchAction.FORWARD_START
+            });
 
             return true;
         }
 
         this.stringPosStack.pop();
 
-        if(nfaState?.ASTelement?.type !== undefined && !(nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION))
-        {
-            this.matchBuilder.addState({
-                type: nfaState.ASTelement.type, 
-                regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
-                strAt: [this.matchBuilder.matchData.start ?? 0 ,this.stringPosStack.top()],
-                action: MatchAction.BACKTRACKING
-            });
-        }
+        if(nfaState?.ASTelement?.type === undefined || nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION)
+            return true;
+
+        this.matchBuilder.addState({
+            type: nfaState.ASTelement.type, 
+            regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
+            strAt: [this.matchBuilder.matchData.start ?? 0 ,this.stringPosStack.top()],
+            action: MatchAction.BACKTRACKING
+        });
 
         return true;
     }
