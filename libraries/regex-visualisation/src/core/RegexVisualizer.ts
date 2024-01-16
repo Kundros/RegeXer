@@ -37,6 +37,7 @@ export class RegexVisualizer {
         window.addEventListener('message', (event : MessageEvent) => this.messageRecieve(event));
         document.addEventListener("regexDebbugerVisible", () => {
             this.debuggerWindow_.setRegexText(this.regexEditor_.textInput);
+            this.debuggerWindow_.setMatchStringText(this.stringMatchEditor_.textInput);
         })
     }
 

@@ -47,9 +47,9 @@ export const sliderSettings : SliderOptions =
             }
         },
 
-        durationOptions: {
-            defaultDuration: 10,
-            durationInput: true,
+        speedOptions: {
+            defaultSpeed: 5,
+            speedInput: true,
             background: "#44474d",
             textColor: "white",
             iconColor: "#a3a3a3",

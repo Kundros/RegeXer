@@ -27,7 +27,7 @@ export type SliderOptions = {
         margin?: string
 
         actionBtns?: ActionBtnsOptions,
-        durationOptions?: DurationOptions,
+        speedOptions?: SpeedOptions,
         editPositionBox?: EditPositionBox
     }
 };
@@ -43,9 +43,9 @@ export type EditPositionBox = {
     maxWidth?: string
 }
 
-export type DurationOptions = {
-    defaultDuration: number,
-    durationInput?: boolean,
+export type SpeedOptions = {
+    defaultSpeed: number,
+    speedInput?: boolean,
     iconColor?: string,
     textColor?: string,
     background?: string,
@@ -266,19 +266,19 @@ export class Slider{
         this.updateThumb();
     }
 
-    public set autoplayDuration(val: number)
+    public set autoplaySpeed(val: number)
     {
-        const durationOptions = this.options_?.editable?.durationOptions;
-        let min = durationOptions?.min ?? 1;
-        let max = durationOptions?.max ?? 1000;
+        const speedOptions = this.options_?.editable?.speedOptions;
+        let min = speedOptions?.min ?? 1;
+        let max = speedOptions?.max ?? 1000;
         min = min < 0 ? 0 : min;
         if(val <= min) 
             val = min;
         else if(val >= max) 
             val = max;
 
-        this.autoplayDuration_ = val;
-        this.durationInput_.textContent = this.autoplayDuration_.toString();
+        this.autoplaySpeed_ = val;
+        this.speedInput_.textContent = this.autoplaySpeed_.toString();
     }
 
     public get parent()
@@ -301,9 +301,9 @@ export class Slider{
         return this.max_;
     }
 
-    public get autoplayDuration()
+    public get autoplaySpeed()
     {
-        return this.autoplayDuration_;
+        return this.autoplaySpeed_;
     }
 
 
@@ -326,7 +326,7 @@ export class Slider{
         this.renderSegmentsContainer();
         this.renderEditPositionBox();
         this.renderActionBtns();
-        this.renderDuration();
+        this.renderSpeed();
 
         this.container_.append(this.wrapper_);
         this.wrapper_.append(this.editableContainer_);
@@ -386,12 +386,11 @@ export class Slider{
 
                 let lastTime = Date.now();
                 let valueFloating = this.value_;
-                const minMaxDiff = this.max_ - this.min_;
 
                 this.autoplaying_ = setInterval(() => {
-                    const timeDuration = this.autoplayDuration_ * 1000; // User can change duration during autoplay
+                    const timeDuration = (1/this.autoplaySpeed_) * 1000; // User can change duration during autoplay
                     const timeSpan = (Date.now() - lastTime) / timeDuration;
-                    valueFloating = minMaxDiff*timeSpan + valueFloating;
+                    valueFloating += timeSpan;
                     let integerTemp = Math.floor(valueFloating);
                     
                     if(integerTemp > this.max_)
@@ -514,12 +513,12 @@ export class Slider{
         }
     }
 
-    private renderDuration()
+    private renderSpeed()
     {
-        const durationOptions = this.options_?.editable?.durationOptions;
-        if(durationOptions?.durationInput === undefined || this.editableContainer_ === undefined)
+        const speedOptions = this.options_?.editable?.speedOptions;
+        if(speedOptions?.speedInput === undefined || this.editableContainer_ === undefined)
         {
-            this.autoplayDuration = durationOptions?.defaultDuration ?? 1;
+            this.autoplaySpeed = speedOptions?.defaultSpeed ?? 1;
             return;
         }
 
@@ -527,65 +526,65 @@ export class Slider{
         arrows.innerHTML = arrowUpSvg + arrowUpSvg;
 
 
-        this.durationInput_ = ElementHelper.wrapElement([], "span", ["cslider-editable-duration"], [["contenteditable", "true"]]);
+        this.speedInput_ = ElementHelper.wrapElement([], "span", ["cslider-editable-speed"], [["contenteditable", "true"]]);
 
-        this.durationInputWrapper_ = ElementHelper.wrapElement([
-            this.durationInput_,
+        this.speedInputWrapper_ = ElementHelper.wrapElement([
+            this.speedInput_,
             arrows
         ], "div", ["cslider-custom-speed"]);
 
-        this.editableContainer_.append(this.durationInputWrapper_);
+        this.editableContainer_.append(this.speedInputWrapper_);
 
-        this.durationInputWrapper_.style.background = durationOptions.background ?? "none";
-        this.durationInputWrapper_.style.borderRadius = durationOptions.radius ?? "0px";
-        this.durationInputWrapper_.style.padding = durationOptions.padding ?? "0";
-        this.durationInputWrapper_.style.maxWidth = durationOptions.maxWidth ?? "100%";
+        this.speedInputWrapper_.style.background = speedOptions.background ?? "none";
+        this.speedInputWrapper_.style.borderRadius = speedOptions.radius ?? "0px";
+        this.speedInputWrapper_.style.padding = speedOptions.padding ?? "0";
+        this.speedInputWrapper_.style.maxWidth = speedOptions.maxWidth ?? "100%";
 
-        this.durationInput_.style.color = durationOptions.textColor ?? "black";
-        this.durationInput_.style.fontSize = durationOptions.fontSize ?? "min(1.3rem, 60cqh)";
-        this.durationInput_.textContent = durationOptions.defaultDuration.toString();
+        this.speedInput_.style.color = speedOptions.textColor ?? "black";
+        this.speedInput_.style.fontSize = speedOptions.fontSize ?? "min(1.3rem, 60cqh)";
+        this.speedInput_.textContent = speedOptions.defaultSpeed.toString();
 
-        if(durationOptions.info)
+        if(speedOptions.info)
         {
-            this.durationInputWrapper_.append(
+            this.speedInputWrapper_.append(
                 ElementHelper.wrapElement([
                     new Text("i"),
-                    ElementHelper.wrapElement(durationOptions?.customInfoText ?? "Autoplay duration in seconds (minimally 1s)", "span", ["cslider-speed-info-text"])
+                    ElementHelper.wrapElement(speedOptions?.customInfoText ?? "Autoplay speed as (1/speed) seconds per frame", "span", ["cslider-speed-info-text"])
                 ], "div", ["cslider-speed-info"])
             );
         }
 
-        if(durationOptions.iconColor)
+        if(speedOptions.iconColor)
         {
-            this.durationInputWrapper_.querySelectorAll("svg").forEach(icon => {
-                icon.style.fill = durationOptions.iconColor;
+            this.speedInputWrapper_.querySelectorAll("svg").forEach(icon => {
+                icon.style.fill = speedOptions.iconColor;
             });
         }
 
-        this.autoplayDuration = durationOptions.defaultDuration;
+        this.autoplaySpeed = speedOptions.defaultSpeed;
 
         const up = arrows.querySelector("svg:first-child");
         const down = arrows.querySelector("svg:last-child");
 
         up.addEventListener("click", () => {
-            this.autoplayDuration = this.autoplayDuration_ + (.5 * (10 ** Math.floor(this.autoplayDuration_ / 10).toString().length));
+            this.autoplaySpeed = this.autoplaySpeed_ + (.1 * (10 ** Math.floor(this.autoplaySpeed_ / 1).toString().length));
         });
 
         down.addEventListener("click", () => {
-            this.autoplayDuration = this.autoplayDuration_ - (.5 * (10 ** Math.floor(this.autoplayDuration_ / 15).toString().length));
+            this.autoplaySpeed = this.autoplaySpeed_ - (.1 * (10 ** Math.floor(this.autoplaySpeed_ / 2).toString().length));
         });
 
-        this.durationInput_.addEventListener("input", () => {
-            if(!/^[\d]*?$/.test(this.durationInput_.textContent))
+        this.speedInput_.addEventListener("input", () => {
+            if(!/^[\d]*?$/.test(this.speedInput_.textContent))
             { 
-                this.durationInput_.textContent = this.autoplayDuration_.toString();
+                this.speedInput_.textContent = this.autoplaySpeed_.toString();
                 return;
             }
-            const val = Number.parseFloat(this.durationInput_.textContent);
+            const val = Number.parseFloat(this.speedInput_.textContent);
 
             if(Number.isNaN(val)) return;
 
-            this.autoplayDuration = val;
+            this.autoplaySpeed = val;
         });
     }
 
@@ -716,7 +715,7 @@ export class Slider{
     private min_ : number;
     private max_ : number;
     private value_ : number;
-    private autoplayDuration_ : number;
+    private autoplaySpeed_ : number;
     private options_ : SliderOptions;
     private autoplaying_? : NodeJS.Timeout;
 
@@ -730,8 +729,8 @@ export class Slider{
     private canvas_? : HTMLCanvasElement;
     private actionBtnsContainer_? : HTMLElement;
     private editableContainer_? : HTMLElement;
-    private durationInputWrapper_? : HTMLElement;
-    private durationInput_? : HTMLElement;
+    private speedInputWrapper_? : HTMLElement;
+    private speedInput_? : HTMLElement;
     private positionEditInput_? : HTMLElement;
     private positionEditInputWrapper_? : HTMLElement;
 

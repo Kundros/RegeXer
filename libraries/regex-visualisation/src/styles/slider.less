@@ -114,6 +114,7 @@
         & .cslider-custom-speed{
             grid-column: 3 / 3;
             justify-self: left;
+            z-index: 4;
         }
 
         & .cslider-edit-position-wrapper{
@@ -130,7 +131,7 @@
             position: relative;
             container-type: size;
 
-            & .cslider-editable-duration, & .cslider-edit-position{
+            & .cslider-editable-speed, & .cslider-edit-position{
                 box-sizing: border-box;
                 background: none;
                 border: none;    
@@ -152,11 +153,11 @@
                 width: 100%;
             }
 
-            & .cslider-editable-duration{
+            & .cslider-editable-speed{
                 width: 80%;
 
                 &::after{
-                    content: "s";
+                    content: "x";
                     pointer-events: none;
                     color: #999999;
                 }
@@ -215,13 +216,14 @@
                 & .cslider-speed-info-text, & .cslider-edit-position-info-text{
                     top: 100cqh;
                     position: absolute;
-                    background: #1d85ad88;
                     color: white;
                     padding: 10px;
                     font-size: 1rem;
                     border-radius: 10px;
                     display: none;
                     font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
+                    backdrop-filter: blur(6px);
+                    background: rgb(0 170 221 / 35%);
                 }
 
                 & .cslider-speed-info-text{

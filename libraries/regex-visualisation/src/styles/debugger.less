@@ -114,7 +114,8 @@
         }
 
         & .regex-debugger-visualisation{
-            & .regex-debugger-regex{
+
+            & .regex-debugger-regex, & .regex-debugger-string{
                 position: relative;
                 min-height: 41px;
                 font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
@@ -138,7 +139,7 @@
                     z-index: 2;
                 }
 
-                & > .regex-debugger-regex-canvas{
+                & > .regex-debugger-regex-canvas, & > .regex-debugger-string-canvas{
                     position: absolute;
                     height: -webkit-fill-available;
                     width: -webkit-fill-available;
@@ -147,6 +148,14 @@
                     top: 0;    
                     margin: 10px;
                     box-sizing: border-box;
+                }
+            }
+
+            & .regex-debugger-string {
+                margin-top: 15px;
+                
+                & > span {
+                    max-height: 400px;
                 }
             }
         }

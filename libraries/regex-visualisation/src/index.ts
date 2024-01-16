@@ -18,6 +18,9 @@ import { RegexDebugger } from "./core/RegexDebugger";
                 positionColor: "#095c32",
                 backtrackingPositionColor: "#9e7f1b",
                 backtrackingDirectionColor: "#bd090d"
+            },
+            matchHighlighting: {
+                positionColor: "#622c96"
             }
         }),
         vscode,
