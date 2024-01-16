@@ -107,7 +107,8 @@ export type MatchState =
 export const MatchAction = 
 {    
      BACKTRACKING: 0x1,
-     FORWARD_START: 0x2
+     FORWARD_START: 0x2,
+     BACKTRACKING_OPTION: 0x4
 } as const;
 
 export type MatchAction = typeof MatchAction[keyof typeof MatchAction];
@@ -121,8 +122,11 @@ export type MatchAction = typeof MatchAction[keyof typeof MatchAction];
  * @property {number} IGNORE_GROUP_ENTERS if set all enterings to group will be ignored and not captured by match history
  * @property {number} IGNORE_GROUP_ENTERS if set all leavings from group will be ignored and not captured by match history
  * @property {number} IGNORE_OPTION_LEAVES if set all leavings from option will be ignored and not captured by match history
+ * @property {number} IGNORE_OPTION_LEAVES if set all enterings to option will be ignored and not captured by match history
  * @property {number} BACKTRACK_TRIM_POSITION if set the position that is backtracked to is trimed to first coordinate
+ * @property {number} OPTION_ENTERS_SHOW_ACTIVE if set then only current selected option will be highlighted
  * @property {number} IGNORE_STR_START_POSITION_CHANGE if set then when starting position is changed then the new position isn't recorded by match history
+ * @property {number} OPTION_SHOW_FIRST_ENTER if set then is added aditional match state of first enter into option
  */
 export const MatchFlags = 
 {
@@ -132,8 +136,11 @@ export const MatchFlags =
      IGNORE_GROUP_ENTERS: 0x4,
      IGNORE_GROUP_LEAVES: 0x8,
      IGNORE_OPTION_LEAVES: 0x10,
-     BACKTRACK_TRIM_POSITION: 0x20,
-     IGNORE_STR_START_POSITION_CHANGE: 0x40
+     IGNORE_OPTION_ENTERS: 0x20,
+     BACKTRACK_TRIM_POSITION: 0x40,
+     OPTION_ENTERS_SHOW_ACTIVE: 0x80,
+     IGNORE_STR_START_POSITION_CHANGE: 0x100,
+     OPTION_SHOW_FIRST_ENTER: 0x200
 } as const;
 
 /**
