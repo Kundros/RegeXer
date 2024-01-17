@@ -1,10 +1,10 @@
 import { workerData, parentPort } from 'worker_threads';
 import { RegexTypes } from '@core/RegexParser';
 import { Stack } from '@regexer/structures/Stack';
-import { ASTGroup, ASTOption, ASTtype, NFAState, NFAStateList, NFAtype, RegexStates } from '../coreTypes/parserTypes';
+import { ASTGroup, ASTOption, NFAState, NFAStateList, NFAtype } from '../coreTypes/parserTypes';
 import { MatchBuilder } from './MatchBuilder';
 import { MatchAction, MatchFlags } from './RegexMatch';
-import { NewData, NewFlags, NewMessage, ReturnErrorMessage, ReturnMessage } from '../coreTypes/MatchWorkerTypes';
+import { MatchResultsTypes, MessageWorkerRecieve, NewData, NewFlags, ReturnErrorMessage, ReturnMessage } from '../coreTypes/MatchWorkerTypes';
 
 let AST: RegexTypes.ASTRoot = workerData.AST;
 let NFA: RegexTypes.NFAtype[] = workerData.NFA;
@@ -138,7 +138,7 @@ class Matcher
                 });
 
                 continue;
-            }
+            }   
         }
 
         this.matchBuilder.matchData.end = this.stringPosStack.top();
@@ -148,7 +148,7 @@ class Matcher
             type: RegexTypes.RegexStates.ROOT,
             regAt: [regexEnd, regexEnd]
         });
-        parentPort.postMessage(<ReturnMessage>{ type: "succeded", pid: this.pid, data: [this.matchBuilder.finalize()] });
+        parentPort.postMessage(<ReturnMessage>{ type: MatchResultsTypes.SUCCESS, pid: this.pid, data: [this.matchBuilder.finalize()] });
     }
 
     private handleOptionTransitioning(nfaState : NFAtype)
@@ -226,7 +226,7 @@ class Matcher
                     regAt: [0, 0],
                     strAt: [matchString.length, matchString.length]
                 });
-                parentPort.postMessage(<ReturnMessage>{ type: "failed", pid: this.pid, data: [this.matchBuilder.finalize()] });
+                parentPort.postMessage(<ReturnMessage>{ type: MatchResultsTypes.NO_MATCH, pid: this.pid, data: [this.matchBuilder.finalize()] });
 
                 return false;
             }
@@ -268,7 +268,7 @@ class Matcher
         return true;
     }
 
-    private pid : number;
+    public pid : number;
     private stringPosStack : Stack<number>;
     private regexPosStack : Stack<number>;
     private statesStack : Stack<matchingState>;
@@ -278,14 +278,14 @@ class Matcher
 
 const matcher = new Matcher();
 
-parentPort.on("message", (message : NewMessage) => {
+parentPort.on("message", (message : MessageWorkerRecieve) => {
     switch(message.type)
     {
         case 'match':
         {
             if(typeof message.data !== "string")
             {
-                parentPort.postMessage(<ReturnErrorMessage>{type: "error", pid: message.pid, data: "Unexpected error during matching."});
+                parentPort.postMessage(<ReturnErrorMessage>{type: MatchResultsTypes.ERROR, pid: message.pid, data: "Unexpected error during matching."});
                 return;
             }
 
@@ -295,7 +295,7 @@ parentPort.on("message", (message : NewMessage) => {
                 matcher.match(matchString, message.pid);
             } 
             catch(e) {
-                parentPort.postMessage(<ReturnErrorMessage>{type: "error", pid: message.pid, data: "Unexpected error during matching."});
+                parentPort.postMessage(<ReturnErrorMessage>{type: MatchResultsTypes.ERROR, pid: message.pid, data: "Unexpected error during matching."});
             }
 
             break;
