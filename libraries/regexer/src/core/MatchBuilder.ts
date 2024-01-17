@@ -16,8 +16,6 @@ export class MatchBuilder
     {
         const top : MatchState | undefined = this.matchData.states[this.matchData.states.length-1];
 
-        this.matchData.statesCount++;
-
         if((this.flags_ & MatchFlags.SHORTEN_BACKTRACKING))
         {
             if(state?.action & MatchAction.BACKTRACKING)
@@ -39,6 +37,7 @@ export class MatchBuilder
         if((this.flags_ & MatchFlags.REMOVE_STATES_WO_EFFECT) && top !== undefined && this.isNoEffectState(state, top))
             return this;
         
+        this.matchData.statesCount++;
         this.matchData.states.push(state);
 
         return this;
