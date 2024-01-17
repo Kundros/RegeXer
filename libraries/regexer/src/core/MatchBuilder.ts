@@ -36,6 +36,9 @@ export class MatchBuilder
 
         if((this.flags_ & MatchFlags.REMOVE_STATES_WO_EFFECT) && top !== undefined && this.isNoEffectState(state, top))
             return this;
+
+        if(state?.strAt === undefined)
+            state.strAt = top.strAt;
         
         this.matchData.statesCount++;
         this.matchData.states.push(state);
