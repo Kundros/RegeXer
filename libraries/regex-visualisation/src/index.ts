@@ -17,7 +17,8 @@ import { RegexDebugger } from "./core/RegexDebugger";
             regexHighlighting: {
                 positionColor: "#095c32",
                 backtrackingPositionColor: "#9e7f1b",
-                backtrackingDirectionColor: "#bd090d"
+                backtrackingDirectionColor: "#bd090d",
+                informativeColor: "#075f91"
             },
             matchHighlighting: {
                 positionColor: "#622c96"
