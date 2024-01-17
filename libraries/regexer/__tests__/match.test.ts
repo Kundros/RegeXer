@@ -58,7 +58,7 @@ test("match setting (SHORTEN_BACKTRACKING + BACKTRACKED_FROM_EXACT)", async () =
 });
 
 test("-", async () => {
-    const regexer = new Regexer("a",
+    const regexer = new Regexer("a|bb|c|d",
         MatchFlags.SHORTEN_BACKTRACKING | 
         MatchFlags.BACKTRACKED_FROM_EXACT |
         MatchFlags.BACKTRACK_TRIM_POSITION |
@@ -68,7 +68,7 @@ test("-", async () => {
         MatchFlags.REMOVE_STATES_WO_EFFECT
     );
 
-    const matches = (await regexer.match("b")).matches;
+    const matches = (await regexer.match("bd")).matches;
 
     while(matches[0].currentState !== null)
     {

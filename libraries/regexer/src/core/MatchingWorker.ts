@@ -179,7 +179,8 @@ class Matcher
 
             this.matchBuilder.addState({
                 type: nfaState.ASTelement.type, 
-                regAt : [optionSelectedArr[0].start, optionSelectedArr[optionSelectedArr.length-1].end]
+                regAt : [optionSelectedArr[0].start, optionSelectedArr[optionSelectedArr.length-1].end],
+                action: MatchAction.SHOWCASE
             });
         }
     }
