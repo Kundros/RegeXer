@@ -93,7 +93,8 @@ export class RegexDebugger {
         this.regexCanvas_.width = boundingRegex.width;
         this.regexCanvas_.height = boundingRegex.height;
 
-        this.highlightPosition(state.regAt);
+        if(state.regAt[0] !== state.fromExact?.[0])
+            this.highlightPosition(state.regAt);
 
         if(step === 1 && state?.strAt === undefined)
             state.strAt = [0, 0];
