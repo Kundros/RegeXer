@@ -41,7 +41,7 @@ export const sliderSettings : SliderOptions =
             },
             wrapper: {
                 background: "#44474d",
-                padding: "5px",
+                padding: "5px 15px",
                 radius: "40px",
                 maxWidth: "220px"
             }
