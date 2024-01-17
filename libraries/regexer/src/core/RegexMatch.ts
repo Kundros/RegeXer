@@ -103,12 +103,16 @@ export type MatchState =
      action?: MatchAction,
      fromExact?: [number, number]
 }
-
+/**
+ * @property {number} BACKTRACKING signalize that the state is backtracking
+ * @property {number} FORWARD_START signalize that the start of the match in string has moved forward
+ * @property {number} SHOWCASE signalize that the state showcases some part of the regex
+ */
 export const MatchAction = 
 {    
      BACKTRACKING: 0x1,
      FORWARD_START: 0x2,
-     BACKTRACKING_OPTION: 0x4
+     SHOWCASE: 0x4
 } as const;
 
 export type MatchAction = typeof MatchAction[keyof typeof MatchAction];
