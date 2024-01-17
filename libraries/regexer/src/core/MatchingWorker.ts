@@ -27,6 +27,13 @@ class Matcher
         this.matchBuilder.matchData.start = 0;
         this.groups = new Stack<ASTGroup>();
 
+        this.matchBuilder.addState({
+            type: RegexTypes.RegexStates.ROOT,
+            regAt: [0, 0],
+            strAt: [0, 0]
+        });
+
+
         while(true) 
         {
             const nfaState = NFA[this.regexPosStack.top()] as NFAtype;
@@ -98,8 +105,6 @@ class Matcher
 
                 let canAddToMatch = false;
 
-                if((~flags & MatchFlags.IGNORE_OPTION_ENTERS) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION))
-                    canAddToMatch = true;
                 if((~flags & MatchFlags.IGNORE_OPTION_LEAVES) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION_END))
                     canAddToMatch = true;
                 else if((~flags & MatchFlags.IGNORE_GROUP_ENTERS) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP))
@@ -107,27 +112,13 @@ class Matcher
                 else if((~flags & MatchFlags.IGNORE_GROUP_LEAVES) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END))
                     canAddToMatch = true;
 
-                let regAt : [number, number] = [nfaState.ASTelement.start, nfaState.ASTelement.end];
-
-                if((flags & MatchFlags.OPTION_ENTERS_SHOW_ACTIVE) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION))
-                {
-                    const span = this.handleSingleOptionSpan(nfaState);
-                    if(span != null)
-                    {
-                        if((flags & MatchFlags.OPTION_SHOW_FIRST_ENTER) && this.statesStack.top()?.transition === 0)
-                            this.matchBuilder.addState({
-                                type: nfaState.ASTelement.type, 
-                                regAt
-                            });
-                        regAt = span;
-                    }
-                }
+                this.handleOptionTransitioning(nfaState);
 
                 if(canAddToMatch)
                 {
                     this.matchBuilder.addState({
                         type: nfaState.ASTelement.type, 
-                        regAt
+                        regAt : [nfaState.ASTelement.start, nfaState.ASTelement.end]
                     });
                 }
 
@@ -152,26 +143,45 @@ class Matcher
 
         this.matchBuilder.matchData.end = this.stringPosStack.top();
 
-        parentPort.postMessage(<ReturnMessage>{ type: "succeded", pid: this.pid, data: [this.matchBuilder.finalize((NFA[0] as NFAState)?.ASTelement?.end ?? 0)] });
+        const regexEnd = (NFA[0] as NFAState)?.ASTelement?.end ?? 0;
+        this.matchBuilder.addState({
+            type: RegexTypes.RegexStates.ROOT,
+            regAt: [regexEnd, regexEnd]
+        });
+        parentPort.postMessage(<ReturnMessage>{ type: "succeded", pid: this.pid, data: [this.matchBuilder.finalize()] });
     }
 
-    private handleSingleOptionSpan(nfaState : NFAtype) : null | [number, number]
+    private handleOptionTransitioning(nfaState : NFAtype)
     {
         const currentOption = nfaState?.ASTelement as ASTOption;
         const topState = this.statesStack.top();
 
+        if(!(nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION))
+            return;
+
         if(topState?.state !== nfaState)
-            return null;
+            return;
 
         if(topState.transition >= currentOption.children.length && topState.transition < 0)
-            return null;
+            return;
 
-        const optionSelectedArr = currentOption.children[topState.transition];
+        if((flags & MatchFlags.OPTION_SHOW_FIRST_ENTER) && this.statesStack.top()?.transition === 0)
+            this.matchBuilder.addState({
+                type: nfaState.ASTelement.type, 
+                regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end]
+            });
 
-        if(optionSelectedArr.length <= 0)
-            return null;
+        if((flags & MatchFlags.OPTION_ENTERS_SHOW_ACTIVE))
+        {
+            const optionSelectedArr = currentOption.children[topState.transition];
 
-        return [optionSelectedArr[0].start, optionSelectedArr[optionSelectedArr.length-1].end];
+            if(optionSelectedArr.length <= 0) return;
+
+            this.matchBuilder.addState({
+                type: nfaState.ASTelement.type, 
+                regAt : [optionSelectedArr[0].start, optionSelectedArr[optionSelectedArr.length-1].end]
+            });
+        }
     }
 
     private handleList(matchString : string)
@@ -209,6 +219,12 @@ class Matcher
             {
                 delete this.matchBuilder.matchData.start;
                 delete this.matchBuilder.matchData.end;
+
+                this.matchBuilder.addState({
+                    type: RegexTypes.RegexStates.ROOT,
+                    regAt: [0, 0],
+                    strAt: [matchString.length, matchString.length]
+                });
                 parentPort.postMessage(<ReturnMessage>{ type: "failed", pid: this.pid, data: [this.matchBuilder.finalize()] });
 
                 return false;
@@ -219,7 +235,7 @@ class Matcher
 
             this.matchBuilder.matchData.start = this.stringPosStack.top();
 
-            if(flags & MatchFlags.IGNORE_STR_START_POSITION_CHANGE || nfaState?.ASTelement?.type === undefined || nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION)
+            if(flags & MatchFlags.IGNORE_STR_START_POSITION_CHANGE || nfaState?.ASTelement?.type === undefined)
                 return true;
 
             this.matchBuilder.addState({
@@ -234,7 +250,7 @@ class Matcher
 
         this.stringPosStack.pop();
 
-        if(nfaState?.ASTelement?.type === undefined || nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION)
+        if(nfaState?.ASTelement?.type === undefined)
             return true;
 
         this.matchBuilder.addState({
@@ -243,6 +259,10 @@ class Matcher
             strAt: [this.matchBuilder.matchData.start ?? 0 ,this.stringPosStack.top()],
             action: MatchAction.BACKTRACKING
         });
+
+        const optionElement = this.statesStack.top()?.state?.ASTelement;
+        if(optionElement?.type === RegexTypes.RegexStates.OPTION)
+            this.matchBuilder.updateOption(optionElement.start, optionElement.end);
 
         return true;
     }

@@ -42,7 +42,9 @@ export function activate(context: vscode.ExtensionContext) {
 			MatchFlags.BACKTRACKED_FROM_EXACT |
 			MatchFlags.BACKTRACK_TRIM_POSITION |
 			MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
-			MatchFlags.OPTION_SHOW_FIRST_ENTER
+			MatchFlags.OPTION_SHOW_FIRST_ENTER |
+			MatchFlags.REMOVE_STATES_WO_EFFECT |
+			MatchFlags.OPTION_NO_ERROR_RETURN
 		);
 
 		// Handle messages from the webview

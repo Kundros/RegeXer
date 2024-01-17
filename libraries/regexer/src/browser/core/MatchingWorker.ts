@@ -104,7 +104,7 @@ class Matcher
 
         this.matchBuilder.matchData.end = this.stringPosStack.top();
 
-        postMessage({ type: "succeded", pid: this.pid, data: this.matchBuilder.finalize(AST[0].end) });
+        postMessage({ type: "succeded", pid: this.pid, data: this.matchBuilder.finalize() });
     }
 
     private handleList(matchString : string)
