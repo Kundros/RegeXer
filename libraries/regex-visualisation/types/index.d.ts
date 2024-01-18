@@ -1,4 +1,4 @@
-import { MatchBatchData, MatchData, RegexMatch } from "@kundros/regexer";
+import { MatchBatchData, MatchData, MatchingCompleteResponse, RegexMatch } from "@kundros/regexer";
 import { RegexTypes } from "@kundros/regexer/types/core/RegexParser";
 
 declare module '*.html' {
@@ -20,6 +20,11 @@ export type Message = {
 export type MessageBatchData = Message & {
     data: MatchBatchData
 }
+
+export type MessageMatchComplete = Message & {
+    data: MatchingCompleteResponse
+}
+
 
 export type MessageRegexData = Message & {
     data: RegexData

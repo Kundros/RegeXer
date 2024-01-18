@@ -95,7 +95,6 @@ export class RegexDebugger {
     private visualizeStep(step: number)
     {
         if(this.matches_ === undefined || this.matches_.length === 0) return;
-        console.log(this.matches_[0]);
         const state = this.matches_[0].moveTo(step-1);
 
         if(state === null) return;
@@ -113,7 +112,6 @@ export class RegexDebugger {
         if(step === 1 && state?.strAt === undefined)
             state.strAt = [0, 0];
 
-        console.log(state);
         // position has changed
         if(state?.strAt !== undefined)
         {

@@ -1,7 +1,7 @@
 import { WebviewApi } from "vscode-webview";
-import { Message, MessageBatchData, MessageErrorRegex, MessageMatchData, MessageRegexData, RegexData } from "types";
+import { Message, MessageBatchData, MessageErrorRegex, MessageMatchComplete, MessageMatchData, MessageRegexData, RegexData } from "types";
 import { RegexEditor } from "./RegexEditor";
-import { RegexMatch } from "@kundros/regexer";
+import { MatchingCompleteResponse, RegexMatch } from "@kundros/regexer";
 import { StringMatchEditor } from "./StringMatchEditor";
 import { RegexDebugger } from "./RegexDebugger";
 
@@ -39,6 +39,7 @@ export class RegexVisualizer {
         this.regexEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.regexTextCallback(event, textElement));
         this.stringMatchEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.matchTextCallback(event, textElement));
         window.addEventListener('message', (event : MessageEvent) => this.messageRecieve(event));
+
         document.addEventListener("regexDebbugerVisible", () => {
             this.debuggerWindow_.setRegexText(this.regexEditor_.textInput);
             this.debuggerWindow_.setMatchStringText(this.stringMatchEditor_.textInput);
@@ -80,8 +81,8 @@ export class RegexVisualizer {
         this.stringMatchEditor_.setLoading();
         if(this.options_.matchWait > 0)
         {
-            this.stringMatchEditor_.setLoading();
             this.matchWait_ = setTimeout(() => {
+
                 this.matches_ = [new RegexMatch()];
                 this.debuggerWindow_.matches = this.matches_;
                 this.steps_ = 0;
@@ -149,7 +150,6 @@ export class RegexVisualizer {
                 this.debuggerWindow_.steps = this.steps_;
 
                 this.stringMatchEditor_.updateMatchStatesMessage(RegexData.data.statesCount, this.matches_.length - (RegexData.data.success ? 1 : 0));
-                this.stringMatchEditor_.updateSignSuccess(RegexData.data.success);
 
                 break;
             }
@@ -164,6 +164,18 @@ export class RegexVisualizer {
                 this.debuggerWindow_.steps = lastMatch.statesCount;
                 this.stringMatchEditor_.updateMatchStatesMessage(lastMatch.statesCount, 0);
 
+                break;
+            }
+
+            case 'regex_matching_complete':
+            {
+                const completeFlag = message as MessageMatchComplete;
+                console.log(completeFlag);
+
+                if(completeFlag.data !== MatchingCompleteResponse.SUCCESS)
+                    break;
+
+                this.stringMatchEditor_.updateSignSuccess(this.matches_.length > 0 ? this.matches_[0].success : false);
                 break;
             }
         }
