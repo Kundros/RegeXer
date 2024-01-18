@@ -1,16 +1,15 @@
 import { test, expect } from '@jest/globals';
 
 import { Regexer } from '../src/core/Regexer';
-import { MatchResultsTypes } from '../src/coreTypes/MatchWorkerTypes';
 
 global.__filename = "dist/cjs/core/Regexer";
 
 test("empty", async () => {
     const regexer = new Regexer();
 
-    expect((await regexer.match("")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("aaa")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("487512rewfff)fef")).type).toBe(MatchResultsTypes.SUCCESS);
+    expect((await regexer.match(""))[0].success).toBe(true);
+    expect((await regexer.match("aaa"))[0].success).toBe(true);
+    expect((await regexer.match("487512rewfff)fef"))[0].success).toBe(true);
 
     regexer.clear();
 });
@@ -18,11 +17,11 @@ test("empty", async () => {
 test("one character", async () => {
     const regexer = new Regexer("a");
 
-    expect((await regexer.match("")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("aaa")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("djrkdajmkt")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("djrkd1jmkt")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("d")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match(""))[0].success).toBe(false);
+    expect((await regexer.match("aaa"))[0].success).toBe(true);
+    expect((await regexer.match("djrkdajmkt"))[0].success).toBe(true);
+    expect((await regexer.match("djrkd1jmkt"))[0].success).toBe(false);
+    expect((await regexer.match("d"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -30,12 +29,12 @@ test("one character", async () => {
 test("string character", async () => {
     const regexer = new Regexer("test");
 
-    expect((await regexer.match("")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("aaab")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("test")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("aaatest")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("aatesaaa")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("aatastaaa")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match(""))[0].success).toBe(false);
+    expect((await regexer.match("aaab"))[0].success).toBe(false);
+    expect((await regexer.match("test"))[0].success).toBe(true);
+    expect((await regexer.match("aaatest"))[0].success).toBe(true);
+    expect((await regexer.match("aatesaaa"))[0].success).toBe(false);
+    expect((await regexer.match("aatastaaa"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -43,10 +42,10 @@ test("string character", async () => {
 test("iteration character zero or more", async () => {
     const regexer = new Regexer("a*");
 
-    expect((await regexer.match("")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("aaab")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("bb")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("aaaaaatest")).type).toBe(MatchResultsTypes.SUCCESS);
+    expect((await regexer.match(""))[0].success).toBe(true);
+    expect((await regexer.match("aaab"))[0].success).toBe(true);
+    expect((await regexer.match("bb"))[0].success).toBe(true);
+    expect((await regexer.match("aaaaaatest"))[0].success).toBe(true);
 
     regexer.clear();
 });
@@ -54,10 +53,10 @@ test("iteration character zero or more", async () => {
 test("iteration character one or more", async () => {
     const regexer = new Regexer("a+");
 
-    expect((await regexer.match("")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("aaab")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("bb")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("aaaaaatest")).type).toBe(MatchResultsTypes.SUCCESS);
+    expect((await regexer.match(""))[0].success).toBe(false);
+    expect((await regexer.match("aaab"))[0].success).toBe(true);
+    expect((await regexer.match("bb"))[0].success).toBe(false);
+    expect((await regexer.match("aaaaaatest"))[0].success).toBe(true);
 
     regexer.clear();
 });
@@ -65,12 +64,12 @@ test("iteration character one or more", async () => {
 test("iteration surounded zero or more", async () => {
     const regexer = new Regexer("ba*r");
 
-    expect((await regexer.match("br")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("baaar")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("babar")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("tbaataaaartest")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("a")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("tar")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("br"))[0].success).toBe(true);
+    expect((await regexer.match("baaar"))[0].success).toBe(true);
+    expect((await regexer.match("babar"))[0].success).toBe(true);
+    expect((await regexer.match("tbaataaaartest"))[0].success).toBe(false);
+    expect((await regexer.match("a"))[0].success).toBe(false);
+    expect((await regexer.match("tar"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -78,9 +77,9 @@ test("iteration surounded zero or more", async () => {
 test("iteration surounded one or more", async () => {
     const regexer = new Regexer("ba+r");
 
-    expect((await regexer.match("br")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("baaar")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("babar")).type).toBe(MatchResultsTypes.SUCCESS);
+    expect((await regexer.match("br"))[0].success).toBe(false);
+    expect((await regexer.match("baaar"))[0].success).toBe(true);
+    expect((await regexer.match("babar"))[0].success).toBe(true);
 
     regexer.clear();
 });
@@ -88,11 +87,11 @@ test("iteration surounded one or more", async () => {
 test("iteration group surounded 1", async () => {
     const regexer = new Regexer("b(ab)+r");
 
-    expect((await regexer.match("ab")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("babr")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("babar")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("bababr")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("br")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("ab"))[0].success).toBe(false);
+    expect((await regexer.match("babr"))[0].success).toBe(true);
+    expect((await regexer.match("babar"))[0].success).toBe(false);
+    expect((await regexer.match("bababr"))[0].success).toBe(true);
+    expect((await regexer.match("br"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -100,10 +99,10 @@ test("iteration group surounded 1", async () => {
 test("iteration group surounded 2", async () => {
     const regexer = new Regexer("b(ab)*r");
 
-    expect((await regexer.match("ab")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("bar")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("bababr")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("br")).type).toBe(MatchResultsTypes.SUCCESS);
+    expect((await regexer.match("ab"))[0].success).toBe(false);
+    expect((await regexer.match("bar"))[0].success).toBe(false);
+    expect((await regexer.match("bababr"))[0].success).toBe(true);
+    expect((await regexer.match("br"))[0].success).toBe(true);
 
     regexer.clear();
 });
@@ -111,10 +110,10 @@ test("iteration group surounded 2", async () => {
 test("option", async () => {
     const regexer = new Regexer("a|b");
 
-    expect((await regexer.match("a")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("b")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("c")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("cdrabr")).type).toBe(MatchResultsTypes.SUCCESS);
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match("b"))[0].success).toBe(true);
+    expect((await regexer.match("c"))[0].success).toBe(false);
+    expect((await regexer.match("cdrabr"))[0].success).toBe(true);
 
     regexer.clear();
 });
@@ -122,23 +121,11 @@ test("option", async () => {
 test("option 2", async () => {
     const regexer = new Regexer("a|(rb+r)");
 
-    expect((await regexer.match("a")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("b")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("rbr")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("rr")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("ggrrab")).type).toBe(MatchResultsTypes.SUCCESS);
-
-    regexer.clear();
-});
-
-test("option 2", async () => {
-    const regexer = new Regexer("a|(rb+r)");
-
-    expect((await regexer.match("a")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("b")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("rbr")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("rr")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("ggrrab")).type).toBe(MatchResultsTypes.SUCCESS);
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match("b"))[0].success).toBe(false);
+    expect((await regexer.match("rbr"))[0].success).toBe(true);
+    expect((await regexer.match("rr"))[0].success).toBe(false);
+    expect((await regexer.match("ggrrab"))[0].success).toBe(true);
 
     regexer.clear();
 });
@@ -146,15 +133,15 @@ test("option 2", async () => {
 test("complex match (option, iteration, group)", async () => {
     const regexer = new Regexer("t(a|(rb+r)|dd)+t");
 
-    expect((await regexer.match("a")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("tt")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("tat")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("tddt")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("tarbraddt")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("abrtrbrarbraddta")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("trbbbbrt")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("trbabbbrt")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("tddaddrb")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("a"))[0].success).toBe(false);
+    expect((await regexer.match("tt"))[0].success).toBe(false);
+    expect((await regexer.match("tat"))[0].success).toBe(true);
+    expect((await regexer.match("tddt"))[0].success).toBe(true);
+    expect((await regexer.match("tarbraddt"))[0].success).toBe(true);
+    expect((await regexer.match("abrtrbrarbraddta"))[0].success).toBe(true);
+    expect((await regexer.match("trbbbbrt"))[0].success).toBe(true);
+    expect((await regexer.match("trbabbbrt"))[0].success).toBe(false);
+    expect((await regexer.match("tddaddrb"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -162,11 +149,11 @@ test("complex match (option, iteration, group)", async () => {
 test("SOS (start of string)", async () => {
     const regexer = new Regexer("^a");
 
-    expect((await regexer.match("a")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("ta")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("taaat")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("tttta")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("attttbttt")).type).toBe(MatchResultsTypes.SUCCESS);
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match("ta"))[0].success).toBe(false);
+    expect((await regexer.match("taaat"))[0].success).toBe(false);
+    expect((await regexer.match("tttta"))[0].success).toBe(false);
+    expect((await regexer.match("attttbttt"))[0].success).toBe(true);
 
     regexer.clear();
 });
@@ -174,11 +161,11 @@ test("SOS (start of string)", async () => {
 test("EOS (end of string)", async () => {
     const regexer = new Regexer("a$");
 
-    expect((await regexer.match("a")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("ta")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("taaat")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("tttta")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("attttbttt")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match("ta"))[0].success).toBe(true);
+    expect((await regexer.match("taaat"))[0].success).toBe(false);
+    expect((await regexer.match("tttta"))[0].success).toBe(true);
+    expect((await regexer.match("attttbttt"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -186,15 +173,15 @@ test("EOS (end of string)", async () => {
 test("SOS + EOS (with option)", async () => {
     const regexer = new Regexer("^(a)+|b+$");
 
-    expect((await regexer.match("a")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("ta")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("taaat")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("tttta")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("attttbtttb")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("ab")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("ttttb")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("gabg")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("ba")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match("ta"))[0].success).toBe(false);
+    expect((await regexer.match("taaat"))[0].success).toBe(false);
+    expect((await regexer.match("tttta"))[0].success).toBe(false);
+    expect((await regexer.match("attttbtttb"))[0].success).toBe(true);
+    expect((await regexer.match("ab"))[0].success).toBe(true);
+    expect((await regexer.match("ttttb"))[0].success).toBe(true);
+    expect((await regexer.match("gabg"))[0].success).toBe(false);
+    expect((await regexer.match("ba"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -202,17 +189,17 @@ test("SOS + EOS (with option)", async () => {
 test("\\w\\W (equivalent: [_0-9a-zA-Z][^_0-9a-zA-Z])", async () => {
     const regexer = new Regexer("\\w\\W");
 
-    expect((await regexer.match("a-")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("_.")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("2§")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("B>")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("aa")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("a0")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("a_")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("aH")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match(".(")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("+0")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match(" 0")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("a-"))[0].success).toBe(true);
+    expect((await regexer.match("_."))[0].success).toBe(true);
+    expect((await regexer.match("2§"))[0].success).toBe(true);
+    expect((await regexer.match("B>"))[0].success).toBe(true);
+    expect((await regexer.match("aa"))[0].success).toBe(false);
+    expect((await regexer.match("a0"))[0].success).toBe(false);
+    expect((await regexer.match("a_"))[0].success).toBe(false);
+    expect((await regexer.match("aH"))[0].success).toBe(false);
+    expect((await regexer.match(".("))[0].success).toBe(false);
+    expect((await regexer.match("+0"))[0].success).toBe(false);
+    expect((await regexer.match(" 0"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -220,15 +207,15 @@ test("\\w\\W (equivalent: [_0-9a-zA-Z][^_0-9a-zA-Z])", async () => {
 test("\\d\\D (equivalent: [0-9][^0-9])", async () => {
     const regexer = new Regexer("\\d\\D");
 
-    expect((await regexer.match("a-")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("09")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("00")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("0a")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("4*")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("1(")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("0\x00")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("7!")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("ga")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("a-"))[0].success).toBe(false);
+    expect((await regexer.match("09"))[0].success).toBe(false);
+    expect((await regexer.match("00"))[0].success).toBe(false);
+    expect((await regexer.match("0a"))[0].success).toBe(true);
+    expect((await regexer.match("4*"))[0].success).toBe(true);
+    expect((await regexer.match("1("))[0].success).toBe(true);
+    expect((await regexer.match("0\x00"))[0].success).toBe(true);
+    expect((await regexer.match("7!"))[0].success).toBe(true);
+    expect((await regexer.match("ga"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -236,16 +223,16 @@ test("\\d\\D (equivalent: [0-9][^0-9])", async () => {
 test("\\s\\S (equivalent: [\\t\\n\\v\\f\\r \\xA0][^\\t\\n\\v\\f\\r \\xA0])", async () => {
     const regexer = new Regexer("\\s\\S");
 
-    expect((await regexer.match("  ")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match(" \n")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("\n\t")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("\na")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("\t0")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match(" g")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("\f'")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("\xA0_")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("\v\v")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("\v\xFF")).type).toBe(MatchResultsTypes.SUCCESS);
+    expect((await regexer.match("  "))[0].success).toBe(false);
+    expect((await regexer.match(" \n"))[0].success).toBe(false);
+    expect((await regexer.match("\n\t"))[0].success).toBe(false);
+    expect((await regexer.match("\na"))[0].success).toBe(true);
+    expect((await regexer.match("\t0"))[0].success).toBe(true);
+    expect((await regexer.match(" g"))[0].success).toBe(true);
+    expect((await regexer.match("\f'"))[0].success).toBe(true);
+    expect((await regexer.match("\xA0_"))[0].success).toBe(true);
+    expect((await regexer.match("\v\v"))[0].success).toBe(false);
+    expect((await regexer.match("\v\xFF"))[0].success).toBe(true);
 
     regexer.clear();
 });
@@ -253,7 +240,7 @@ test("\\s\\S (equivalent: [\\t\\n\\v\\f\\r \\xA0][^\\t\\n\\v\\f\\r \\xA0])", asy
 test("escaped ascii \\[0tnvrf]", async () => {
     const regexer = new Regexer("\0\t\n\v\r\f");
 
-    expect((await regexer.match("\0\t\n\v\r\f")).type).toBe(MatchResultsTypes.SUCCESS);
+    expect((await regexer.match("\0\t\n\v\r\f"))[0].success).toBe(true);
 
     regexer.clear();
 });
@@ -261,11 +248,11 @@ test("escaped ascii \\[0tnvrf]", async () => {
 test("list", async () => {
     const regexer = new Regexer("[abc]");
 
-    expect((await regexer.match("a")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("dddb")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("ddcd")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("abc")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("ggdq")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match("dddb"))[0].success).toBe(true);
+    expect((await regexer.match("ddcd"))[0].success).toBe(true);
+    expect((await regexer.match("abc"))[0].success).toBe(true);
+    expect((await regexer.match("ggdq"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -273,10 +260,10 @@ test("list", async () => {
 test("list hex", async () => {
     const regexer = new Regexer("[\x00\x01]");
 
-    expect((await regexer.match("\x00")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("\x01")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("aaa\x01bb")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("\x02")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("\x00"))[0].success).toBe(true);
+    expect((await regexer.match("\x01"))[0].success).toBe(true);
+    expect((await regexer.match("aaa\x01bb"))[0].success).toBe(true);
+    expect((await regexer.match("\x02"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -284,11 +271,11 @@ test("list hex", async () => {
 test("list range", async () => {
     const regexer = new Regexer("[\x00-z]");
 
-    expect((await regexer.match("\x05")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("\x04")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("g")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("~")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("\xAA")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("\x05"))[0].success).toBe(true);
+    expect((await regexer.match("\x04"))[0].success).toBe(true);
+    expect((await regexer.match("g"))[0].success).toBe(true);
+    expect((await regexer.match("~"))[0].success).toBe(false);
+    expect((await regexer.match("\xAA"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -296,11 +283,11 @@ test("list range", async () => {
 test("list negated", async () => {
     const regexer = new Regexer("[^a-zA-Z]");
 
-    expect((await regexer.match("056")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("-")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("(")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("g")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("Z")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("056"))[0].success).toBe(true);
+    expect((await regexer.match("-"))[0].success).toBe(true);
+    expect((await regexer.match("("))[0].success).toBe(true);
+    expect((await regexer.match("g"))[0].success).toBe(false);
+    expect((await regexer.match("Z"))[0].success).toBe(false);
 
     regexer.clear();
 });
@@ -308,11 +295,11 @@ test("list negated", async () => {
 test("list iteration", async () => {
     const regexer = new Regexer("_[a-zA-Z]*_");
 
-    expect((await regexer.match("_abcde_")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("_ABCdeZghl_")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("012__")).type).toBe(MatchResultsTypes.SUCCESS);
-    expect((await regexer.match("_ghtw0eg_")).type).toBe(MatchResultsTypes.NO_MATCH);
-    expect((await regexer.match("_*_")).type).toBe(MatchResultsTypes.NO_MATCH);
+    expect((await regexer.match("_abcde_"))[0].success).toBe(true);
+    expect((await regexer.match("_ABCdeZghl_"))[0].success).toBe(true);
+    expect((await regexer.match("012__"))[0].success).toBe(true);
+    expect((await regexer.match("_ghtw0eg_"))[0].success).toBe(false);
+    expect((await regexer.match("_*_"))[0].success).toBe(false);
 
     regexer.clear();
 });

@@ -1,5 +1,5 @@
-import { MatchBatch, MatchResultsTypes } from "@regexer/coreTypes/MatchWorkerTypes";
-import { MatchAction, MatchData, MatchFlags, MatchState } from "./RegexMatch";
+import { MatchWorkerResultTypes } from "@regexer/coreTypes/MatchWorkerTypes";
+import { MatchAction, MatchBatchData, MatchData, MatchFlags, MatchState } from "@regexer/coreTypes/MatchTypes";
 
 export class MatchBuilder
 {
@@ -8,7 +8,8 @@ export class MatchBuilder
         this.flags_ = flags;
         this.matchData = {
             states: [],
-            statesCount: 0
+            statesCount: 0,
+            success: false
         }
 
         this.batchSize_ = batchSize;
@@ -52,23 +53,23 @@ export class MatchBuilder
         return this;
     }
 
+    public set success(value : boolean)
+    {
+        this.matchData.success = value;
+    }
+
     public isBatchReady() : boolean
     {
         return this.batchSize_ > 0 && this.batchPosition_[1] - this.batchPosition_[0] >= this.batchSize_;
     }
 
-    public getFinalBatch(type: MatchResultsTypes) : MatchBatch
+    public getFinalBatch() : MatchBatchData
     {
         this.batchPosition_[1] = this.matchData.statesCount;
-
-        let batch = this.getBatch();
-        batch.type = type;
-        batch.matchData = this.matchData;
-        
-        return batch;
+        return this.getBatch();
     }
 
-    public getBatch() : MatchBatch
+    public getBatch() : MatchBatchData
     {
         const tmp = this.batchPosition_[0];
         this.batchPosition_[0] = this.batchPosition_[1];

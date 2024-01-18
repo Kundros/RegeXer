@@ -1,4 +1,4 @@
-import { MatchData, MatchFlags, MatchState, RegexMatch } from "@core/RegexMatch";
+import { RegexMatch } from "@core/RegexMatch";
 import { parse, PeggySyntaxError, RegexTypes } from "@core/RegexParser"
 import { RegParseException } from "@regexer/exceptions/RegParseException";
 import { RegMatchException } from "@regexer/exceptions/RegMatchException";
@@ -7,7 +7,8 @@ import { RegexParserErrors } from "../coreTypes/parserTypes";
 import { Worker } from 'worker_threads';
 import { URL } from 'url';
 import * as path from "path";
-import { MatchBatch, MatchComplete, MatchResultsTypes, MessageWorkerRecieve, NewData, NewFlags, NewMessage, ReturnBatch, ReturnMessage } from "../coreTypes/MatchWorkerTypes";
+import { MatchWorkerResultTypes, MessageWorkerRecieve, NewData, NewFlags, NewMessage, ReturnBatch, ReturnMessage } from "../coreTypes/MatchWorkerTypes";
+import { BatchMatchOptions, MatchData, MatchFlags, MatchingCompleteResponse } from "@regexer/coreTypes/MatchTypes";
 
 /**
  * @classdesc 
@@ -61,26 +62,24 @@ export class Regexer{
     }
 
     /** 
-     * !WARNING! batching can exist only once per Regexer object, all existing instances of ongoing matching will be terminated
      * @description 
      * match is sended in batches so the states that are already preceded can be avalaible sooner than match is finished \
-     * you can recieve the batches from queue when avalaible \
-     * you can request each batch from getBatch() after is avalaible
+     * each batch will be sent to provided batchCallback \
+     * each completed match will be sent to matchCallback (without states those were sent in batches) \
+     * finished by calling completeCallback
      */
-    public matchInBatches(matchString : string, batchSize : number = -1)
+    public async matchInBatches(matchString : string, options: BatchMatchOptions)
     {
-        // abort all
-        this.terminateAllOngoing();
+        if(options?.forceStopRunning ?? false) // abort all
+            this.terminateAllOngoing();
 
         const pid = this.nextPid_++;
-        this.batches_ = []; // clear batches if exists 
-        this.batchingCompleted_ = false;
 
         this.runningMatchings_.set(pid, {});
         const currentProcess = this.runningMatchings_.get(pid);
 
-        new Promise((resolve, reject) => {
-            this.worker_.postMessage(<MessageWorkerRecieve>{ type: "match", pid, data: matchString, batchSize: batchSize });
+        await new Promise<void>((resolve, reject) => {
+            this.worker_.postMessage(<MessageWorkerRecieve>{ type: "match", pid, data: matchString, batchSize: options?.batchSize ?? -1 });
 
             currentProcess.external_reject = (reason?: any) => {
                 const returned = reason as ReturnMessage;
@@ -94,49 +93,41 @@ export class Regexer{
 
                 if(returned.pid !== pid)
                     return;
-                if(returned.type & MatchResultsTypes.BATCH)
+
+                if(returned.type & MatchWorkerResultTypes.BATCH)
                 {
                     const batchMessage = returned as ReturnBatch;
-                    if(returned?.type !== undefined)
-                        this.batchingCompleted_ = true;
-                    this.batches_.push(batchMessage.data);
+                    options.batchCallback(batchMessage.data);
+                }
+                else if(returned.type & MatchWorkerResultTypes.ABORTED)
+                {
+                    options.completeCallback(MatchingCompleteResponse.ABORTED);
+                    resolve();
+                }
+                else
+                {
+                    const matchMessage = returned as ReturnMessage;
+                    options.matchCallback(matchMessage.data);
+                    options.completeCallback(MatchingCompleteResponse.SUCCESS);
+                    resolve();
                 }
             }
 
             this.worker_.on('error', currentProcess.external_reject);
             this.worker_.on('message', currentProcess.external_resolve);
         });
-    }
 
-    /**
-     * @description
-     *  queue of all batches that have been processed already
-     * @returns {Promise<MatchBatch | null>} returns batch if there is expected to be one, or null if batch can't be found.
-     */
-    public async getBatch() : Promise<MatchBatch | null>
-    {
-        return await new Promise(resolve => {
-            const checkIfHasValue = setInterval(
-                () => {
-                    if(this.batches_.length > 0)
-                    {
-                        clearInterval(checkIfHasValue);
-                        resolve(this.batches_.shift());
-                    }
-                    else if(this.batchingCompleted_)
-                    {
-                        resolve(null);
-                    }
-                }, 10
-            )
-        });
+        // clear listeners from this match session
+        this.worker_.removeListener('error', currentProcess.external_reject);
+        this.worker_.removeListener('message', currentProcess.external_resolve);
+        this.runningMatchings_.delete(pid);
     }
 
     public terminateAllOngoing()
     {
         for (let [pid, value] of this.runningMatchings_) {
             if(value.external_resolve !== undefined)
-                value.external_resolve(<ReturnMessage>{type: MatchResultsTypes.ABORTED, pid, data: []})
+                value.external_resolve(<ReturnMessage>{type: MatchWorkerResultTypes.ABORTED, pid, data: []})
 
             this.worker_.removeListener('error', value.external_reject);
             this.worker_.removeListener('message', value.external_resolve);
@@ -151,7 +142,7 @@ export class Regexer{
      * @returns {Promise<MatchComplete>}
      * @throws {RegMatchException} If some unexpacted error occured
      */
-    public async match(matchString : string, forceStopRunning : boolean = false) : Promise<MatchComplete>
+    public async match(matchString : string, forceStopRunning : boolean = false) : Promise<RegexMatch[]>
     {
         if(this.worker_ === undefined)
             this.renewWorker();
@@ -196,15 +187,13 @@ export class Regexer{
 
         const returned = result as NewMessage;
 
-        if(returned.type & MatchResultsTypes.ERROR)
+        if(returned.type & MatchWorkerResultTypes.ERROR)
             throw new RegMatchException(returned.data as string);
 
         // currently only one match
         let data = returned.data as MatchData;
-        const matches : RegexMatch[] = [];
-        matches.push(new RegexMatch(data));
 
-        return <MatchComplete>{type: returned.type, matches};
+        return [new RegexMatch(data)];
     }
 
     /** 
@@ -265,10 +254,6 @@ export class Regexer{
     private AST_?: RegexTypes.ASTRoot;
     private NFA_?: RegexTypes.NFAtype[];
     private matchFlags_ ?: number | MatchFlags;
-
-    private batches_ : MatchBatch[] = [];
-    private batchesDone_ : MatchData[];
-    private batchingCompleted_ : boolean = true;
 
     private runningMatchings_ = new Map<number, {
         external_reject? : (any) => void,

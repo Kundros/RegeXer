@@ -3,8 +3,8 @@ import { RegexTypes } from '@core/RegexParser';
 import { Stack } from '@regexer/structures/Stack';
 import { ASTGroup, ASTOption, NFAState, NFAStateList, NFAtype } from '../coreTypes/parserTypes';
 import { MatchBuilder } from './MatchBuilder';
-import { MatchAction, MatchFlags } from './RegexMatch';
-import { MatchResultsTypes, MessageWorkerRecieve, NewData, NewFlags, ReturnBatch, ReturnErrorMessage, ReturnMessage } from '../coreTypes/MatchWorkerTypes';
+import { MatchWorkerResultTypes, MessageWorkerRecieve, NewData, NewFlags, ReturnBatch, ReturnErrorMessage, ReturnMessage } from '../coreTypes/MatchWorkerTypes';
+import { MatchAction, MatchFlags } from '@regexer/coreTypes/MatchTypes';
 
 let AST: RegexTypes.ASTRoot = workerData.AST;
 let NFA: RegexTypes.NFAtype[] = workerData.NFA;
@@ -44,7 +44,7 @@ class Matcher
                 break;
             
             if(this.matchBuilder.isBatchReady())
-                parentPort.postMessage(<ReturnBatch>{ type: MatchResultsTypes.BATCH, pid: this.pid, data: this.matchBuilder.getBatch() });
+                parentPort.postMessage(<ReturnBatch>{ type: MatchWorkerResultTypes.BATCH, pid: this.pid, data: this.matchBuilder.getBatch() });
 
             /* 
                 If the state isn't at the top of the stack we need to add it as new state
@@ -153,9 +153,9 @@ class Matcher
         });
 
         if(this.batchSize_ > 0)
-            parentPort.postMessage(<ReturnBatch>{ type: MatchResultsTypes.BATCH, pid: this.pid, data: this.matchBuilder.getFinalBatch(MatchResultsTypes.SUCCESS) });
-        else
-            parentPort.postMessage(<ReturnMessage>{ type: MatchResultsTypes.SUCCESS, pid: this.pid, data: this.matchBuilder.finalize() });
+            parentPort.postMessage(<ReturnBatch>{ type: MatchWorkerResultTypes.BATCH, pid: this.pid, data: this.matchBuilder.getFinalBatch() });
+        this.matchBuilder.success = true;
+        parentPort.postMessage(<ReturnMessage>{ type: MatchWorkerResultTypes.SUCCESS, pid: this.pid, data: this.matchBuilder.finalize() });
     }
 
     private handleOptionTransitioning(nfaState : NFAtype)
@@ -235,9 +235,8 @@ class Matcher
                 });
 
                 if(this.batchSize_ > 0)
-                    parentPort.postMessage(<ReturnBatch>{ type: MatchResultsTypes.BATCH, pid: this.pid, data: this.matchBuilder.getFinalBatch(MatchResultsTypes.NO_MATCH) });
-                else
-                    parentPort.postMessage(<ReturnMessage>{ type: MatchResultsTypes.NO_MATCH, pid: this.pid, data: this.matchBuilder.finalize() });
+                    parentPort.postMessage(<ReturnBatch>{ type: MatchWorkerResultTypes.BATCH, pid: this.pid, data: this.matchBuilder.getFinalBatch() });
+                parentPort.postMessage(<ReturnMessage>{ type: MatchWorkerResultTypes.NO_MATCH, pid: this.pid, data: this.matchBuilder.finalize() });
 
                 return false;
             }
@@ -297,7 +296,7 @@ parentPort.on("message", (message : MessageWorkerRecieve) => {
         {
             if(typeof message.data !== "string")
             {
-                parentPort.postMessage(<ReturnErrorMessage>{type: MatchResultsTypes.ERROR, pid: message.pid, data: "Unexpected error during matching."});
+                parentPort.postMessage(<ReturnErrorMessage>{type: MatchWorkerResultTypes.ERROR, pid: message.pid, data: "Unexpected error during matching."});
                 return;
             }
 
@@ -307,7 +306,7 @@ parentPort.on("message", (message : MessageWorkerRecieve) => {
                 matcher.match(matchString, message.pid, message.batchSize ?? -1);
             } 
             catch(e) {
-                parentPort.postMessage(<ReturnErrorMessage>{type: MatchResultsTypes.ERROR, pid: message.pid, data: "Unexpected error during matching."});
+                parentPort.postMessage(<ReturnErrorMessage>{type: MatchWorkerResultTypes.ERROR, pid: message.pid, data: "Unexpected error during matching."});
             }
 
             break;
