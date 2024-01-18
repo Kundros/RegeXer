@@ -11,10 +11,15 @@ export class RegexMatch
           };
      }
 
-     public addBatch(batch : MatchBatchData)
+     public async addBatch(batch : MatchBatchData)
      {
           this.matchData_.statesCount = batch.matchCurrentSize;
-          this.matchData_.states.push(...batch.matchStates);
+
+          for(let i = 0; i < batch.matchStates.length ;i++)
+          {
+               await new Promise(resolve => setTimeout(resolve, 0));
+               this.matchData_.states.push(batch.matchStates[i]);
+          }
      }
 
      public changeMatchInformation(match : MatchData)

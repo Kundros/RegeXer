@@ -88,7 +88,7 @@ export class Regexer{
                     reject(reason);
             }
 
-            currentProcess.external_resolve = (value: unknown) => {
+            currentProcess.external_resolve = async (value: unknown) => {
                 const returned = value as NewMessage;
 
                 if(returned.pid !== pid)
@@ -96,7 +96,7 @@ export class Regexer{
 
                 if(returned.type & MatchWorkerResultTypes.BATCH)
                 {
-                    const batchMessage = returned as ReturnBatch;
+                    const batchMessage = returned as ReturnBatch; 
                     options.batchCallback(batchMessage.data);
                 }
                 else if(returned.type & MatchWorkerResultTypes.ABORTED)
