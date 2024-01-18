@@ -19,7 +19,7 @@ export class Regexer{
      * @param regexString your string to be matched against parsed regex
      * @throws {RegParseException} If parsing was unsuccessful
      */
-    public newParse(regexString : string = "")
+    public async newParse(regexString : string = "")
     {
         try{
             const data = parse(regexString);
@@ -49,7 +49,7 @@ export class Regexer{
                 return;
             }
 
-            this.renewWorker();
+            await this.renewWorker();
         }
     }
 
@@ -115,7 +115,7 @@ export class Regexer{
         this.runningMatchings_.delete(pid);
     }
 
-    public terminateAllOngoing()
+    public async terminateAllOngoing()
     {
         for (let [pid, value] of this.runningMatchings_) {
             if(value.external_resolve !== undefined)
@@ -126,7 +126,7 @@ export class Regexer{
         }
 
         this.runningMatchings_.clear();
-        this.renewWorker();
+        await this.renewWorker();
     }
 
     /** 
@@ -137,7 +137,7 @@ export class Regexer{
     public async match(matchString : string, forceStopRunning : boolean = false) : Promise<RegexMatch[]>
     {
         if(this.worker_ === undefined)
-            this.renewWorker();
+            await this.renewWorker();
 
         if(this.NFA_ === undefined || this.AST_ === undefined)
             throw new RegMatchException("Can't match due to unsuccessful regex parse.");
@@ -227,12 +227,15 @@ export class Regexer{
     }
 
     /** @description destroys worker if exists, creates new if does not. */
-    private renewWorker()
+    private async renewWorker()
     {
         this.clear();
 
         // renew it
-        this.worker_ = new Worker(new URL("./MatchingWorker", "file:///" + path.resolve(__filename)));
+        const workerSource = new URL("./MatchingWorker", "file:///" + path.resolve(__filename));
+        const blob = await (await fetch(workerSource)).blob();
+        const blobUrl = URL.createObjectURL(blob);
+        this.worker_ = new Worker(blobUrl);
 
         this.worker_.postMessage({
             type: "new_data",
