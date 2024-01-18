@@ -95,7 +95,7 @@ export class RegexDebugger {
     private visualizeStep(step: number)
     {
         if(this.matches_ === undefined || this.matches_.length === 0) return;
-
+        console.log(this.matches_[0]);
         const state = this.matches_[0].moveTo(step-1);
 
         if(state === null) return;

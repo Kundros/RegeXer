@@ -1,5 +1,5 @@
 import { WebviewApi } from "vscode-webview";
-import { Message, MessageErrorRegex, MessageMatchData, MessageRegexData, RegexData } from "types";
+import { Message, MessageBatchData, MessageErrorRegex, MessageMatchData, MessageRegexData, RegexData } from "types";
 import { RegexEditor } from "./RegexEditor";
 import { RegexMatch } from "@kundros/regexer";
 import { StringMatchEditor } from "./StringMatchEditor";
@@ -23,6 +23,10 @@ export class RegexVisualizer {
         this.options_.regexWait = options?.regexWait ?? 500;
 
         this.registerListeners();
+
+        this.matches_ = [new RegexMatch()];
+        this.debuggerWindow_.matches = this.matches_;
+        this.steps_ = 0;
 
         this.vscode_.postMessage({
             type: 'regex_match_string',
@@ -78,6 +82,10 @@ export class RegexVisualizer {
         {
             this.stringMatchEditor_.setLoading();
             this.matchWait_ = setTimeout(() => {
+                this.matches_ = [new RegexMatch()];
+                this.debuggerWindow_.matches = this.matches_;
+                this.steps_ = 0;
+
                 this.vscode_.postMessage({
                     type: 'regex_match_string',
                     data: textElement.textContent
@@ -86,6 +94,10 @@ export class RegexVisualizer {
         }
         else
         {
+            this.matches_ = [new RegexMatch()];
+            this.debuggerWindow_.matches = this.matches_;
+            this.steps_ = 0;
+
             this.vscode_.postMessage({
                 type: 'regex_match_string',
                 data: textElement.textContent
@@ -98,7 +110,7 @@ export class RegexVisualizer {
         const message = event.data as Message;
 
         switch(message.type){
-            case 'regex_data':
+            case 'regex_match':
             {
                 const RegexData = message as MessageRegexData;
 
@@ -106,6 +118,10 @@ export class RegexVisualizer {
                 this.regexEditor_.highlight(this.regexData_.AST);
 
                 /* --- update match --- */
+                this.matches_ = [new RegexMatch()];
+                this.debuggerWindow_.matches = this.matches_;
+                this.steps_ = 0;
+
                 this.vscode_.postMessage({
                     type: 'regex_match_string',
                     data: this.stringMatchEditor_.textInput.textContent
@@ -127,24 +143,26 @@ export class RegexVisualizer {
             case 'regex_match_data':
             {
                 const RegexData = message as MessageMatchData;
-                const matchesData = RegexData.data.matches;
-                const matchesDataLength = matchesData.length;
+                this.matches_[this.matches_.length-1].changeMatchInformation(RegexData.data);
 
-                const matches : RegexMatch[] = [];
-                let steps = 0;
+                this.steps_ += RegexData.data.statesCount;
+                this.debuggerWindow_.steps = this.steps_;
 
-                for(let i = 0 ; i < matchesDataLength ; i++)
-                {
-                    Object.setPrototypeOf(matchesData[i], RegexMatch.prototype);
-                    matches.push(matchesData[i]);
-                    steps += matchesData[i].statesCount;
-                }
-
-                this.debuggerWindow_.matches = matches; 
-                this.debuggerWindow_.steps = steps;
-
-                this.stringMatchEditor_.updateMatchStatesMessage(steps, RegexData.data.success ? matchesDataLength : 0);
+                this.stringMatchEditor_.updateMatchStatesMessage(RegexData.data.statesCount, this.matches_.length - (RegexData.data.success ? 1 : 0));
                 this.stringMatchEditor_.updateSignSuccess(RegexData.data.success);
+
+                break;
+            }
+
+            case 'regex_batch_data':
+            {
+                const batchData = message as MessageBatchData;
+                const lastMatch = this.matches_[this.matches_.length-1];
+
+                lastMatch.addBatch(batchData.data);
+
+                this.debuggerWindow_.steps = lastMatch.statesCount;
+                this.stringMatchEditor_.updateMatchStatesMessage(lastMatch.statesCount, 0);
 
                 break;
             }
@@ -155,6 +173,9 @@ export class RegexVisualizer {
     private matchWait_? : NodeJS.Timeout;
     private regexWait_? : NodeJS.Timeout;
     private regexData_? : RegexData;
+
+    private matches_ : RegexMatch[];
+    private steps_ : number;
 
     private regexEditor_ : RegexEditor;
     private stringMatchEditor_ : StringMatchEditor;

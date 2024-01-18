@@ -1,4 +1,4 @@
-import { RegexMatch } from "@kundros/regexer";
+import { MatchBatchData, MatchData, RegexMatch } from "@kundros/regexer";
 import { RegexTypes } from "@kundros/regexer/types/core/RegexParser";
 
 declare module '*.html' {
@@ -16,6 +16,10 @@ export type Message = {
     type: string,
     data: unknown
 } 
+
+export type MessageBatchData = Message & {
+    data: MatchBatchData
+}
 
 export type MessageRegexData = Message & {
     data: RegexData
@@ -41,12 +45,6 @@ export type RegexErrorData = {
     to: number,
     errorCode: RegexTypes.RegexParserErrors,
     errorMessage: string,
-    text: string
-}
-
-export type MatchData = {
-    success: boolean,
-    matches: RegexMatch[],
     text: string
 }
 
