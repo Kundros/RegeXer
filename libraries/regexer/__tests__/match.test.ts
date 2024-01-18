@@ -1,8 +1,9 @@
 import { test, expect } from '@jest/globals';
 
 import { Regexer } from '../src/core/Regexer';
-import { MatchFlags, MatchState } from '../src/core/RegexMatch';
 import { RegexTypes } from '../src/core/RegexParser';
+import { MatchBatchData, MatchData, MatchFlags, MatchingCompleteResponse } from '../src/coreTypes/MatchTypes';
+import { RegexMatch } from '../src/core/RegexMatch';
 
 global.__filename = "dist/cjs/core/Regexer";
 
@@ -13,7 +14,9 @@ test("match setting (SHORTEN_BACKTRACKING + BACKTRACKED_FROM_EXACT)", async () =
         MatchFlags.IGNORE_STR_START_POSITION_CHANGE
     );
 
-    const matches = (await regexer.match("aaa")).matches;
+    const matches = await regexer.match("aaa");
+
+    expect(matches[0].success).toBe(false);
 
     expect(matches[0].statesCount).toBe(11);
 
@@ -58,7 +61,7 @@ test("match setting (SHORTEN_BACKTRACKING + BACKTRACKED_FROM_EXACT)", async () =
 });
 
 test("-", async () => {
-    const regexer = new Regexer("a|bb|c|d",
+    const regexer = new Regexer("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         MatchFlags.SHORTEN_BACKTRACKING | 
         MatchFlags.BACKTRACKED_FROM_EXACT |
         MatchFlags.BACKTRACK_TRIM_POSITION |
@@ -68,13 +71,27 @@ test("-", async () => {
         MatchFlags.REMOVE_STATES_WO_EFFECT
     );
 
-    const matches = (await regexer.match("bd")).matches;
-
-    while(matches[0].currentState !== null)
+    let match = new RegexMatch();
+    await regexer.matchInBatches("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", {
+        batchCallback: (batch: MatchBatchData) => {
+            match.addBatch(batch);
+            console.log(match.statesCount);
+        },
+        matchCallback: (matchFinal: MatchData) => {
+            match.changeMatchInformation(matchFinal);
+        },
+        completeCallback: (flag: MatchingCompleteResponse) => {
+            console.log(match);
+            console.log("completed: " + flag);
+        },
+        batchSize: 1000
+    });
+    
+    /*while(matches2[0].currentState !== null)
     {
-        console.log(matches[0].currentState);
-        matches[0].moveForward();
-    }
+        console.log(matches2[0].currentState);
+        matches2[0].moveForward();
+    }*/
 
     regexer.clear();
 });

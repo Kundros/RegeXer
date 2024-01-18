@@ -3,6 +3,7 @@ export * from "@core/RegexMatch"
 export * from "@regexer/exceptions/RegParseException"
 export * from "@exceptions/RegMatchException"
 export * from "@regexer/coreTypes/parserTypes";
+export * from "@regexer/coreTypes/MatchTypes"
 
 /*import { Regexer } from "@models/Regexer";
 

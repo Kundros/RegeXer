@@ -1,15 +1,18 @@
-import { MatchAction, MatchData, MatchFlags, MatchState } from "./RegexMatch";
-import { RegexStates } from "../coreTypes/parserTypes";
+import { MatchWorkerResultTypes } from "@regexer/coreTypes/MatchWorkerTypes";
+import { MatchAction, MatchBatchData, MatchData, MatchFlags, MatchState } from "@regexer/coreTypes/MatchTypes";
 
 export class MatchBuilder
 {
-    constructor(flags?: number | MatchFlags)
+    constructor(flags?: number | MatchFlags, batchSize : number = -1)
     {
         this.flags_ = flags;
         this.matchData = {
             states: [],
-            statesCount: 0
+            statesCount: 0,
+            success: false
         }
+
+        this.batchSize_ = batchSize;
     }
 
     public addState(state : MatchState) : MatchBuilder
@@ -27,6 +30,7 @@ export class MatchBuilder
                 {
                     this.matchData.states.pop();
                     this.matchData.statesCount--;
+                    this.batchPosition_[1]--;
                 }
             }
         }
@@ -43,7 +47,39 @@ export class MatchBuilder
         this.matchData.statesCount++;
         this.matchData.states.push(state);
 
+        if(this.matchData.statesCount > 1)
+            this.batchPosition_[1]++;
+
         return this;
+    }
+
+    public set success(value : boolean)
+    {
+        this.matchData.success = value;
+    }
+
+    public isBatchReady() : boolean
+    {
+        return this.batchSize_ > 0 && this.batchPosition_[1] - this.batchPosition_[0] >= this.batchSize_;
+    }
+
+    public getFinalBatch() : MatchBatchData
+    {
+        this.batchPosition_[1] = this.matchData.statesCount;
+        return this.getBatch();
+    }
+
+    public getBatch() : MatchBatchData
+    {
+        const tmp = this.batchPosition_[0];
+        this.batchPosition_[0] = this.batchPosition_[1];
+
+        return {
+            batchSize: this.batchPosition_[1] - tmp,
+            matchCurrentSize: this.matchData.statesCount,
+            batchSpan: [tmp, this.batchPosition_[1]],
+            matchStates: this.matchData.states.slice(tmp, this.batchPosition_[1])
+        };
     }
 
     public isNoEffectState(state1 : MatchState, state2 : MatchState) : boolean
@@ -74,9 +110,14 @@ export class MatchBuilder
 
     public finalize() : MatchData
     {
+        if(this.batchSize_ > 0)
+            this.matchData.states = [];
+
         return this.matchData;
     }
 
     public matchData: MatchData;
     private flags_ ?: number | MatchFlags;
+    private batchPosition_ : [number, number] = [0, 0];
+    private batchSize_: number;
 }

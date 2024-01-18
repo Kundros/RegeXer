@@ -1,8 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { Regexer, RegMatchException, RegParseException, MatchFlags } from "@kundros/regexer";
+import { Regexer, RegMatchException, RegParseException, MatchFlags, MatchBatchData, MatchData, MatchingCompleteResponse } from "@kundros/regexer";
 import { MessageRegexData } from '@kundros/regex-visualisation/types';
+import { match } from 'assert';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -85,15 +86,22 @@ export function activate(context: vscode.ExtensionContext) {
 				case 'regex_match_string':
 				{
 					try{
-						const matchData = await regexer.match(message.data);
-
-						const sendMessage = { type: 'regex_match_data', data: {
-							success: matchData.success,
-							matches: matchData.matches,
-							text: message.data
-						} };
-	
-						panel.webview.postMessage(sendMessage); // post match data back to webview
+						regexer.matchInBatches(message.data, {
+							batchCallback: (batch: MatchBatchData) => {
+								const sendMessage = { type: 'regex_batch_data', data: batch};
+								panel.webview.postMessage(sendMessage); // post batch data back to webview
+							},
+							matchCallback: (match: MatchData) => {
+								const sendMessage = { type: 'regex_match_data', data: match};
+								panel.webview.postMessage(sendMessage); // post match data back to webview
+							},
+							completeCallback: (completed : MatchingCompleteResponse) => {
+								const sendMessage = { type: 'regex_matching_complete', data: completed};
+								panel.webview.postMessage(sendMessage); // post finished matching
+							},
+							batchSize: 50000,
+							forceStopRunning: true
+						});
 					}
 					catch(e)
 					{

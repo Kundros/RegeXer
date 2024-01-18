@@ -2,7 +2,7 @@ import { RegexTypes } from '@core/RegexParser';
 import { Stack } from '@structures/Stack';
 import { NFAState, NFAStateList } from '@regexer/coreTypes/parserTypes';
 import { MatchBuilder } from '@core/MatchBuilder';
-import { MatchAction } from '@core/RegexMatch';
+import { MatchAction } from '@regexer/coreTypes/MatchTypes';
 
 let AST: RegexTypes.ASTRoot;
 let NFA: RegexTypes.NFAtype[];
