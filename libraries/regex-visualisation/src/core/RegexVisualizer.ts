@@ -86,6 +86,7 @@ export class RegexVisualizer {
                 this.matches_ = [new RegexMatch()];
                 this.debuggerWindow_.matches = this.matches_;
                 this.steps_ = 0;
+                console.log("t");
 
                 this.vscode_.postMessage({
                     type: 'regex_match_string',
