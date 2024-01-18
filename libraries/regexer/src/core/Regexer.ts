@@ -1,4 +1,4 @@
-import { MatchData, MatchFlags, RegexMatch } from "@core/RegexMatch";
+import { RegexMatch } from "@core/RegexMatch";
 import { parse, PeggySyntaxError, RegexTypes } from "@core/RegexParser"
 import { RegParseException } from "@regexer/exceptions/RegParseException";
 import { RegMatchException } from "@regexer/exceptions/RegMatchException";
@@ -7,11 +7,12 @@ import { RegexParserErrors } from "../coreTypes/parserTypes";
 import { Worker } from 'worker_threads';
 import { URL } from 'url';
 import * as path from "path";
-import { MatchComplete, NewData, NewFlags, NewMessage, ReturnMessage } from "../coreTypes/MatchWorkerTypes";
+import { MatchWorkerResultTypes, MessageWorkerRecieve, NewData, NewFlags, NewMessage, ReturnBatch, ReturnMessage } from "../coreTypes/MatchWorkerTypes";
+import { BatchMatchOptions, MatchData, MatchFlags, MatchingCompleteResponse } from "@regexer/coreTypes/MatchTypes";
 
 /**
  * @classdesc 
- * Parsing class that creates match structure of matching history 
+ * Parsing class that creates match structure of matching history \
  * on given input string that can be used for further debug or other usages
  * @class
  */
@@ -61,11 +62,87 @@ export class Regexer{
     }
 
     /** 
+     * @description 
+     * match is sended in batches so the states that are already preceded can be avalaible sooner than match is finished \
+     * each batch will be sent to provided batchCallback \
+     * each completed match will be sent to matchCallback (without states those were sent in batches) \
+     * finished by calling completeCallback
+     */
+    public async matchInBatches(matchString : string, options: BatchMatchOptions)
+    {
+        if(options?.forceStopRunning ?? false) // abort all
+            this.terminateAllOngoing();
+
+        const pid = this.nextPid_++;
+
+        this.runningMatchings_.set(pid, {});
+        const currentProcess = this.runningMatchings_.get(pid);
+
+        await new Promise<void>((resolve, reject) => {
+            this.worker_.postMessage(<MessageWorkerRecieve>{ type: "match", pid, data: matchString, batchSize: options?.batchSize ?? -1 });
+
+            currentProcess.external_reject = (reason?: any) => {
+                const returned = reason as ReturnMessage;
+
+                if(returned.pid === pid)
+                    reject(reason);
+            }
+
+            currentProcess.external_resolve = (value: unknown) => {
+                const returned = value as NewMessage;
+
+                if(returned.pid !== pid)
+                    return;
+
+                if(returned.type & MatchWorkerResultTypes.BATCH)
+                {
+                    const batchMessage = returned as ReturnBatch;
+                    options.batchCallback(batchMessage.data);
+                }
+                else if(returned.type & MatchWorkerResultTypes.ABORTED)
+                {
+                    options.completeCallback(MatchingCompleteResponse.ABORTED);
+                    resolve();
+                }
+                else
+                {
+                    const matchMessage = returned as ReturnMessage;
+                    options.matchCallback(matchMessage.data);
+                    options.completeCallback(MatchingCompleteResponse.SUCCESS);
+                    resolve();
+                }
+            }
+
+            this.worker_.on('error', currentProcess.external_reject);
+            this.worker_.on('message', currentProcess.external_resolve);
+        });
+
+        // clear listeners from this match session
+        this.worker_.removeListener('error', currentProcess.external_reject);
+        this.worker_.removeListener('message', currentProcess.external_resolve);
+        this.runningMatchings_.delete(pid);
+    }
+
+    public terminateAllOngoing()
+    {
+        for (let [pid, value] of this.runningMatchings_) {
+            if(value.external_resolve !== undefined)
+                value.external_resolve(<ReturnMessage>{type: MatchWorkerResultTypes.ABORTED, pid, data: []})
+
+            this.worker_.removeListener('error', value.external_reject);
+            this.worker_.removeListener('message', value.external_resolve);
+        }
+
+        this.runningMatchings_.clear();
+        this.renewWorker();
+    }
+
+    /** 
      * @param matchString your string to be matched against parsed regex
-     * @returns {Promise<{success: boolean, match: RegexMatch}>}
+     * @returns {Promise<MatchComplete>}
      * @throws {RegMatchException} If some unexpacted error occured
      */
-    public async match(matchString : string) : Promise<MatchComplete>
+    public async match(matchString : string, forceStopRunning : boolean = false) : Promise<RegexMatch[]>
     {
         if(this.worker_ === undefined)
             this.renewWorker();
@@ -73,46 +150,50 @@ export class Regexer{
         if(this.NFA_ === undefined || this.AST_ === undefined)
             throw new RegMatchException("Can't match due to unsuccessful regex parse.");
 
-        const pid = this.nextPid++;
-        let external_reject : (any) => void, external_resolve : (unknown) => void;
+        // abort all proceses if set
+        if(forceStopRunning) this.terminateAllOngoing();
 
+        const pid = this.nextPid_++;
+
+        this.runningMatchings_.set(pid, {});
+        const currentProcess = this.runningMatchings_.get(pid);
+
+        // begin matching session in worker
         const result = await new Promise((resolve, reject) => {
-            this.worker_.postMessage(<NewMessage>{ type: "match", pid, data: matchString });
+            this.worker_.postMessage(<MessageWorkerRecieve>{ type: "match", pid, data: matchString });
 
-            external_reject = (reason?: any) => {
+            currentProcess.external_reject = (reason?: any) => {
                 const returned = reason as ReturnMessage;
 
                 if(returned.pid === pid)
                     reject(reason);
             }
 
-            external_resolve = (value: unknown) => {
+            currentProcess.external_resolve = (value: unknown) => {
                 const returned = value as ReturnMessage;
 
                 if(returned.pid === pid)
                     resolve(value);
             }
 
-            this.worker_.on('error', external_reject);
-            this.worker_.on('message', external_resolve);
+            this.worker_.on('error', currentProcess.external_reject);
+            this.worker_.on('message', currentProcess.external_resolve);
         });
 
-        this.worker_.removeListener('error', external_reject);
-        this.worker_.removeListener('message', external_resolve);
+        // clear listeners from this match session
+        this.worker_.removeListener('error', currentProcess.external_reject);
+        this.worker_.removeListener('message', currentProcess.external_resolve);
+        this.runningMatchings_.delete(pid);
 
         const returned = result as NewMessage;
 
-        if(returned.type === 'error')
+        if(returned.type & MatchWorkerResultTypes.ERROR)
             throw new RegMatchException(returned.data as string);
 
-        let data = returned.data as MatchData[];
-        let lengthData = data.length;
-        const matches : RegexMatch[] = [];
+        // currently only one match
+        let data = returned.data as MatchData;
 
-        for(let i = 0 ; i < lengthData ; i++)
-            matches.push(new RegexMatch(data[i]));
-
-        return {success: returned.type === 'succeded', matches} as MatchComplete;
+        return [new RegexMatch(data)];
     }
 
     /** 
@@ -124,7 +205,7 @@ export class Regexer{
         this.matchFlags_ = matchFlags;
         this.worker_.postMessage(
         { 
-            type: "new_data", 
+            type: "new_flags", 
             data: <NewFlags>{
                 flags: this.matchFlags_
             }
@@ -146,19 +227,17 @@ export class Regexer{
     /** @description clears worker, do before loosing reference to object, hence not waiting for garbage collector. */
     public clear()
     {
-        this.worker_.unref();
-        this.worker_ = undefined;
+        if(this.worker_ !== undefined)
+        {
+            this.worker_.terminate();
+            this.worker_ = undefined;
+        }
     }
 
     /** @description destroys worker if exists, creates new if does not. */
     private renewWorker()
     {
-        // if worker exists then unref it
-        if(this.worker_ !== undefined)
-        {
-            this.worker_.unref();
-            this.worker_ = undefined;
-        }
+        this.clear();
 
         // renew it
         this.worker_ = new Worker(new URL("./MatchingWorker", "file:///" + path.resolve(__filename)), {
@@ -170,9 +249,14 @@ export class Regexer{
         });
     }
 
-    private nextPid : number = 0;
+    private nextPid_ : number = 0;
     private worker_? : Worker;
     private AST_?: RegexTypes.ASTRoot;
     private NFA_?: RegexTypes.NFAtype[];
     private matchFlags_ ?: number | MatchFlags;
+
+    private runningMatchings_ = new Map<number, {
+        external_reject? : (any) => void,
+        external_resolve? : (unknown) => void
+    }>();
 }

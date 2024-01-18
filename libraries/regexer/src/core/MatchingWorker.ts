@@ -1,10 +1,10 @@
 import { workerData, parentPort } from 'worker_threads';
 import { RegexTypes } from '@core/RegexParser';
 import { Stack } from '@regexer/structures/Stack';
-import { ASTGroup, ASTOption, ASTtype, NFAState, NFAStateList, NFAtype, RegexStates } from '../coreTypes/parserTypes';
+import { ASTGroup, ASTOption, NFAState, NFAStateList, NFAtype } from '../coreTypes/parserTypes';
 import { MatchBuilder } from './MatchBuilder';
-import { MatchAction, MatchFlags } from './RegexMatch';
-import { NewData, NewFlags, NewMessage, ReturnErrorMessage, ReturnMessage } from '../coreTypes/MatchWorkerTypes';
+import { MatchWorkerResultTypes, MessageWorkerRecieve, NewData, NewFlags, ReturnBatch, ReturnErrorMessage, ReturnMessage } from '../coreTypes/MatchWorkerTypes';
+import { MatchAction, MatchFlags } from '@regexer/coreTypes/MatchTypes';
 
 let AST: RegexTypes.ASTRoot = workerData.AST;
 let NFA: RegexTypes.NFAtype[] = workerData.NFA;
@@ -17,15 +17,16 @@ class Matcher
     constructor() 
     {}
 
-    public match(matchString : string, pid : number)
+    public match(matchString : string, pid : number, batchSize: number = -1)
     {
         this.pid = pid;
         this.regexPosStack = new Stack<number>([0]);
         this.stringPosStack = new Stack<number>([0]);
         this.statesStack = new Stack<matchingState>();
-        this.matchBuilder = new MatchBuilder(flags);
+        this.matchBuilder = new MatchBuilder(flags, batchSize);
         this.matchBuilder.matchData.start = 0;
         this.groups = new Stack<ASTGroup>();
+        this.batchSize_ = batchSize;
 
         this.matchBuilder.addState({
             type: RegexTypes.RegexStates.ROOT,
@@ -42,6 +43,8 @@ class Matcher
             if(nfaState?.ASTelement?.type === RegexTypes.RegexStates.END)
                 break;
             
+            if(this.matchBuilder.isBatchReady())
+                parentPort.postMessage(<ReturnBatch>{ type: MatchWorkerResultTypes.BATCH, pid: this.pid, data: this.matchBuilder.getBatch() });
 
             /* 
                 If the state isn't at the top of the stack we need to add it as new state
@@ -138,7 +141,7 @@ class Matcher
                 });
 
                 continue;
-            }
+            }   
         }
 
         this.matchBuilder.matchData.end = this.stringPosStack.top();
@@ -148,7 +151,11 @@ class Matcher
             type: RegexTypes.RegexStates.ROOT,
             regAt: [regexEnd, regexEnd]
         });
-        parentPort.postMessage(<ReturnMessage>{ type: "succeded", pid: this.pid, data: [this.matchBuilder.finalize()] });
+
+        if(this.batchSize_ > 0)
+            parentPort.postMessage(<ReturnBatch>{ type: MatchWorkerResultTypes.BATCH, pid: this.pid, data: this.matchBuilder.getFinalBatch() });
+        this.matchBuilder.success = true;
+        parentPort.postMessage(<ReturnMessage>{ type: MatchWorkerResultTypes.SUCCESS, pid: this.pid, data: this.matchBuilder.finalize() });
     }
 
     private handleOptionTransitioning(nfaState : NFAtype)
@@ -226,7 +233,10 @@ class Matcher
                     regAt: [0, 0],
                     strAt: [matchString.length, matchString.length]
                 });
-                parentPort.postMessage(<ReturnMessage>{ type: "failed", pid: this.pid, data: [this.matchBuilder.finalize()] });
+
+                if(this.batchSize_ > 0)
+                    parentPort.postMessage(<ReturnBatch>{ type: MatchWorkerResultTypes.BATCH, pid: this.pid, data: this.matchBuilder.getFinalBatch() });
+                parentPort.postMessage(<ReturnMessage>{ type: MatchWorkerResultTypes.NO_MATCH, pid: this.pid, data: this.matchBuilder.finalize() });
 
                 return false;
             }
@@ -268,34 +278,35 @@ class Matcher
         return true;
     }
 
-    private pid : number;
+    public pid : number;
     private stringPosStack : Stack<number>;
     private regexPosStack : Stack<number>;
     private statesStack : Stack<matchingState>;
     private matchBuilder : MatchBuilder;
     private groups : Stack<ASTGroup>;
+    private batchSize_ : number;
 }
 
 const matcher = new Matcher();
 
-parentPort.on("message", (message : NewMessage) => {
+parentPort.on("message", (message : MessageWorkerRecieve) => {
     switch(message.type)
     {
         case 'match':
         {
             if(typeof message.data !== "string")
             {
-                parentPort.postMessage(<ReturnErrorMessage>{type: "error", pid: message.pid, data: "Unexpected error during matching."});
+                parentPort.postMessage(<ReturnErrorMessage>{type: MatchWorkerResultTypes.ERROR, pid: message.pid, data: "Unexpected error during matching."});
                 return;
             }
 
             const matchString : string = message.data;
 
             try{
-                matcher.match(matchString, message.pid);
+                matcher.match(matchString, message.pid, message.batchSize ?? -1);
             } 
             catch(e) {
-                parentPort.postMessage(<ReturnErrorMessage>{type: "error", pid: message.pid, data: "Unexpected error during matching."});
+                parentPort.postMessage(<ReturnErrorMessage>{type: MatchWorkerResultTypes.ERROR, pid: message.pid, data: "Unexpected error during matching."});
             }
 
             break;
@@ -303,9 +314,9 @@ parentPort.on("message", (message : NewMessage) => {
         case 'new_data':
         {
             let newData = message.data as NewData;
-            AST = newData.AST;
-            NFA = newData.NFA;
-            flags = newData.flags
+            AST = newData?.AST;
+            NFA = newData?.NFA;
+            flags = newData?.flags
 
             break;
         }
