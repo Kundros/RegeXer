@@ -111,7 +111,7 @@ export class RegexVisualizer {
         const message = event.data as Message;
 
         switch(message.type){
-            case 'regex_match':
+            case 'regex_data':
             {
                 const RegexData = message as MessageRegexData;
 
