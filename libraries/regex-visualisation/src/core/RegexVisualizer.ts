@@ -24,9 +24,7 @@ export class RegexVisualizer {
 
         this.registerListeners();
 
-        this.matches_ = [new RegexMatch()];
-        this.debuggerWindow_.matches = this.matches_;
-        this.steps_ = 0;
+        this.resetMatches();
 
         this.vscode_.postMessage({
             type: 'regex_match_string',
@@ -44,6 +42,14 @@ export class RegexVisualizer {
             this.debuggerWindow_.setRegexText(this.regexEditor_.textInput);
             this.debuggerWindow_.setMatchStringText(this.stringMatchEditor_.textInput);
         })
+    }
+
+    private resetMatches()
+    {
+        this.matches_ = [new RegexMatch()];
+        this.debuggerWindow_.matches = this.matches_;
+        this.steps_ = 0;
+        this.debuggerWindow_.resetSteps();
     }
 
     private regexTextCallback(event : InputEvent, textElement : HTMLElement) 
@@ -82,11 +88,7 @@ export class RegexVisualizer {
         if(this.options_.matchWait > 0)
         {
             this.matchWait_ = setTimeout(() => {
-
-                this.matches_ = [new RegexMatch()];
-                this.debuggerWindow_.matches = this.matches_;
-                this.steps_ = 0;
-                console.log("t");
+                this.resetMatches();
 
                 this.vscode_.postMessage({
                     type: 'regex_match_string',
@@ -96,9 +98,7 @@ export class RegexVisualizer {
         }
         else
         {
-            this.matches_ = [new RegexMatch()];
-            this.debuggerWindow_.matches = this.matches_;
-            this.steps_ = 0;
+            this.resetMatches();
 
             this.vscode_.postMessage({
                 type: 'regex_match_string',
@@ -120,9 +120,7 @@ export class RegexVisualizer {
                 this.regexEditor_.highlight(this.regexData_.AST);
 
                 /* --- update match --- */
-                this.matches_ = [new RegexMatch()];
-                this.debuggerWindow_.matches = this.matches_;
-                this.steps_ = 0;
+                this.resetMatches();
 
                 this.vscode_.postMessage({
                     type: 'regex_match_string',
@@ -150,7 +148,7 @@ export class RegexVisualizer {
                 this.steps_ += RegexData.data.statesCount;
                 this.debuggerWindow_.steps = this.steps_;
 
-                this.stringMatchEditor_.updateMatchStatesMessage(RegexData.data.statesCount, this.matches_.length - (RegexData.data.success ? 1 : 0));
+                this.stringMatchEditor_.updateMatchStatesMessage(RegexData.data.statesCount, this.matches_.length - (RegexData.data.success ? 0 : 1));
 
                 break;
             }
@@ -171,7 +169,6 @@ export class RegexVisualizer {
             case 'regex_matching_complete':
             {
                 const completeFlag = message as MessageMatchComplete;
-                console.log(completeFlag);
 
                 if(completeFlag.data !== MatchingCompleteResponse.SUCCESS)
                     break;

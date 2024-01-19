@@ -5,9 +5,11 @@ import { StringMatchEditor } from "./core/StringMatchEditor";
 import './styles/main.less';
 import './styles/debugger.less';
 import { RegexDebugger } from "./core/RegexDebugger";
+import { Regexer } from "@kundros/regexer";
 
 /** private scope vscode api variable according to: https://code.visualstudio.com/api/extension-guides/webview#passing-messages-from-a-webview-to-an-extension */
 (function() {
+    const regexer = new Regexer();
     const vscode = acquireVsCodeApi();
 
     new RegexVisualizer(

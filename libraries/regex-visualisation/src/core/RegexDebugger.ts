@@ -89,7 +89,11 @@ export class RegexDebugger {
     public set steps(steps: number)
     {
         this.slider_.max = steps;
-        this.slider_.value = 1;
+    }
+
+    public resetSteps()
+    {
+        this.slider_.value = this.slider_.min;
     }
 
     private visualizeStep(step: number)

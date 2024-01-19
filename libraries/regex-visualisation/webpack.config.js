@@ -3,6 +3,7 @@
 'use strict';
 
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 //@ts-check
@@ -10,7 +11,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 /** @type WebpackConfig */
 const extensionConfig = {
-  target: 'web',
+  target: 'webworker',
 	mode: 'none',
 
   resolve: {
@@ -38,6 +39,10 @@ const extensionConfig = {
   },
   module: {
     rules: [
+      {
+        resourceQuery: /inline/,
+        type: 'asset/source',
+      },
       {
         test: /\.ts$/,
         exclude: /node_modules/,
@@ -92,12 +97,18 @@ const extensionConfig = {
       }
     ]
   },
+  optimization: {
+    splitChunks: false
+  },
   watchOptions: {
     ignored: ['**/node_modules', path.resolve(__dirname, './dist')],
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: "./src/templates/main.html"
+    }),
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1,
     })
   ]
 };
