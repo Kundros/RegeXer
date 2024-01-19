@@ -5,6 +5,7 @@ import { RegMatchException } from "@exceptions/RegMatchException";
 import { RegexParserErrors } from "@regexer/coreTypes/parserTypes";
 import { RegexMatch } from "@regexer/core/RegexMatch";
 import { MatchWorkerResultTypes, MessageWorkerRecieve, NewData, NewFlags, NewMessage, ReturnBatch, ReturnMessage } from "@regexer/coreTypes/MatchWorkerTypes";
+import { CorsWorker as Worker } from './CorsWorker';
 
 import * as path from "path";
 
@@ -232,10 +233,8 @@ export class Regexer{
         this.clear();
 
         // renew it
-        const workerSource = new URL("./MatchingWorker", "file:///" + path.resolve(__filename));
-        const blob = await (await fetch(workerSource)).blob();
-        const blobUrl = URL.createObjectURL(blob);
-        this.worker_ = new Worker(blobUrl);
+        const corsWorker = new Worker(new URL("./MatchingWorker", "file:///" + path.resolve(__filename)));
+        this.worker_ = corsWorker.getWorker();
 
         this.worker_.postMessage({
             type: "new_data",
@@ -248,7 +247,7 @@ export class Regexer{
     }
 
     private nextPid_ : number = 0;
-    private worker_? : Worker;
+    private worker_? : globalThis.Worker;
     private AST_?: RegexTypes.ASTRoot;
     private NFA_?: RegexTypes.NFAtype[];
     private matchFlags_ ?: number | MatchFlags;
