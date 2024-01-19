@@ -4,7 +4,7 @@
     "module": "CommonJS",
     "rootDir": "./src",
     "outDir": "./dist",
-    "lib": ["DOM"],
+    "lib": ["DOM", "WebWorker"],
     "esModuleInterop": true,
     "baseUrl": ".",
   },
