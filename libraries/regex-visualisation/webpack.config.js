@@ -3,6 +3,7 @@
 'use strict';
 
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 //@ts-check
@@ -10,7 +11,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 /** @type WebpackConfig */
 const extensionConfig = {
-  target: 'web',
+  target: 'webworker',
 	mode: 'none',
 
   resolve: {
@@ -39,6 +40,10 @@ const extensionConfig = {
   module: {
     rules: [
       {
+        resourceQuery: /inline/,
+        type: 'asset/source',
+      },
+      {
         test: /\.ts$/,
         exclude: /node_modules/,
         use: [
@@ -65,7 +70,7 @@ const extensionConfig = {
                 strictMath: true,
               },
             },
-          }
+          },
         ]
       },
       {
@@ -75,8 +80,25 @@ const extensionConfig = {
             loader: path.resolve('loaders/url-path-loader.js')
           }
         ],
+      },
+      {
+        test: /\.(html)$/,
+        use: ['html-loader']
+      },
+      {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader',
+        options: {
+          removeTags: true,
+          removingTags: ["fill"],
+          removeSVGTagAttrs: true,
+          removingTagAttrs: ["fill"]
+        }
       }
     ]
+  },
+  optimization: {
+    splitChunks: false
   },
   watchOptions: {
     ignored: ['**/node_modules', path.resolve(__dirname, './dist')],
@@ -84,6 +106,9 @@ const extensionConfig = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "./src/templates/main.html"
+    }),
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1,
     })
   ]
 };

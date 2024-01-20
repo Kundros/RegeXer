@@ -1,0 +1,170 @@
+@base-color: #352F44;
+@darker-color: #5C5470;
+@light-color: #B9B4C7;
+@lighter-color: #FAF0E6;
+
+@gray-color: #1f1f1f;
+
+#regex-debugger-overlay {
+    &.hidden{
+        display: none;
+    }
+
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    background: #000000CC;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    tab-size: 1;
+
+    & .tab-symbol{
+        font-size: 16px;
+        margin: 0 1px;
+        display: inline-block;
+        background-color: #525666;
+    }
+
+    & .new-line-symbol{
+        pointer-events: none;
+        display: inline;
+        position: relative;
+        padding-right: .5rem;
+    }
+
+    & .new-line-symbol::before {
+        content: "↲";
+        font-weight: 600;
+        color: #525666;
+        pointer-events: none;
+        position: absolute;
+    }
+    
+    & .regex-debugger-window{
+        width: 90%;
+        max-width: 900px;
+        height: 80%;
+        border-radius: 10px;
+        background: #1d1e20;
+        padding: 10px;
+
+        & .regex-debugger-header{
+            width: 100%;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ffffff22;
+            padding-bottom: 5px;
+            margin-top: -5px;
+
+            h2{
+                font-weight: 200;
+                font-size: 18px;
+                color: #999999;
+            }
+
+            & .exit-debug{
+                width: 14px;
+                height: 14px;
+                margin-left: auto;
+                position: relative;
+                cursor: pointer;
+
+                & > div{
+                    position: absolute;
+                    width: 100%;
+                    top: 50%;
+                    height: 2px;
+                    transition: all .3s;
+                    background-color: #999999;
+                }
+
+                & > div:first-child{
+                    transform: rotate(45deg);
+                }
+
+                & > div:last-child{
+                    transform: rotate(-45deg);
+                }
+            }
+
+            & .exit-debug:hover{
+                & > div{
+                    background-color: white;
+                }
+
+                & > div:first-child{
+                    transform: rotate(135deg) scale(1.2);
+                }
+
+                & > div:last-child{
+                    transform: rotate(45deg) scale(1.2);
+                }
+            }
+        }
+
+        & .regex-debugger-timeline{
+
+            & .timeline-range{
+                width: 100%;
+            }
+        }
+
+        & .regex-debugger-visualisation{
+
+            & .regex-debugger-regex, & .regex-debugger-string{
+                position: relative;
+                min-height: 41px;
+                font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
+                background: #00000044;
+                padding: 10px;
+                border-radius: 10px;    
+                box-sizing: border-box;
+
+                & > span{
+                    max-height: 127px;
+                    display: block;
+                    line-height: 21px;
+                    font-size: 16px;
+                    letter-spacing: 2px;
+                    overflow-y: auto;
+                    box-sizing: border-box;
+                    word-break: break-word;
+                    white-space: break-spaces;
+                    position: relative;  
+                    margin-left: 2px;
+                    z-index: 2;
+                }
+
+                & > .regex-debugger-regex-canvas, & > .regex-debugger-string-canvas{
+                    position: absolute;
+                    height: -webkit-fill-available;
+                    width: -webkit-fill-available;
+                    left: 0;
+                    pointer-events: none;
+                    top: 0;    
+                    margin: 10px;
+                    box-sizing: border-box;
+                }
+            }
+
+            & .regex-debugger-string {
+                margin-top: 15px;
+                
+                & > span {
+                    max-height: 400px;
+                }
+            }
+        }
+    }
+}
+
+body.vscode-light {
+    & .regex-debugger-window{
+        background: rgb(204, 207, 209);
+    }
+}
