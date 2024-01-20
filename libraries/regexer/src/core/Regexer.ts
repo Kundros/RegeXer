@@ -118,8 +118,8 @@ export class Regexer{
         });
 
         // clear listeners from this match session
-        this.worker_.removeListener('error', currentProcess.external_reject);
-        this.worker_.removeListener('message', currentProcess.external_resolve);
+        this.worker_?.removeListener('error', currentProcess.external_reject);
+        this.worker_?.removeListener('message', currentProcess.external_resolve);
         this.runningMatchings_.delete(pid);
     }
 
