@@ -155,7 +155,7 @@ export class RegexDebugger {
         else
             context.fillStyle = options?.positionColor ?? "#00FF00";
 
-        const dimensions = this.getLettersSpanDimentions(position[0], position[1], inRegex);
+        const dimensions = this.getTextRowsDimentions(position[0], position[1], inRegex);
 
         for(let i = 0 ; i < dimensions.length ; i++)
         {
@@ -176,7 +176,7 @@ export class RegexDebugger {
         context.save();
 
         context.fillStyle = options?.backtrackingDirectionColor ?? "#FF0000";
-        const dimensions = this.getLettersSpanDimentions(from, to);
+        const dimensions = this.getTextRowsDimentions(from, to);
 
         if(dimensions.length === 0)
             return;
@@ -199,7 +199,7 @@ export class RegexDebugger {
         context.restore();
     }
 
-    private getLettersSpanDimentions(from: number, to: number, inRegex : boolean = true) : [number, number, number, number][] // x, y, width, height
+    private getTextRowsDimentions(from: number, to: number, inRegex : boolean = true) : [number, number, number, number][] // x, y, width, height
     {
         const context = inRegex ? this.regexContext_ : this.matchContext_;
         const textElement = inRegex ? this.regexText_ : this.matchText_;
@@ -210,20 +210,21 @@ export class RegexDebugger {
         const text = textElement.textContent;
         const textLength = text.length;
 
+        //compute box sizing
+        const computedStyle = window.getComputedStyle( textElement, null );
+        const spacingWidth = Number.parseInt(computedStyle.letterSpacing);
+        const lineHeight = Number.parseInt(computedStyle.lineHeight);
+
         // compute letter measurements
-        const spacing = window.getComputedStyle( textElement, null ).getPropertyValue( "letter-spacing" );
-        const lineHeightStr = window.getComputedStyle( textElement, null ).getPropertyValue( "line-height" );
-        const spacingWidth = Number.parseInt(spacing.replace("px", ""));
-        const lineHeight = Number.parseInt(lineHeightStr.replace("px", ""));
         const letterMeasure = context.measureText("i");
         const letterWidth = letterMeasure.width ;
         const letterHeight = letterMeasure.fontBoundingBoxDescent + letterMeasure.fontBoundingBoxAscent;
 
-        const textBounding = textElement.getBoundingClientRect();
-        const maxLineSize = textBounding.width;
+        const maxLineSize = textElement.clientWidth;
 
         let outputRows = [];
         let yOffset = 0;
+        let scrollOffset = textElement.scrollTop;
         let lastRowSize = 0;
         let currentRowSize = 0;
 
@@ -243,16 +244,34 @@ export class RegexDebugger {
                 continue;
             }
 
+            const yPos = (yOffset * lineHeight) - scrollOffset;
+
+            // skip unvisible rows
+            if(yPos + letterHeight < 0)
+            {
+                if(text[i] === '\n')
+                {
+                    currentRowSize = 0;
+                    yOffset++;
+                }
+                continue;
+            }
+            else if(yPos > textElement.clientHeight)
+            {
+                break;
+            }
+
+            // add new row or update existing
             if(i >= from && i < to)
             {
-                if(outputRows.length === 0 || outputRows[outputRows.length-1][1] < yOffset * lineHeight) 
-                    outputRows.push([lastRowSize + spacingWidth, yOffset * lineHeight, currentRowSize - lastRowSize - spacingWidth, letterHeight]);
+                if(outputRows.length === 0 || outputRows[outputRows.length-1][1] < yPos) 
+                    outputRows.push([lastRowSize + spacingWidth, yPos, currentRowSize - lastRowSize - spacingWidth, letterHeight]);
                 else
                     outputRows[outputRows.length-1][2] = currentRowSize - outputRows[outputRows.length-1][0];
             }
 
             if(i === to && i === from)
-                outputRows.push([lastRowSize, yOffset * lineHeight, spacingWidth, letterHeight]);
+                outputRows.push([lastRowSize, yPos, spacingWidth, letterHeight]);
 
             if(text[i] === '\n')
             {
@@ -274,6 +293,9 @@ export class RegexDebugger {
             if(event.target === this.overlay_)
                 this.switchVisibility();
         });
+        
+        this.matchText_.addEventListener("scroll", () => { this.visualizeStep(this.slider_.value); });
+        this.regexText_.addEventListener("scroll", () => { this.visualizeStep(this.slider_.value); });
 
         this.slider_.parent.addEventListener("cslider", (event : SliderEvent) => this.visualizeStep(event.detail.value));
 
