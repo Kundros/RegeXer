@@ -229,7 +229,8 @@ export class Slider{
         this.container_.dispatchEvent(new CustomEvent("cslider", <SliderEvent>{ 
             detail: {
                 value: this.value_
-            }
+            },
+            bubbles: true
         }));
 
         this.updateProgress();
