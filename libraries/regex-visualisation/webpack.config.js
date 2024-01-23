@@ -11,7 +11,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 /** @type WebpackConfig */
 const extensionConfig = {
-  target: 'web',
+  target: 'webworker',
 	mode: 'none',
 
   resolve: {

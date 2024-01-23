@@ -71,43 +71,51 @@ export class Regexer{
         this.activePromise_ = new Promise(async (resolve) => {
             const pid = this.nextPid_++;
 
-            let batchOrMatch : ReturnBatch | ReturnMatch = await this.worker_.match(pid, matchString, options?.batchSize ?? -1);
-    
-            if(batchOrMatch.type !== MatchResponse.BATCH)
-            {
+            try{
+                let batchOrMatch : ReturnBatch | ReturnMatch = await this.worker_.match(pid, matchString, options?.batchSize ?? -1);
+        
+                if(batchOrMatch.type !== MatchResponse.BATCH)
+                {
+                    if(batchOrMatch.type & (MatchResponse.SUCCESS | MatchResponse.NO_MATCH))
+                        await options.matchCallback((batchOrMatch as ReturnMatch).data);
+        
+                    await options.completeCallback(batchOrMatch.type);
+
+                    resolve(null);
+                    return;
+                }
+        
+                await options.batchCallback((batchOrMatch as ReturnBatch).data);
+        
+                while((batchOrMatch = await this.worker_?.nextBatch(pid))?.type === MatchResponse.BATCH)
+                { 
+                    await options.batchCallback((batchOrMatch as ReturnBatch).data);
+                }
+
+                if(batchOrMatch === null || batchOrMatch === undefined)
+                {
+                    await options.completeCallback(MatchResponse.ERROR);
+                    resolve(null);
+                    return;
+                }
+        
                 if(batchOrMatch.type & (MatchResponse.SUCCESS | MatchResponse.NO_MATCH))
                     await options.matchCallback((batchOrMatch as ReturnMatch).data);
-    
+        
                 await options.completeCallback(batchOrMatch.type);
-
-                resolve(null);
-                return;
             }
-    
-            await options.batchCallback((batchOrMatch as ReturnBatch).data);
-    
-            while((batchOrMatch = await this.worker_.nextBatch(pid))?.type === MatchResponse.BATCH)
-            { 
-                await options.batchCallback((batchOrMatch as ReturnBatch).data);
-            }
-
-            if(batchOrMatch === null)
-            {
+            catch(e) {
                 await options.completeCallback(MatchResponse.ERROR);
-                resolve(null);
-                return;
             }
-    
-            if(batchOrMatch.type & (MatchResponse.SUCCESS | MatchResponse.NO_MATCH))
-                await options.matchCallback((batchOrMatch as ReturnMatch).data);
-    
-            await options.completeCallback(batchOrMatch.type);
 
             resolve(null);
         });
 
-        await this.activePromise_;
-        delete(this.activePromise_);
+        if(this.activePromise_ !== undefined)
+        {
+            await this.activePromise_;
+            delete(this.activePromise_);
+        }
     }
 
     /** 
@@ -171,12 +179,16 @@ export class Regexer{
     /** @description clears worker, do before loosing reference to object, hence not waiting for garbage collector. */
     public async clear()
     {
-        if(this.worker_ !== undefined)
+        try
         {
-            await this.worker_.abort();
-            await Thread.terminate(this.worker_);
-            this.worker_ = undefined;
+            if(this.worker_ !== undefined)
+            {
+                await this.worker_.abort();
+                await Thread.terminate(this.worker_);
+                this.worker_ = undefined;
+            }
         }
+        catch(e){}
     }
 
     /** @description destroys worker if exists, creates new if does not. */

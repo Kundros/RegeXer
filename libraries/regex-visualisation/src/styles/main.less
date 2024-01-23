@@ -6,6 +6,7 @@
 @gray-color: #1f1f1f;
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap');
 
 body {
     background: var(--vscode-editor-background, @base-color);
@@ -231,6 +232,8 @@ body.vscode-light {
         align-items: center;
         color: #999999;
         font-size: 13px;
+        font-family: var(--vscode-font-family, 'Roboto'), monospace;
+        font-weight: 300;
 
         & > .match-num-matches, > .match-num-steps{
             margin-right: .3rem;

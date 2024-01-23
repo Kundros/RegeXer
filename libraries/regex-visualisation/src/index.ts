@@ -8,7 +8,7 @@ import { RegexDebugger } from "./core/RegexDebugger";
 
 /** private scope vscode api variable according to: https://code.visualstudio.com/api/extension-guides/webview#passing-messages-from-a-webview-to-an-extension */
 (async function() {
-    const vscode = acquireVsCodeApi();
+    const vscode = typeof acquireVsCodeApi === "function" ? acquireVsCodeApi() : undefined;
 
     new RegexVisualizer(
         new RegexEditor(document.querySelector("#regex-wrapper > span")),

@@ -1,7 +1,7 @@
 import { WebviewApi } from "vscode-webview";
 import { Message, MessageBatchData, MessageErrorRegex, MessageMatchComplete, MessageMatchData, MessageRegexData, RegexData } from "types";
 import { RegexEditor } from "./RegexEditor";
-import { MatchBatchData, MatchData, MatchFlags, MatchResponse, RegexMatch, Regexer } from "@kundros/regexer";
+import { MatchBatchData, MatchData, MatchFlags, MatchResponse, RegParseException, RegexMatch, Regexer } from "@kundros/regexer";
 import { StringMatchEditor } from "./StringMatchEditor";
 import { RegexDebugger } from "./RegexDebugger";
 
@@ -11,7 +11,7 @@ export type RegexVisualizerOptions = {
 }
 
 export class RegexVisualizer {
-    constructor(regexEditor : RegexEditor, stringMatchEditor : StringMatchEditor, debuggerWindow: RegexDebugger, vscode : WebviewApi<unknown>, options? : RegexVisualizerOptions)
+    constructor(regexEditor : RegexEditor, stringMatchEditor : StringMatchEditor, debuggerWindow: RegexDebugger, vscode : WebviewApi<unknown> | undefined, options? : RegexVisualizerOptions)
     {
         this.regexEditor_ = regexEditor;
         this.stringMatchEditor_ = stringMatchEditor;
@@ -35,13 +35,13 @@ export class RegexVisualizer {
             MatchFlags.OPTION_NO_ERROR_RETURN
         );
 
-        this.updateRegex("");
+        this.updateRegex();
     }
 
     private registerListeners()
     {
-        this.regexEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.regexTextCallback(event, textElement));
-        this.stringMatchEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.matchTextCallback(event, textElement));
+        this.regexEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.regexTextCallback(textElement, event));
+        this.stringMatchEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.matchTextCallback(textElement, event));
         window.addEventListener('message', (event : MessageEvent) => this.messageRecieve(event));
 
         document.addEventListener("regexDebbugerVisible", () => {
@@ -58,7 +58,7 @@ export class RegexVisualizer {
         this.debuggerWindow_.resetSteps();
     }
 
-    private async regexTextCallback(event : InputEvent, textElement : HTMLElement) 
+    private regexTextCallback(textElement : HTMLElement, event?: InputEvent) 
     {
         if(this.regexWait_ != undefined)
             clearTimeout(this.regexWait_);
@@ -67,16 +67,16 @@ export class RegexVisualizer {
         if(this.options_.regexWait > 0)
         {
             this.regexWait_ = setTimeout(async () => {
-                await this.updateRegex(textElement.textContent);
+                this.updateRegex(textElement.textContent);
             }, this.options_.regexWait);
         }
         else
         {
-            await this.updateRegex(textElement.textContent);
+            this.updateRegex(textElement.textContent);
         }
     }
 
-    private matchTextCallback(event : InputEvent, textElement : HTMLElement)
+    private matchTextCallback(textElement : HTMLElement, event?: InputEvent)
     {
         if(this.stringMatchEditor_.isIdle)
             return;
@@ -99,14 +99,22 @@ export class RegexVisualizer {
         }
     }
 
-    private async updateRegex(regexString : string)
+    private async updateRegex(regexString : string = "")
     {
-        await this.regexer_.parse(regexString);
-        this.regexEditor_.highlight(this.regexer_.AST);
+        try
+        {
+            await this.regexer_.parse(regexString);
 
-        /* --- update match --- */
-        this.resetMatches();
-        this.updateMatch(this.stringMatchEditor_.textInput.textContent);
+            this.regexEditor_.highlight(this.regexer_.AST);
+
+            /* --- update match --- */
+            this.matchTextCallback(this.stringMatchEditor_.textInput);
+        }
+        catch(exception : unknown) // invalid regex
+        {
+            const parseError = exception as RegParseException;
+            this.regexEditor_.highlightError(parseError.getPosition());
+        }
     }
 
     private async updateMatch(matchString : string)
@@ -127,7 +135,6 @@ export class RegexVisualizer {
             matchCallback(matchData : MatchData) {
                 that.matches_[that.matches_.length-1].changeMatchInformation(matchData);
 
-                console.log(matchData);
                 that.steps_ += matchData.statesCount;
                 that.debuggerWindow_.steps = that.steps_;
 

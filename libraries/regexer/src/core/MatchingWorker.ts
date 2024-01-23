@@ -148,7 +148,8 @@ class MatcherInternal
                 {
                     this.matchBuilder.addState({
                         type: nfaState.ASTelement.type, 
-                        regAt : [nfaState.ASTelement.start, nfaState.ASTelement.end]
+                        regAt : [nfaState.ASTelement.start, nfaState.ASTelement.end],
+                        strAt: [this.matchBuilder.matchData.start ?? 0 ,this.stringPosStack.top()]
                     });
                 }
 
@@ -208,7 +209,8 @@ class MatcherInternal
         if((flags & MatchFlags.OPTION_SHOW_FIRST_ENTER) && this.statesStack.top()?.transition === 0)
             this.matchBuilder.addState({
                 type: nfaState.ASTelement.type, 
-                regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end]
+                regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
+                strAt: [this.matchBuilder.matchData.start ?? 0 ,this.stringPosStack.top()]
             });
 
         if((flags & MatchFlags.OPTION_ENTERS_SHOW_ACTIVE))
@@ -220,6 +222,7 @@ class MatcherInternal
             this.matchBuilder.addState({
                 type: nfaState.ASTelement.type, 
                 regAt : [optionSelectedArr[0].start, optionSelectedArr[optionSelectedArr.length-1].end],
+                strAt: [this.matchBuilder.matchData.start ?? 0 ,this.stringPosStack.top()],
                 action: MatchAction.SHOWCASE
             });
         }
