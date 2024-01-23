@@ -1,38 +1,61 @@
-import { workerData, parentPort } from 'worker_threads';
+import { expose } from 'threads/worker';
 import { RegexTypes } from '@core/RegexParser';
 import { Stack } from '@regexer/structures/Stack';
 import { ASTGroup, ASTOption, NFAState, NFAStateList, NFAtype } from '../coreTypes/parserTypes';
 import { MatchBuilder } from './MatchBuilder';
-import { MatchWorkerResultTypes, MessageWorkerRecieve, NewData, NewFlags, ReturnBatch, ReturnErrorMessage, ReturnMessage } from '../coreTypes/MatchWorkerTypes';
+import { MatchResponse, NewData, ReturnAborted, ReturnBatch, ReturnMatch } from '../coreTypes/MatchWorkerTypes';
 import { MatchAction, MatchFlags } from '@regexer/coreTypes/MatchTypes';
 
-let AST: RegexTypes.ASTRoot = workerData.AST;
-let NFA: RegexTypes.NFAtype[] = workerData.NFA;
-let flags : number | MatchFlags | undefined = workerData?.flags;
+let AST: RegexTypes.ASTRoot;
+let NFA: RegexTypes.NFAtype[];
+let flags : number | MatchFlags | undefined;
 
 type matchingState = {transition: number, state: RegexTypes.NFAtype};
 
-class Matcher
+class MatcherInternal
 {
     constructor() 
     {}
 
-    public match(matchString : string, pid : number, batchSize: number = -1)
+    public match(pid : number, matchString? : string, batchSize?: number)
     {
-        this.pid = pid;
-        this.regexPosStack = new Stack<number>([0]);
-        this.stringPosStack = new Stack<number>([0]);
-        this.statesStack = new Stack<matchingState>();
-        this.matchBuilder = new MatchBuilder(flags, batchSize);
-        this.matchBuilder.matchData.start = 0;
-        this.groups = new Stack<ASTGroup>();
-        this.batchSize_ = batchSize;
+        if(matchString !== undefined)
+        {
+            this.pid = pid;
+            this.regexPosStack = new Stack<number>([0]);
+            this.stringPosStack = new Stack<number>([0]);
+            this.statesStack = new Stack<matchingState>();
+            this.matchBuilder = new MatchBuilder(flags, batchSize ?? -1);
+            this.matchBuilder.matchData.start = 0;
+            this.groups = new Stack<ASTGroup>();
+            this.batchSize_ = batchSize ?? -1;
+            this.matchString_ = matchString;
+            this.isMatching = true;
+            delete(this.response);
 
-        this.matchBuilder.addState({
-            type: RegexTypes.RegexStates.ROOT,
-            regAt: [0, 0],
-            strAt: [0, 0]
-        });
+            this.matchBuilder.addState({
+                type: RegexTypes.RegexStates.ROOT,
+                regAt: [0, 0],
+                strAt: [0, 0]
+            });
+        }
+
+        if(this.pid !== pid)
+            return null;
+
+        if(this.response === MatchResponse.ABORTED)
+        {
+            this.isMatching = false;
+            this.abortResolve();
+            return <ReturnAborted>{ type: this.response, pid: this.pid, data: undefined };
+        }
+        else if(this.response !== undefined)
+        {
+            this.isMatching = false;
+            if(this.response & MatchResponse.SUCCESS)
+                this.matchBuilder.success = true;
+            return <ReturnMatch>{ type: this.response, pid: this.pid, data: this.matchBuilder.finalize() };
+        }
 
 
         while(true) 
@@ -44,7 +67,7 @@ class Matcher
                 break;
             
             if(this.matchBuilder.isBatchReady())
-                parentPort.postMessage(<ReturnBatch>{ type: MatchWorkerResultTypes.BATCH, pid: this.pid, data: this.matchBuilder.getBatch() });
+                return <ReturnBatch>{ type: MatchResponse.BATCH, pid: this.pid, data: this.matchBuilder.getBatch() };
 
             /* 
                 If the state isn't at the top of the stack we need to add it as new state
@@ -62,17 +85,20 @@ class Matcher
             /* if the state is list we transition differently */
             if(astState & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL)) 
             {
-                if(!this.handleList(matchString)) return;
+                const returned = this.handleList();
+                if(returned !== null) return returned;
                 continue;
             }
-            else if((astState & RegexTypes.RegexStates.END_STRING) && this.stringPosStack.top() != matchString.length) 
+            else if((astState & RegexTypes.RegexStates.END_STRING) && this.stringPosStack.top() != this.matchString_.length) 
             {
-                if(!this.handleBacktracking(matchString)) return;
+                const returned = this.handleBacktracking();
+                if(returned !== null) return returned;
                 continue;
             }
             else if((astState & RegexTypes.RegexStates.START_STRING) && this.stringPosStack.top() != 0) 
             {
-                if(!this.handleBacktracking(matchString)) return;
+                const returned = this.handleBacktracking();
+                if(returned !== null) return returned;
                 continue;
             }
 
@@ -86,7 +112,8 @@ class Matcher
             const transitions = (nfaState as NFAState).transitions;
             if(transitions.length <= this.statesStack.top().transition)
             {
-                if(!this.handleBacktracking(matchString)) return;
+                const returned = this.handleBacktracking();
+                if(returned !== null) return returned;
                 continue;
             }
 
@@ -129,7 +156,7 @@ class Matcher
             }
 
             /* we now try if we can transition into new state */
-            if(matchString[this.stringPosStack.top()] === transition[0] && this.stringPosStack.top() < matchString.length)
+            if(this.matchString_[this.stringPosStack.top()] === transition[0] && this.stringPosStack.top() < this.matchString_.length)
             {
                 this.regexPosStack.push(this.regexPosStack.top() + transition[1]);
                 this.stringPosStack.push(this.stringPosStack.top() + 1);
@@ -152,10 +179,16 @@ class Matcher
             regAt: [regexEnd, regexEnd]
         });
 
+        // send last batch
         if(this.batchSize_ > 0)
-            parentPort.postMessage(<ReturnBatch>{ type: MatchWorkerResultTypes.BATCH, pid: this.pid, data: this.matchBuilder.getFinalBatch() });
+        {
+            matcher.response = MatchResponse.SUCCESS; // save response
+            return <ReturnBatch>{ type: MatchResponse.BATCH, pid: this.pid, data: this.matchBuilder.getFinalBatch() };
+        }
+
         this.matchBuilder.success = true;
-        parentPort.postMessage(<ReturnMessage>{ type: MatchWorkerResultTypes.SUCCESS, pid: this.pid, data: this.matchBuilder.finalize() });
+        this.isMatching = false;
+        return <ReturnMatch>{ type: MatchResponse.SUCCESS, pid: this.pid, data: this.matchBuilder.finalize() };
     }
 
     private handleOptionTransitioning(nfaState : NFAtype)
@@ -192,22 +225,22 @@ class Matcher
         }
     }
 
-    private handleList(matchString : string)
+    private handleList() : ReturnMatch | ReturnBatch | null
     {
         const listState = this.statesStack.top().state as NFAStateList;
 
-        if(this.stringPosStack.top() + 1 <= matchString.length && listState.transitions.has(matchString[this.stringPosStack.top()]))
+        if(this.stringPosStack.top() + 1 <= this.matchString_.length && listState.transitions.has(this.matchString_[this.stringPosStack.top()]))
         {
             this.regexPosStack.push(this.regexPosStack.top() + 1);
             this.stringPosStack.push(this.stringPosStack.top() + 1);
         }
         else
-            return this.handleBacktracking(matchString);
+            return this.handleBacktracking();
 
-        return true;
+        return null;
     }
 
-    private handleBacktracking(matchString : string) : boolean
+    private handleBacktracking() : ReturnMatch | ReturnBatch | null
     {
         const nfaState = NFA[this.regexPosStack.top()];
         this.statesStack.pop();
@@ -223,7 +256,7 @@ class Matcher
         if(this.statesStack.size() === 0)
         {
             /* match from any position wasn't found */
-            if(this.stringPosStack.top() + 1 >= matchString.length)
+            if(this.stringPosStack.top() + 1 >= this.matchString_.length)
             {
                 delete this.matchBuilder.matchData.start;
                 delete this.matchBuilder.matchData.end;
@@ -231,14 +264,18 @@ class Matcher
                 this.matchBuilder.addState({
                     type: RegexTypes.RegexStates.ROOT,
                     regAt: [0, 0],
-                    strAt: [matchString.length, matchString.length]
+                    strAt: [this.matchString_.length, this.matchString_.length]
                 });
 
+                // send last batch
                 if(this.batchSize_ > 0)
-                    parentPort.postMessage(<ReturnBatch>{ type: MatchWorkerResultTypes.BATCH, pid: this.pid, data: this.matchBuilder.getFinalBatch() });
-                parentPort.postMessage(<ReturnMessage>{ type: MatchWorkerResultTypes.NO_MATCH, pid: this.pid, data: this.matchBuilder.finalize() });
+                {
+                    matcher.response = MatchResponse.NO_MATCH; // save response
+                    return <ReturnBatch>{ type: MatchResponse.BATCH, pid: this.pid, data: this.matchBuilder.getFinalBatch() };
+                }
 
-                return false;
+                this.isMatching = false;
+                return <ReturnMatch>{ type: MatchResponse.NO_MATCH, pid: this.pid, data: this.matchBuilder.finalize() };
             }
 
             this.stringPosStack.push(this.stringPosStack.pop() + 1);
@@ -247,7 +284,7 @@ class Matcher
             this.matchBuilder.matchData.start = this.stringPosStack.top();
 
             if(flags & MatchFlags.IGNORE_STR_START_POSITION_CHANGE || nfaState?.ASTelement?.type === undefined)
-                return true;
+                return null;
 
             this.matchBuilder.addState({
                 type: nfaState.ASTelement.type, 
@@ -256,13 +293,13 @@ class Matcher
                 action: MatchAction.FORWARD_START
             });
 
-            return true;
+            return null;
         }
 
         this.stringPosStack.pop();
 
         if(nfaState?.ASTelement?.type === undefined)
-            return true;
+            return null;
 
         this.matchBuilder.addState({
             type: nfaState.ASTelement.type, 
@@ -275,7 +312,7 @@ class Matcher
         if(optionElement?.type === RegexTypes.RegexStates.OPTION)
             this.matchBuilder.updateOption(optionElement.start, optionElement.end);
 
-        return true;
+        return null;
     }
 
     public pid : number;
@@ -285,47 +322,58 @@ class Matcher
     private matchBuilder : MatchBuilder;
     private groups : Stack<ASTGroup>;
     private batchSize_ : number;
+    
+    public isMatching ?: boolean;
+    public response ?: MatchResponse;
+    public abortResolve ?: (value?: unknown) => void
+
+    private matchString_ : string;
 }
 
-const matcher = new Matcher();
+const matcher = new MatcherInternal();
 
-parentPort.on("message", (message : MessageWorkerRecieve) => {
-    switch(message.type)
+const Matcher = {
+    match(pid : number, matchString : string, batchSize: number = -1) : ReturnMatch | ReturnBatch | ReturnAborted | null
     {
-        case 'match':
-        {
-            if(typeof message.data !== "string")
-            {
-                parentPort.postMessage(<ReturnErrorMessage>{type: MatchWorkerResultTypes.ERROR, pid: message.pid, data: "Unexpected error during matching."});
-                return;
-            }
+        if(AST === undefined || NFA === undefined)
+            return null;
+        return matcher.match(pid, matchString, batchSize)
+    },
 
-            const matchString : string = message.data;
+    nextBatch(pid : number) : ReturnMatch | ReturnBatch | ReturnAborted | null
+    {
+        if(AST === undefined || NFA === undefined)
+            return null;
+        return matcher.match(pid);
+    },
 
-            try{
-                matcher.match(matchString, message.pid, message.batchSize ?? -1);
-            } 
-            catch(e) {
-                parentPort.postMessage(<ReturnErrorMessage>{type: MatchWorkerResultTypes.ERROR, pid: message.pid, data: "Unexpected error during matching."});
-            }
+    newData(newData : NewData)
+    {
+        AST = newData.AST;
+        NFA = newData.NFA;
+        if(newData.flags !== undefined)
+            flags = newData.flags;
+    },
 
-            break;
-        }
-        case 'new_data':
-        {
-            let newData = message.data as NewData;
-            AST = newData?.AST;
-            NFA = newData?.NFA;
-            flags = newData?.flags
+    newFlags(newFlags : MatchFlags | number)
+    {
+        this.flags = newFlags;
+    },
 
-            break;
-        }
-        case 'new_flags':
-        {
-            let newData = message.data as NewFlags;
-            flags = newData.flags
-
-            break;
-        }
+    async abort()
+    {
+        matcher.response = MatchResponse.ABORTED;
+        await new Promise(resolve => { 
+            matcher.abortResolve = resolve; 
+            setInterval(() => {
+                if(!matcher.isMatching)
+                {
+                    matcher.abortResolve();
+                }
+            }, 1);
+        });
     }
-});
+}
+
+export type Matcher = typeof Matcher;
+expose(Matcher);

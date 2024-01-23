@@ -1,4 +1,4 @@
-import { MatchWorkerResultTypes } from "@regexer/coreTypes/MatchWorkerTypes";
+import { MatchResponse } from "@regexer/coreTypes/MatchWorkerTypes";
 import { MatchAction, MatchBatchData, MatchData, MatchFlags, MatchState } from "@regexer/coreTypes/MatchTypes";
 
 export class MatchBuilder

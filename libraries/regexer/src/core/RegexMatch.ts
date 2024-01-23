@@ -14,12 +14,7 @@ export class RegexMatch
      public async addBatch(batch : MatchBatchData)
      {
           this.matchData_.statesCount = batch.matchCurrentSize;
-
-          for(let i = 0; i < batch.matchStates.length ;i++)
-          {
-               await new Promise(resolve => setTimeout(resolve, 0));
-               this.matchData_.states.push(batch.matchStates[i]);
-          }
+          this.matchData_.states.push(...batch.matchStates);
      }
 
      public changeMatchInformation(match : MatchData)

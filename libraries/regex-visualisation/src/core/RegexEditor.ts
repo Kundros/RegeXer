@@ -1,5 +1,4 @@
-import { RegexTypes } from "@kundros/regexer/types/core/RegexParser";
-import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, AstEscapedSpecial, GroupTypes, RegexStates } from "@kundros/regexer";
+import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, ASTtype, AstEscapedSpecial, GroupTypes, RegexStates } from "@kundros/regexer";
 import { TextEditor, TextEditorOptions } from "./TextEditor";
 import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
 import { ElementHelper } from "./other/ElementHelper";
@@ -11,7 +10,7 @@ export class RegexEditor extends TextEditor
         super(textInput, options);
     }
 
-    public highlight(AST: RegexTypes.ASTtype, isRoot: boolean = true) : Node[] | null
+    public highlight(AST: ASTtype, isRoot: boolean = true) : Node[] | null
     {
         let elements : Node[] = [];
         
@@ -54,7 +53,7 @@ export class RegexEditor extends TextEditor
         this.updateText();
     }
 
-    private highlightInternal(AST: RegexTypes.ASTtype) : Node
+    private highlightInternal(AST: ASTtype) : Node
     {
         const text = this.textInput_.textContent;
 

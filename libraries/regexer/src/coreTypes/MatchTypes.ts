@@ -1,12 +1,5 @@
 import { RegexTypes } from "@regexer/core/RegexParser"
-
-export const MatchingCompleteResponse = {
-    SUCCESS: 0x1,
-    FAILED: 0x2,
-    ABORTED: 0x4
-} as const;
-
-export type MatchingCompleteResponse = typeof MatchingCompleteResponse[keyof typeof MatchingCompleteResponse];
+import { MatchResponse } from "./MatchWorkerTypes"
 
 export type MatchBatchData = {
     batchSize: number,
@@ -17,9 +10,9 @@ export type MatchBatchData = {
 
 export type BatchMatchOptions = 
 {
-    batchCallback: (MatchBatch) => void,
-    matchCallback: (MatchData) => void,
-    completeCallback: (MatchingCompleteResponse) => void,
+    batchCallback: (matchBatch : MatchBatchData) => void | Promise<void>,
+    matchCallback: (matchData : MatchData) => void | Promise<void>,
+    completeCallback: (matchingCompleteResponse : MatchResponse) => void | Promise<void>,
     batchSize?: number,
     forceStopRunning?: boolean
 }

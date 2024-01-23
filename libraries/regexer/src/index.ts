@@ -1,9 +1,10 @@
 export * from "@core/Regexer";
-export * from "@core/RegexMatch"
-export * from "@regexer/exceptions/RegParseException"
-export * from "@exceptions/RegMatchException"
+export * from "@core/RegexMatch";
+export * from "@regexer/exceptions/RegParseException";
+export * from "@exceptions/RegMatchException";
 export * from "@regexer/coreTypes/parserTypes";
-export * from "@regexer/coreTypes/MatchTypes"
+export * from "@regexer/coreTypes/MatchTypes";
+export { MatchResponse } from "@regexer/coreTypes/MatchWorkerTypes";
 
 /*import { Regexer } from "@models/Regexer";
 

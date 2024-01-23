@@ -7,7 +7,7 @@ import './styles/debugger.less';
 import { RegexDebugger } from "./core/RegexDebugger";
 
 /** private scope vscode api variable according to: https://code.visualstudio.com/api/extension-guides/webview#passing-messages-from-a-webview-to-an-extension */
-(function() {
+(async function() {
     const vscode = acquireVsCodeApi();
 
     new RegexVisualizer(

@@ -52,6 +52,12 @@ const extensionConfig = {
         use: [
           {
             loader: path.resolve('loaders/url-path-loader.js')
+          },
+          {
+            loader: path.resolve('loaders/custom-worker-loader.js'),
+            options: {
+              target: "node"
+            }
           }
         ],
       }

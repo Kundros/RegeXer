@@ -1,7 +1,7 @@
 import { WebviewApi } from "vscode-webview";
 import { Message, MessageBatchData, MessageErrorRegex, MessageMatchComplete, MessageMatchData, MessageRegexData, RegexData } from "types";
 import { RegexEditor } from "./RegexEditor";
-import { MatchingCompleteResponse, RegexMatch } from "@kundros/regexer";
+import { MatchBatchData, MatchData, MatchFlags, MatchResponse, RegexMatch, Regexer } from "@kundros/regexer";
 import { StringMatchEditor } from "./StringMatchEditor";
 import { RegexDebugger } from "./RegexDebugger";
 
@@ -23,13 +23,19 @@ export class RegexVisualizer {
         this.options_.regexWait = options?.regexWait ?? 500;
 
         this.registerListeners();
-
         this.resetMatches();
 
-        this.vscode_.postMessage({
-            type: 'regex_match_string',
-            data: ''
-        });
+        this.regexer_ = new Regexer( 
+            MatchFlags.SHORTEN_BACKTRACKING | 
+            MatchFlags.BACKTRACKED_FROM_EXACT |
+            MatchFlags.BACKTRACK_TRIM_POSITION |
+            MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
+            MatchFlags.OPTION_SHOW_FIRST_ENTER |
+            MatchFlags.REMOVE_STATES_WO_EFFECT |
+            MatchFlags.OPTION_NO_ERROR_RETURN
+        );
+
+        this.updateRegex("");
     }
 
     private registerListeners()
@@ -52,7 +58,7 @@ export class RegexVisualizer {
         this.debuggerWindow_.resetSteps();
     }
 
-    private regexTextCallback(event : InputEvent, textElement : HTMLElement) 
+    private async regexTextCallback(event : InputEvent, textElement : HTMLElement) 
     {
         if(this.regexWait_ != undefined)
             clearTimeout(this.regexWait_);
@@ -60,19 +66,13 @@ export class RegexVisualizer {
         this.stringMatchEditor_.setLoading();
         if(this.options_.regexWait > 0)
         {
-            this.regexWait_ = setTimeout(() => {
-                this.vscode_.postMessage({
-                    type: 'regex_update',
-                    data: textElement.textContent
-                });
+            this.regexWait_ = setTimeout(async () => {
+                await this.updateRegex(textElement.textContent);
             }, this.options_.regexWait);
         }
         else
         {
-            this.vscode_.postMessage({
-                type: 'regex_update',
-                data: textElement.textContent
-            });
+            await this.updateRegex(textElement.textContent);
         }
     }
 
@@ -89,100 +89,75 @@ export class RegexVisualizer {
         {
             this.matchWait_ = setTimeout(() => {
                 this.resetMatches();
-
-                this.vscode_.postMessage({
-                    type: 'regex_match_string',
-                    data: textElement.textContent
-                });
+                this.updateMatch(textElement.textContent);
             }, this.options_.matchWait);
         }
         else
         {
             this.resetMatches();
-
-            this.vscode_.postMessage({
-                type: 'regex_match_string',
-                data: textElement.textContent
-            });
+            this.updateMatch(textElement.textContent);
         }
     }
+
+    private async updateRegex(regexString : string)
+    {
+        await this.regexer_.parse(regexString);
+        this.regexEditor_.highlight(this.regexer_.AST);
+
+        /* --- update match --- */
+        this.resetMatches();
+        this.updateMatch(this.stringMatchEditor_.textInput.textContent);
+    }
+
+    private async updateMatch(matchString : string)
+    {
+        /* --- update match --- */
+        this.resetMatches();
+
+        const that = this;
+        this.regexer_.matchInBatches(matchString, {
+            batchCallback(batchData : MatchBatchData) {
+                const lastMatch = that.matches_[that.matches_.length-1];
+
+                lastMatch.addBatch(batchData);
+
+                that.debuggerWindow_.steps = lastMatch.statesCount;
+                that.stringMatchEditor_.updateMatchStatesMessage(lastMatch.statesCount, 0);
+            },
+            matchCallback(matchData : MatchData) {
+                that.matches_[that.matches_.length-1].changeMatchInformation(matchData);
+
+                console.log(matchData);
+                that.steps_ += matchData.statesCount;
+                that.debuggerWindow_.steps = that.steps_;
+
+                that.stringMatchEditor_.updateMatchStatesMessage(matchData.statesCount, that.matches_.length - (matchData.success ? 0 : 1));
+            },
+            completeCallback(flag: MatchResponse)
+            {
+                if(flag & ~(MatchResponse.SUCCESS | MatchResponse.NO_MATCH))
+                    return;
+
+                that.stringMatchEditor_.updateSignSuccess(that.matches_.length > 0 ? that.matches_[0].success : false);
+            },
+            batchSize: 50000,
+            forceStopRunning: true
+        });
+    }
+
 
     private async messageRecieve(event : MessageEvent)
     {
         const message = event.data as Message;
 
         switch(message.type){
-            case 'regex_data':
-            {
-                const RegexData = message as MessageRegexData;
-
-                this.regexData_ = RegexData.data;
-                this.regexEditor_.highlight(this.regexData_.AST);
-
-                /* --- update match --- */
-                this.resetMatches();
-
-                this.vscode_.postMessage({
-                    type: 'regex_match_string',
-                    data: this.stringMatchEditor_.textInput.textContent
-                });
-
-                break;
-            }
-
-            case 'regex_invalid':
-            {
-                const RegexData = message as MessageErrorRegex;
-
-                this.regexEditor_.highlightError([RegexData.data.from, RegexData.data.to]);
-                this.stringMatchEditor_.setSignIdle();
-
-                break;
-            }
-
-            case 'regex_match_data':
-            {
-                const RegexData = message as MessageMatchData;
-                this.matches_[this.matches_.length-1].changeMatchInformation(RegexData.data);
-
-                this.steps_ += RegexData.data.statesCount;
-                this.debuggerWindow_.steps = this.steps_;
-
-                this.stringMatchEditor_.updateMatchStatesMessage(RegexData.data.statesCount, this.matches_.length - (RegexData.data.success ? 0 : 1));
-
-                break;
-            }
-
-            case 'regex_batch_data':
-            {
-                const batchData = message as MessageBatchData;
-                const lastMatch = this.matches_[this.matches_.length-1];
-
-                lastMatch.addBatch(batchData.data);
-
-                this.debuggerWindow_.steps = lastMatch.statesCount;
-                this.stringMatchEditor_.updateMatchStatesMessage(lastMatch.statesCount, 0);
-
-                break;
-            }
-
-            case 'regex_matching_complete':
-            {
-                const completeFlag = message as MessageMatchComplete;
-
-                if(completeFlag.data !== MatchingCompleteResponse.SUCCESS)
-                    break;
-
-                this.stringMatchEditor_.updateSignSuccess(this.matches_.length > 0 ? this.matches_[0].success : false);
-                break;
-            }
+            
         }
     }
     
     private options_ : RegexVisualizerOptions;
     private matchWait_? : NodeJS.Timeout;
     private regexWait_? : NodeJS.Timeout;
-    private regexData_? : RegexData;
 
     private matches_ : RegexMatch[];
     private steps_ : number;
@@ -190,6 +165,7 @@ export class RegexVisualizer {
     private regexEditor_ : RegexEditor;
     private stringMatchEditor_ : StringMatchEditor;
     private debuggerWindow_ : RegexDebugger;
+    private regexer_ : Regexer;
 
     private vscode_ : WebviewApi<unknown>;
 }

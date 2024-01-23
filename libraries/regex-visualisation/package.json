@@ -4,6 +4,7 @@
   "description": "VS-code plugin to visualise regex execution.",
   "main": "dist/index.html",
   "types": "types/index.d.ts",
+  "module": "module",
   "scripts": {
     "build:webpack": "webpack --config webpack.config.js",
     "watch:webpack": "webpack --watch",

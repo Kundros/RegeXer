@@ -43,13 +43,15 @@
     "@vscode/test-electron": "^2.3.8",
     "eslint": "^8.54.0",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.3.2",
+    "typescript": "^5.3.3",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "@kundros/regex-visualisation": "file:../regex-visualisation",
     "@kundros/regexer": "file:../regexer",
-    "html-loader": "^4.2.0"
+    "html-loader": "^4.2.0",
+    "threads": "^1.7.0",
+    "worker-loader": "^3.0.8"
   }
 }

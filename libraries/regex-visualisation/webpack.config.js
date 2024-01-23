@@ -11,7 +11,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 /** @type WebpackConfig */
 const extensionConfig = {
-  target: 'webworker',
+  target: 'web',
 	mode: 'none',
 
   resolve: {
@@ -25,7 +25,7 @@ const extensionConfig = {
     asyncWebAssembly: true,
     layers: true,
     syncWebAssembly: true,
-    topLevelAwait: true,
+    topLevelAwait: true
   },
 
   entry: { 
@@ -33,10 +33,12 @@ const extensionConfig = {
       import: path.resolve(__dirname, 'src/index.ts')
     }
   },
+
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js'
   },
+
   module: {
     rules: [
       {
@@ -48,7 +50,12 @@ const extensionConfig = {
         exclude: /node_modules/,
         use: [
           {
-            loader: 'ts-loader'
+            loader: 'ts-loader',
+            options: {
+              compilerOptions: {
+                module: "esnext"
+              }
+            }
           }
         ],
         resolve: { extensions: ['.ts', '.js' ] }
@@ -78,6 +85,12 @@ const extensionConfig = {
         use: [
           {
             loader: path.resolve('loaders/url-path-loader.js')
+          },
+          {
+            loader: path.resolve('loaders/custom-worker-loader.js'),
+            options: {
+              target: "web"
+            },
           }
         ],
       },

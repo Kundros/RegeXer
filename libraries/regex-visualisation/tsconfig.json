@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "module": "ESNext",
     "rootDir": "./src",
     "outDir": "./dist",
     "lib": ["DOM", "WebWorker"],

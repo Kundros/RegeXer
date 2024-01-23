@@ -6,6 +6,7 @@ global.__filename = "dist/cjs/core/Regexer";
 
 test("empty", async () => {
     const regexer = new Regexer();
+    await regexer.parse();
 
     expect((await regexer.match(""))[0].success).toBe(true);
     expect((await regexer.match("aaa"))[0].success).toBe(true);
@@ -15,7 +16,8 @@ test("empty", async () => {
 });
 
 test("one character", async () => {
-    const regexer = new Regexer("a");
+    const regexer = new Regexer();
+    await regexer.parse("a");
 
     expect((await regexer.match(""))[0].success).toBe(false);
     expect((await regexer.match("aaa"))[0].success).toBe(true);
@@ -27,7 +29,8 @@ test("one character", async () => {
 });
 
 test("string character", async () => {
-    const regexer = new Regexer("test");
+    const regexer = new Regexer();
+    await regexer.parse("test");
 
     expect((await regexer.match(""))[0].success).toBe(false);
     expect((await regexer.match("aaab"))[0].success).toBe(false);
@@ -40,7 +43,8 @@ test("string character", async () => {
 });
 
 test("iteration character zero or more", async () => {
-    const regexer = new Regexer("a*");
+    const regexer = new Regexer();
+    await regexer.parse("a*");
 
     expect((await regexer.match(""))[0].success).toBe(true);
     expect((await regexer.match("aaab"))[0].success).toBe(true);
@@ -51,7 +55,8 @@ test("iteration character zero or more", async () => {
 });
 
 test("iteration character one or more", async () => {
-    const regexer = new Regexer("a+");
+    const regexer = new Regexer();
+    await regexer.parse("a+");
 
     expect((await regexer.match(""))[0].success).toBe(false);
     expect((await regexer.match("aaab"))[0].success).toBe(true);
@@ -62,7 +67,8 @@ test("iteration character one or more", async () => {
 });
 
 test("iteration surounded zero or more", async () => {
-    const regexer = new Regexer("ba*r");
+    const regexer = new Regexer();
+    await regexer.parse("ba*r");
 
     expect((await regexer.match("br"))[0].success).toBe(true);
     expect((await regexer.match("baaar"))[0].success).toBe(true);
@@ -75,7 +81,8 @@ test("iteration surounded zero or more", async () => {
 });
 
 test("iteration surounded one or more", async () => {
-    const regexer = new Regexer("ba+r");
+    const regexer = new Regexer();
+    await regexer.parse("ba+r");
 
     expect((await regexer.match("br"))[0].success).toBe(false);
     expect((await regexer.match("baaar"))[0].success).toBe(true);
@@ -85,7 +92,8 @@ test("iteration surounded one or more", async () => {
 });
 
 test("iteration group surounded 1", async () => {
-    const regexer = new Regexer("b(ab)+r");
+    const regexer = new Regexer();
+    await regexer.parse("b(ab)+r");
 
     expect((await regexer.match("ab"))[0].success).toBe(false);
     expect((await regexer.match("babr"))[0].success).toBe(true);
@@ -97,7 +105,8 @@ test("iteration group surounded 1", async () => {
 });
 
 test("iteration group surounded 2", async () => {
-    const regexer = new Regexer("b(ab)*r");
+    const regexer = new Regexer();
+    await regexer.parse("b(ab)*r");
 
     expect((await regexer.match("ab"))[0].success).toBe(false);
     expect((await regexer.match("bar"))[0].success).toBe(false);
@@ -108,7 +117,8 @@ test("iteration group surounded 2", async () => {
 });
 
 test("option", async () => {
-    const regexer = new Regexer("a|b");
+    const regexer = new Regexer();
+    await regexer.parse("a|b");
 
     expect((await regexer.match("a"))[0].success).toBe(true);
     expect((await regexer.match("b"))[0].success).toBe(true);
@@ -119,7 +129,8 @@ test("option", async () => {
 });
 
 test("option 2", async () => {
-    const regexer = new Regexer("a|(rb+r)");
+    const regexer = new Regexer();
+    await regexer.parse("a|(rb+r)");
 
     expect((await regexer.match("a"))[0].success).toBe(true);
     expect((await regexer.match("b"))[0].success).toBe(false);
@@ -131,7 +142,8 @@ test("option 2", async () => {
 });
 
 test("complex match (option, iteration, group)", async () => {
-    const regexer = new Regexer("t(a|(rb+r)|dd)+t");
+    const regexer = new Regexer();
+    await regexer.parse("t(a|(rb+r)|dd)+t");
 
     expect((await regexer.match("a"))[0].success).toBe(false);
     expect((await regexer.match("tt"))[0].success).toBe(false);
@@ -147,7 +159,8 @@ test("complex match (option, iteration, group)", async () => {
 });
 
 test("SOS (start of string)", async () => {
-    const regexer = new Regexer("^a");
+    const regexer = new Regexer();
+    await regexer.parse("^a");
 
     expect((await regexer.match("a"))[0].success).toBe(true);
     expect((await regexer.match("ta"))[0].success).toBe(false);
@@ -159,7 +172,8 @@ test("SOS (start of string)", async () => {
 });
 
 test("EOS (end of string)", async () => {
-    const regexer = new Regexer("a$");
+    const regexer = new Regexer();
+    await regexer.parse("a$");
 
     expect((await regexer.match("a"))[0].success).toBe(true);
     expect((await regexer.match("ta"))[0].success).toBe(true);
@@ -171,7 +185,8 @@ test("EOS (end of string)", async () => {
 });
 
 test("SOS + EOS (with option)", async () => {
-    const regexer = new Regexer("^(a)+|b+$");
+    const regexer = new Regexer();
+    await regexer.parse("^(a)+|b+$");
 
     expect((await regexer.match("a"))[0].success).toBe(true);
     expect((await regexer.match("ta"))[0].success).toBe(false);
@@ -187,7 +202,8 @@ test("SOS + EOS (with option)", async () => {
 });
 
 test("\\w\\W (equivalent: [_0-9a-zA-Z][^_0-9a-zA-Z])", async () => {
-    const regexer = new Regexer("\\w\\W");
+    const regexer = new Regexer();
+    await regexer.parse("\\w\\W");
 
     expect((await regexer.match("a-"))[0].success).toBe(true);
     expect((await regexer.match("_."))[0].success).toBe(true);
@@ -205,7 +221,8 @@ test("\\w\\W (equivalent: [_0-9a-zA-Z][^_0-9a-zA-Z])", async () => {
 });
 
 test("\\d\\D (equivalent: [0-9][^0-9])", async () => {
-    const regexer = new Regexer("\\d\\D");
+    const regexer = new Regexer();
+    await regexer.parse("\\d\\D");
 
     expect((await regexer.match("a-"))[0].success).toBe(false);
     expect((await regexer.match("09"))[0].success).toBe(false);
@@ -221,7 +238,8 @@ test("\\d\\D (equivalent: [0-9][^0-9])", async () => {
 });
 
 test("\\s\\S (equivalent: [\\t\\n\\v\\f\\r \\xA0][^\\t\\n\\v\\f\\r \\xA0])", async () => {
-    const regexer = new Regexer("\\s\\S");
+    const regexer = new Regexer();
+    await regexer.parse("\\s\\S");
 
     expect((await regexer.match("  "))[0].success).toBe(false);
     expect((await regexer.match(" \n"))[0].success).toBe(false);
@@ -238,7 +256,8 @@ test("\\s\\S (equivalent: [\\t\\n\\v\\f\\r \\xA0][^\\t\\n\\v\\f\\r \\xA0])", asy
 });
 
 test("escaped ascii \\[0tnvrf]", async () => {
-    const regexer = new Regexer("\0\t\n\v\r\f");
+    const regexer = new Regexer();
+    await regexer.parse("\0\t\n\v\r\f");
 
     expect((await regexer.match("\0\t\n\v\r\f"))[0].success).toBe(true);
 
@@ -246,7 +265,8 @@ test("escaped ascii \\[0tnvrf]", async () => {
 });
 
 test("list", async () => {
-    const regexer = new Regexer("[abc]");
+    const regexer = new Regexer();
+    await regexer.parse("[abc]");
 
     expect((await regexer.match("a"))[0].success).toBe(true);
     expect((await regexer.match("dddb"))[0].success).toBe(true);
@@ -258,7 +278,8 @@ test("list", async () => {
 });
 
 test("list hex", async () => {
-    const regexer = new Regexer("[\x00\x01]");
+    const regexer = new Regexer();
+    await regexer.parse("[\x00\x01]");
 
     expect((await regexer.match("\x00"))[0].success).toBe(true);
     expect((await regexer.match("\x01"))[0].success).toBe(true);
@@ -269,7 +290,8 @@ test("list hex", async () => {
 });
 
 test("list range", async () => {
-    const regexer = new Regexer("[\x00-z]");
+    const regexer = new Regexer();
+    await regexer.parse("[\x00-z]");
 
     expect((await regexer.match("\x05"))[0].success).toBe(true);
     expect((await regexer.match("\x04"))[0].success).toBe(true);
@@ -281,7 +303,8 @@ test("list range", async () => {
 });
 
 test("list negated", async () => {
-    const regexer = new Regexer("[^a-zA-Z]");
+    const regexer = new Regexer();
+    await regexer.parse("[^a-zA-Z]");
 
     expect((await regexer.match("056"))[0].success).toBe(true);
     expect((await regexer.match("-"))[0].success).toBe(true);
@@ -293,7 +316,8 @@ test("list negated", async () => {
 });
 
 test("list iteration", async () => {
-    const regexer = new Regexer("_[a-zA-Z]*_");
+    const regexer = new Regexer();
+    await regexer.parse("_[a-zA-Z]*_");
 
     expect((await regexer.match("_abcde_"))[0].success).toBe(true);
     expect((await regexer.match("_ABCdeZghl_"))[0].success).toBe(true);
