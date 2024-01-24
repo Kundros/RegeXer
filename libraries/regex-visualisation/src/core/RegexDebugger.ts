@@ -86,7 +86,7 @@ export class RegexDebugger {
         this.matches_ = matches;
     }
 
-    public set steps(steps: number)
+    public set steps(steps : number)
     {
         this.slider_.max = steps;
     }
@@ -96,7 +96,7 @@ export class RegexDebugger {
         this.slider_.value = this.slider_.min;
     }
 
-    private visualizeStep(step: number)
+    private visualizeStep(step : number)
     {
         if(this.matches_ === undefined || this.matches_.length === 0) return;
         const state = this.matches_[0].moveTo(step-1);
@@ -199,7 +199,7 @@ export class RegexDebugger {
         context.restore();
     }
 
-    private getTextRowsDimentions(from: number, to: number, inRegex : boolean = true) : [number, number, number, number][] // x, y, width, height
+    private getTextRowsDimentions(from : number, to : number, inRegex : boolean = true) : [number, number, number, number][] // x, y, width, height
     {
         const context = inRegex ? this.regexContext_ : this.matchContext_;
         const textElement = inRegex ? this.regexText_ : this.matchText_;

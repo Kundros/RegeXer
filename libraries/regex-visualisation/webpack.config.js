@@ -42,10 +42,6 @@ const extensionConfig = {
   module: {
     rules: [
       {
-        resourceQuery: /inline/,
-        type: 'asset/source',
-      },
-      {
         test: /\.ts$/,
         exclude: /node_modules/,
         use: [
