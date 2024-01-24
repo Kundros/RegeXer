@@ -1,0 +1,83 @@
+%%
+%% This is file `diplomalst.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% diplomalst.dtx 
+%% 
+%% Toto dílo podléhá licenci CC BY-NC-ND 3.0 CZ, https://creativecommons.org/licenses/by-nc-nd/3.0/cz/
+%% Můžete jej šířit a používat pro nekomerční účely, musí však být uveden autor a dokument nelze měnit.
+%% 
+%% This work is licensed under CC BY-NC-ND 3.0 CZ, https://creativecommons.org/licenses/by-nc-nd/3.0/cz/deed.en
+%% You may distribute it and use it for non-commercial purposes, but the author must be mentioned and the document can not be changed.
+%% 
+\def\fileversion{1.0}
+\def\filedate{2021/03/06}
+\def\docdate{6. března 2021}
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{diplomalst}[\filedate\space \fileversion\space diplomalst package]
+\RequirePackage[final]{listings}
+\RequirePackage{xcolor}
+\lstset{language=[Sharp]C}
+\DeclareOption{ansic}{\lstset{language=[ANSI]C}}
+\DeclareOption{bash}{\lstset{language=bash}}
+\DeclareOption{cil}{\lstset{language=CIL}}
+\DeclareOption{cpp}{\lstset{language=C++}}
+\DeclareOption{csharp}{\lstset{language=[Sharp]C}}
+\DeclareOption{delphi}{\lstset{language=Delphi}}
+\DeclareOption{gnuplot}{\lstset{language=Gnuplot}}
+\DeclareOption{html}{\lstset{language=HTML}}
+\DeclareOption{java}{\lstset{language=Java}}
+\DeclareOption{latex}{\lstset{language=[LaTeX]TeX}}
+\DeclareOption{lisp}{\lstset{language=Lisp}}
+\DeclareOption{lua}{\lstset{language=Lua}}
+\DeclareOption{make}{\lstset{language=make}}
+\DeclareOption{mathematica}{\lstset{language=Mathematica}}
+\DeclareOption{matlab}{\lstset{language=Matlab}}
+\DeclareOption{octave}{\lstset{language=Octave}}
+\DeclareOption{pascal}{\lstset{language=Pascal}}
+\DeclareOption{perl}{\lstset{language=Perl}}
+\DeclareOption{php}{\lstset{language=PHP}}
+\DeclareOption{pov}{\lstset{language=POV}}
+\DeclareOption{prolog}{\lstset{language=Prolog}}
+\DeclareOption{python}{\lstset{language=Python}}
+\DeclareOption{ruby}{\lstset{language=Ruby}}
+\DeclareOption{r}{\lstset{language=R}}
+\DeclareOption{sh}{\lstset{language=sh}}
+\DeclareOption{sql}{\lstset{language=SQL}}
+\DeclareOption{tcltk}{\lstset{language=[tk]tcl}}
+\DeclareOption{vb}{\lstset{language=[Visual]Basic}}
+\DeclareOption{vhdl}{\lstset{language=VHDL}}
+\DeclareOption{xml}{\lstset{language=XML}}
+\DeclareOption{xslt}{\lstset{language=XSLT}}
+\ProcessOptions
+\lstset
+{
+breaklines=true,
+tabsize=3,
+columns=flexible,
+showstringspaces=false,
+basicstyle=\ttfamily,
+keywordstyle=\color{blue},
+identifierstyle=\color[RGB]{43,145,175},
+commentstyle=\slshape\color[RGB]{0,128,0},
+stringstyle=\color[RGB]{163,21,21},
+frame=lines,
+captionpos=b,
+inputencoding=utf8,
+extendedchars=true,
+literate={á}{{\'{a}}}1 {Á}{{\'{A}}}1 {ä}{{\"{a}}}1 {Ä}{{\"{A}}}
+1 {č}{{\v{c}}}1 {Č}{{\v{C}}}1 {ď}{{\v{d}}}1 {Ď}{{\v{D}}}
+1 {ě}{{\v{e}}}1 {Ě}{{\v{E}}}1 {é}{{\'{e}}}1 {É}{{\'{E}}}
+1 {í}{{\'{i}}}1 {Í}{{\'{I}}}1 {ĺ}{{\'{l}}}1 {Ĺ}{{\'{L}}}
+1 {ľ}{{\v{l}}}1 {Ľ}{{\v{L}}}1 {ň}{{\v{n}}}1 {Ň}{{\v{N}}}
+1 {ó}{{\'{o}}}1 {Ó}{{\'{O}}}1 {ô}{{\^{o}}}1 {Ô}{{\^{O}}}
+1 {ř}{{\v{r}}}1 {Ř}{{\v{R}}}1 {ŕ}{{\'{r}}}1 {Ŕ}{{\'{R}}}
+1 {š}{{\v{s}}}1 {Š}{{\v{S}}}1 {ť}{{\v{t}}}1 {Ť}{{\v{T}}}
+1 {ú}{{\'{u}}}1 {Ú}{{\'{U}}}1 {ů}{{\r{u}}}1 {Ů}{{\r{U}}}
+1 {ý}{{\'{y}}}1 {Ý}{{\'{Y}}}1 {ž}{{\v{z}}}1 {Ž}{{\v{Z}}}1 
+}
+\endinput
+%%
+%% End of file `diplomalst.sty'.

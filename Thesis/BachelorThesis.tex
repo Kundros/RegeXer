@@ -1,0 +1,78 @@
+% Nejprve uvedeme tridu dokumentu s volbami
+\documentclass[czech,bachelor]{diploma}
+% Dalsi doplnujici baliky maker
+\usepackage[autostyle=true,czech=quotes]{csquotes} % korektni sazba uvozovek, podpora pro balik biblatex
+\usepackage[backend=biber, style=iso-numeric, alldates=iso]{biblatex} % bibliografie
+\usepackage{dcolumn} % sloupce tabulky s ciselnymi hodnotami
+\usepackage{subfig} % makra pro "podobrazky" a "podtabulky"
+\usepackage[cpp]{diplomalst}
+
+% Zadame pozadovane vstupy pro generovani titulnich stran.
+\ThesisAuthor{Dominik Kundra}
+
+\ThesisSupervisor{Ing. Jakub Beránek}
+
+\CzechThesisTitle{Vizualizace regulárních výrazů}
+
+\EnglishThesisTitle{Regular Expression Visualization}
+
+\SubmissionYear{2024}
+
+\ThesisAssignmentFileName{ThesisSpecification_KUN0161.pdf}
+
+% Pokud nechceme nikomu dekovat makro zapoznamkujeme.
+% TODO: \Acknowledgement{Rád bych na tomto místě poděkoval všem, kteří mi s prací pomohli, protože bez nich by tato práce nevznikla.}
+
+% TODO: \CzechAbstract{Tohle je český abstrakt, zbytek odstavce je tvořen výplňovým textem. Naší si rozmachu potřebami s posílat v poskytnout ty má plot. Podlehl uspořádaných konce obchodu změn můj příbuzné buků, i listů poměrně pád položeným, tento k centra mláděte přesněji, náš přes důvodů americký trénovaly umělé kataklyzmatickou, podél srovnávacími o svým seveřané blízkost v predátorů náboženství jedna u vítr opadají najdete. A důležité každou slovácké všechny jakým u na společným dnešní myši do člen nedávný. Zjistí hází vymíráním výborná.}
+
+% TODO: \CzechKeywords{typografie; \LaTeX; diplomová práce}
+
+% TODO: \EnglishAbstract{This is English abstract. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Fusce tellus odio, dapibus id fermentum quis, suscipit id erat. Aenean placerat. Vivamus ac leo pretium faucibus. Duis risus. Fusce consectetuer risus a nunc. Duis ante orci, molestie vitae vehicula venenatis, tincidunt ac pede. Aliquam erat volutpat. Donec vitae arcu. Nullam lectus justo, vulputate eget mollis sed, tempor sed magna. Curabitur ligula sapien, pulvinar a vestibulum quis, facilisis vel sapien. Vestibulum fermentum tortor id mi. Etiam bibendum elit eget erat. Pellentesque pretium lectus id turpis. Nulla quis diam.}
+
+% TODO: \EnglishKeywords{typography; \LaTeX; master thesis}
+
+% TODO: \AddAcronym{DVD}{Digital Versatile Disc}
+% TODO: \AddAcronym{TNT}{Trinitrotoluen}
+% TODO: \AddAcronym{UML}{Unified Modeling Language}
+% TODO: \AddAcronym{HTML}{Hyper Text Markup Language}
+% TODO: \AddAcronym{TUG}{\TeX{} Users Group}
+
+% TODO: \addbibresource{biblatex-examples.bib}
+% TODO: \addbibresource{coffee.bib}
+
+% Novy druh tabulkoveho sloupce, ve kterem jsou cisla zarovnana podle desetinne carky
+\newcolumntype{d}[1]{D{,}{,}{#1}}
+
+
+% Zacatek dokumentu
+\begin{document}
+
+% Nechame vysazet titulni strany.
+\MakeTitlePages
+
+% Jsou v praci obrazky? Pokud ano vysazime jejich seznam a odstrankujeme.
+% Pokud ne smazeme nasledujici dve makra.
+\listoffigures
+\clearpage
+
+% Jsou v praci tabulky? Pokud ano vysazime jejich seznam a odstrankujeme.
+% Pokud ne smazeme nasledujici dve makra.
+\listoftables
+\clearpage
+
+% A nasleduje text zaverecne prace.
+% TODO: chapters
+\input{Chapters/Introduction.tex}
+
+% Seznam literatury
+\printbibliography[title={Literatura}, heading=bibintoc]
+
+% Prilohy
+% TODO: appendix
+\appendix
+
+% Priloha vlozena primo do hlavniho LaTeX souboru. Ne vsechny prilohy je nutne mit ve zvlastnich souborech.
+\chapter{Dlouhý zdrojový kód}
+\lstinputlisting[label=src:CppExternal,caption={Dlouhý zdrojový kód v jazyce C++ načtený s externího souboru}]{SourceCodes/ArraySortingAlgorithms.cpp}
+
+\end{document}
