@@ -22,7 +22,8 @@
         START_STRING: 0x4000,
         END_STRING: 0x8000,
         SPECIAL: 0x10000,
-        GROUP_END: 0x20000
+        GROUP_END: 0x20000,
+        ANY: 0x40000
     };
     
     const Errors = {
@@ -57,6 +58,10 @@
     let nonWordSet = new Set(allAscii);
     let whiteSpaceSet = new Set(['\t', '\n', '\v', '\f', '\r', ' ', '\xA0']);
     let nonWhiteSpaceSet = new Set(allAscii);
+    let dotSet = new Set(allAscii);
+    
+    dotSet.delete("\r");
+    dotSet.delete("\n");
 
     for(let i = 0 ; i < 10 ; i++)
     {
@@ -101,7 +106,8 @@
         States.START_STRING | 
         States.SPECIAL|
         States.GROUP_END |
-        States.ITERATION_END
+        States.ITERATION_END |
+        States.ANY
     );
 
     const noDefaultTransition = ~(
@@ -112,7 +118,8 @@
         States.START_STRING | 
         States.END_STRING | 
         States.N_LIST | 
-        States.P_LIST
+        States.P_LIST |
+        States.ANY
     );
 
     /// Parsing class creating creating AST + NFA structure
@@ -145,7 +152,8 @@
             if(state & (States.END_STRING | States.START_STRING))
             	this.handleEndStartString(outputElements.NFA);
                 
-            if(state & States.SPECIAL){
+            if(state & (States.SPECIAL | States.ANY))
+            {
             	this.handleSpecialBefore(outputElements.NFA, elements);
                 return outputElements;
             }
@@ -413,19 +421,19 @@ modifiers
 /* -------------------------------------------------------- */
 
 general
-    = list / escaped_special / primitive / lookaround / group / EOS / SOS
+    = list / escaped_special / primitive / any_character / lookaround / group / EOS / SOS
 
 any_element 
     = option / iteration / optional / general
 
 to_iterate
-    = escaped_special / primitive / group / list
+    = escaped_special / primitive / any_character / group / list
 
 to_option
     = iteration / optional / general
 
 to_optional 
-    = primitive / group / list
+    = escaped_special / primitive / any_character / group / list
 
 to_list
     = escaped_special / range_ascii / hexadecimal_ascii / [^\]\\] / is_escaped
@@ -436,11 +444,14 @@ to_list
 
 escaped_primitive
 	=
-    [\\\.+*?\[^\]$(){}=!<>|:-]
+    [\\\.+*?\[^\]$(){}=!<>|:\-\/]
     
 escaped_ascii
 	= 
     [0tnvrf]
+    
+any_character
+	= "." { return handler.handle({}, dotSet, States.ANY ) }
     
 escaped_special
 	=
@@ -458,8 +469,7 @@ escaped_special
     }
     
 null_transition 
-	= ""
-    { return handler.handle({}, [], States.NULL); }
+	= "" { return handler.handle({}, [], States.NULL); }
 
 integer_digit
 	= digit:[0-9] { return parseInt(digit, 10); }
@@ -470,11 +480,8 @@ integer
 ascii 
 	= [\x00-\xFF]
     
-reserved_character
-	= [.+*?^$()\[\]{}|\\]
-    
 unreserved_character
-	= [^.+*?^$()\[\]{}|\\]
+	= [^.+*?^$()\[\]{}|\\\/]
     
 is_escaped
 	=
@@ -482,7 +489,8 @@ is_escaped
     { return escaped; } /
     '\\' escaped:escaped_ascii 
     { 
-    	switch(escaped){
+    	switch(escaped)
+        {
         	case '0': return '\0';
             case 'n': return '\n';
             case 't': return '\t';

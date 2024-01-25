@@ -12,6 +12,7 @@
         "List": "RegexTypes.ListState",
         "EscapedSpecial": "RegexTypes.EscapedSpecialState",
         "SOS": "RegexTypes.SOSState",
-        "EOS": "RegexTypes.EOSState"
+        "EOS": "RegexTypes.EOSState",
+        "AnyCharacter": "RegexTypes.AnyState"
     }
 }

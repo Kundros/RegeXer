@@ -31,7 +31,7 @@ const webConfig = {
 
   entry: { 
     MatchingWorker: {
-      import: path.resolve("./src/core/MatchingWorkerEntry.ts")
+      import: path.resolve("./src/core/WorkerWebpackEntry.ts")
     }
   },
 
@@ -90,7 +90,7 @@ const nodeConfig = {
 
   entry: { 
     MatchingWorker: {
-      import: path.resolve("./src/core/MatchingWorkerEntry.ts")
+      import: path.resolve("./src/core/WorkerWebpackEntry.ts")
     }
   },
 

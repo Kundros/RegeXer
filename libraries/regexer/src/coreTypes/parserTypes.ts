@@ -12,7 +12,8 @@ export type ASTtype
     ASTList |
     ASTEOS |
     ASTSOS |
-    AstEscapedSpecial;
+    AstEscapedSpecial |
+    AstAnyCharacter;
 
 export type NFAtype
     =
@@ -33,6 +34,8 @@ export type ASTNoChildren =
     start: number,
     end: number
 }
+
+export type AstAnyCharacter = ASTNoChildren
 
 export type ASTPrimitive = ASTNoChildren &
 {
@@ -98,7 +101,13 @@ export type NFAStateList =
 export type RootState = 
 {
     AST: ASTRoot,
-    NFA: NFAState[]
+    NFA: NFAtype[]
+}
+
+export type AnyState = 
+{
+    AST: AstAnyCharacter,
+    NFA: NFAStateList[]
 }
 
 export type PrimitiveState = 
@@ -178,7 +187,8 @@ export const RegexStates = {
     START_STRING: 0x4000,
     END_STRING: 0x8000,
     SPECIAL: 0x10000,
-    GROUP_END: 0x20000
+    GROUP_END: 0x20000,
+    ANY: 0x40000
 } as const;
 
 export type RegexStates = typeof RegexStates[keyof typeof RegexStates];

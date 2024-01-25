@@ -2,6 +2,7 @@ import { test, expect } from '@jest/globals';
 
 import { Regexer } from '../src/core/Regexer';
 import { RegexTypes } from "../src/core/RegexParser"
+import { NFAStateList } from '../src/coreTypes/parserTypes';
 
 global.__filename = "dist/cjs/core/Regexer";
 
@@ -334,6 +335,18 @@ test('start end end of string (^$)', async () => {
 
     expect(nfaStart[1].transitions[0]).toStrictEqual([null, 1]);
     expect(nfaStart[2].transitions[0]).toStrictEqual([null, 1]);
+
+    regexer.clear();
+});
+
+test('. any symbol', async () => {
+    const regexer = new Regexer();
+    await regexer.parse(".");
+    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAtype[];
+    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+
+    expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.ANY);
+    expect((nfaStart[1] as NFAStateList).transitions).toBeInstanceOf(Set);
 
     regexer.clear();
 });

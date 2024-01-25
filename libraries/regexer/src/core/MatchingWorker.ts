@@ -83,7 +83,7 @@ class MatcherInternal
             const astState = this.statesStack.top().state?.ASTelement?.type;
 
             /* if the state is list we transition differently */
-            if(astState & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL)) 
+            if(astState & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL | RegexTypes.RegexStates.ANY)) 
             {
                 const returned = this.handleList();
                 if(returned !== null) return returned;

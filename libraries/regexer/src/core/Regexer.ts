@@ -197,7 +197,7 @@ export class Regexer{
         await this.clear();
         
         // renew it
-        this.worker_ = await spawn<Matcher>(new Worker(/* custom-worker-loader?webpackPath: "../../MatchingWorker.[target].js" */ '../../dist/cjs/MatchingWorker/MatchingWorker.web.js'));
+        this.worker_ = await spawn<Matcher>(new Worker(/* custom-worker-loader?webpackPath: "../../MatchingWorker.[target].js" */ '../../dist/cjs/core/MatchingWorker.js'));
 
         await this.worker_.newData(<NewData>{
             AST: this.AST_,

@@ -328,3 +328,18 @@ test("list iteration", async () => {
     regexer.clear();
 });
 
+
+test("any symbol", async () => {
+    const regexer = new Regexer();
+    await regexer.parse(".");
+
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match("Z"))[0].success).toBe(true);
+    expect((await regexer.match("("))[0].success).toBe(true);
+    expect((await regexer.match("~"))[0].success).toBe(true);
+    expect((await regexer.match("\n"))[0].success).toBe(false);
+    expect((await regexer.match("\r"))[0].success).toBe(false);
+    expect((await regexer.match("\r%"))[0].success).toBe(true);
+
+    regexer.clear();
+});
