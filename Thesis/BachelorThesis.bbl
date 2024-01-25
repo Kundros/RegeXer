@@ -1,0 +1,100 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global}
+    \entry{Dib}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=61bbb205fd7ed6f493359f209b1d3a40}{%
+           family={Dib},
+           familyi={D\bibinitperiod},
+           given={Firas},
+           giveni={F\bibinitperiod}}}%
+      }
+      \strng{namehash}{61bbb205fd7ed6f493359f209b1d3a40}
+      \strng{fullhash}{61bbb205fd7ed6f493359f209b1d3a40}
+      \strng{bibnamehash}{61bbb205fd7ed6f493359f209b1d3a40}
+      \strng{authorbibnamehash}{61bbb205fd7ed6f493359f209b1d3a40}
+      \strng{authornamehash}{61bbb205fd7ed6f493359f209b1d3a40}
+      \strng{authorfullhash}{61bbb205fd7ed6f493359f209b1d3a40}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{regex101}
+      \field{title}{Build, test, and debug regex}
+      \field{urlday}{25}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://regex101.com/
+      \endverb
+      \verb{url}
+      \verb https://regex101.com/
+      \endverb
+    \endentry
+    \entry{Regexper}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=74c60d5997a208eb6796cd77f27aae46}{%
+           family={Avallone},
+           familyi={A\bibinitperiod},
+           given={Jeff},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{74c60d5997a208eb6796cd77f27aae46}
+      \strng{fullhash}{74c60d5997a208eb6796cd77f27aae46}
+      \strng{bibnamehash}{74c60d5997a208eb6796cd77f27aae46}
+      \strng{authorbibnamehash}{74c60d5997a208eb6796cd77f27aae46}
+      \strng{authornamehash}{74c60d5997a208eb6796cd77f27aae46}
+      \strng{authorfullhash}{74c60d5997a208eb6796cd77f27aae46}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{journaltitle}{Regexper}
+      \field{urlday}{25}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://regexper.com/
+      \endverb
+      \verb{url}
+      \verb https://regexper.com/
+      \endverb
+    \endentry
+    \entry{RegExr}{misc}{}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{journaltitle}{RegExr}
+      \field{urlday}{25}
+      \field{urlmonth}{1}
+      \field{urlyear}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://regexr.com/
+      \endverb
+      \verb{url}
+      \verb https://regexr.com/
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

@@ -448,13 +448,11 @@ INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\lmmi5.tfm
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\lmsy9.tfm
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\lmsy5.tfm
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmr6.tfm
-INPUT .\SourceCodes\ArraySortingAlgorithms.cpp
-INPUT .\SourceCodes\ArraySortingAlgorithms.cpp
+INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmri10.tfm
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmtt.fd
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmtt.fd
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmtt.fd
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmtt10.tfm
-INPUT SourceCodes\ArraySortingAlgorithms.cpp
 INPUT BachelorThesis.aux
 INPUT .\BachelorThesis.out
 INPUT .\BachelorThesis.out
@@ -470,6 +468,8 @@ INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr8.pf
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr8.pfb
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr9.pfb
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr9.pfb
+INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmri10.pfb
+INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmri10.pfb
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmss12.pfb
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmss12.pfb
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmss17.pfb

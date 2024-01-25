@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.12) (preloaded format=pdflatex 2024.1.24)  24 JAN 2024 22:48
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.12) (preloaded format=pdflatex 2024.1.25)  25 JAN 2024 20:35
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1187,65 +1187,47 @@ Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input l
 ] (Chapters/Introduction.tex
 Kapitola 1.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 14.
+(Font)              <10.95> on input line 15.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 14.
+(Font)              <8> on input line 15.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 14.
+(Font)              <6> on input line 15.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 14.
+(Font)              <9> on input line 15.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 14.
-)
-
-LaTeX Warning: Empty bibliography on input line 68.
-
-[7
+(Font)              <5> on input line 15.
+) [7
 
 
 ]
-P\v {r}\'{\i }loha A.
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 76.
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 76.
-(C:\Users\domin\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 68.
+ (C:\Users\domin\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) (SourceCodes/ArraySortingAlgorithms.cpp [8
+) [8
 
-]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [9]) [10] (BachelorThesis.aux)
+] (BachelorThesis.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
 Package rerunfilecheck Info: File `BachelorThesis.out' has not changed.
-(rerunfilecheck)             Checksum: A52A93F3C0E194FF7D2D6211C0F4EE45;544.
-
-Package biblatex Warning: Please (re)run Biber on the file:
-(biblatex)                BachelorThesis
-(biblatex)                and rerun LaTeX afterwards.
-
+(rerunfilecheck)             Checksum: 91566576E76AE5DC4659A64FC880691C;485.
 Package logreq Info: Writing requests to 'BachelorThesis.run.xml'.
 \openout1 = `BachelorThesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 27598 strings out of 474486
- 470406 string characters out of 5743755
- 2045542 words of memory out of 5000000
- 49335 multiletter control sequences out of 15000+600000
- 623103 words of font info for 76 fonts, out of 8000000 for 9000
+ 27271 strings out of 474486
+ 469520 string characters out of 5743755
+ 1931542 words of memory out of 5000000
+ 49106 multiletter control sequences out of 15000+600000
+ 627366 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 107i,17n,109p,1375b,3620s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr6.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss12.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss17.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on BachelorThesis.pdf (10 pages, 1075916 bytes).
+ 107i,17n,109p,1375b,2839s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr6.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss12.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss17.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
+Output written on BachelorThesis.pdf (8 pages, 1083633 bytes).
 PDF statistics:
- 296 PDF objects out of 1000 (max. 8388607)
- 112 named destinations out of 1000 (max. 500000)
+ 191 PDF objects out of 1000 (max. 8388607)
+ 19 named destinations out of 1000 (max. 500000)
  78 words of extra memory for PDF output out of 10000 (max. 10000000)
 

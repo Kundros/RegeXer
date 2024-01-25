@@ -2379,8 +2379,12 @@
   <!-- CITATION DATA -->
   <!-- SECTION 0 -->
   <bcf:bibdata section="0">
+    <bcf:datasource type="file" datatype="bibtex" glob="false">biblatex-examples.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
+    <bcf:citekey order="1" intorder="1">Dib</bcf:citekey>
+    <bcf:citekey order="1" intorder="2">Regexper</bcf:citekey>
+    <bcf:citekey order="1" intorder="3">RegExr</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">
