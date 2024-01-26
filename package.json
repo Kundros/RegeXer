@@ -4,11 +4,20 @@
   "description": "This package is source package for thesis on regex visualisation plugin for vs-code.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build:regexer && npm run build:rv && npm run build:rvex",
+    "build:regexer": "npm run build --prefix ./libraries/regexer/",
+    "build:rv": "npm run build:webpack --prefix ./libraries/regex-visualisation/",
+    "build:rvex": "npm run build:webpack --prefix ./libraries/regex-visualizer-extension/"
   },
   "author": "Dominik Kundra, KUN0161",
   "license": "ISC",
   "devDependencies": {
     "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@kundros/regex-visualisation": "file:./libraries/regex-visualisation",
+    "@kundros/regex-visualizer-extension": "file:./libraries/regex-visualizer-extension",
+    "@kundros/regexer": "file:./libraries/regexer"
   }
 }
