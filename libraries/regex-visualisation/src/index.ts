@@ -12,7 +12,7 @@ import { RegexDebugger } from "./core/RegexDebugger";
 
     new RegexVisualizer(
         new RegexEditor(document.querySelector("#regex-wrapper > span")),
-        new StringMatchEditor(document.querySelector("#match-wrapper > span")),
+        new StringMatchEditor(document.querySelector("#match-wrapper > span"), document.querySelector("#match-wrapper .regex-match-highlighting")),
         new RegexDebugger(document.querySelector("#regex-debugger-overlay"), document.querySelector(".debug-icon"), { 
             regexHighlighting: {
                 positionColor: "#095c32",

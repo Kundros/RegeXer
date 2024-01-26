@@ -1,6 +1,7 @@
 import { MatchAction, RegexMatch } from "@kundros/regexer";
 import { Slider, SliderEvent } from "./Slider";
 import { sliderSettings } from "./settings/SliderSettings";
+import { getTextRowsBounding, highlightPosition } from "./other/textRowsBoundingHelper";
 
 export type DebuggerOptions = {
     regexHighlighting?: RegexHighlightingOption,
@@ -145,27 +146,17 @@ export class RegexDebugger {
     {
         const options = inRegex ? this.debuggerOptions_?.regexHighlighting : this.debuggerOptions_?.matchHighlighting;
         const context = inRegex ? this.regexContext_ : this.matchContext_;
-
-        context.save();
+        const textElement = inRegex ? this.regexText_ : this.matchText_;
+        let color : string;
 
         if(highlightingType === HighlightingTypes.ERROR)
-            context.fillStyle = options?.backtrackingPositionColor ?? "#FF0000";
+            color = options?.backtrackingPositionColor ?? "#FF0000";
         else if(highlightingType === HighlightingTypes.INFORMATIVE && options)
-            context.fillStyle = (options as RegexHighlightingOption)?.informativeColor ?? options?.backtrackingPositionColor ?? "#00FF00";
+            color = (options as RegexHighlightingOption)?.informativeColor ?? options?.backtrackingPositionColor ?? "#00FF00";
         else
-            context.fillStyle = options?.positionColor ?? "#00FF00";
+            color = options?.positionColor ?? "#00FF00";
 
-        const dimensions = this.getTextRowsDimentions(position[0], position[1], inRegex);
-
-        for(let i = 0 ; i < dimensions.length ; i++)
-        {
-            // offset the highlight 2 pixels down
-            context.fillRect(dimensions[i][0], dimensions[i][1] + 2 , dimensions[i][2], dimensions[i][3]);
-        }
-
-        context.stroke();
-
-        context.restore();
+        highlightPosition({context, textElement, from: position[0], to: position[1], highlightColor: color});
     }
 
     private drawBacktracking(from : number, to : number, inRegex : boolean = true)
@@ -176,7 +167,7 @@ export class RegexDebugger {
         context.save();
 
         context.fillStyle = options?.backtrackingDirectionColor ?? "#FF0000";
-        const dimensions = this.getTextRowsDimentions(from, to);
+        const dimensions = getTextRowsBounding({context: this.regexContext_, textElement: this.regexText_, from, to});
 
         if(dimensions.length === 0)
             return;
@@ -197,92 +188,6 @@ export class RegexDebugger {
         context.fill();
         
         context.restore();
-    }
-
-    private getTextRowsDimentions(from : number, to : number, inRegex : boolean = true) : [number, number, number, number][] // x, y, width, height
-    {
-        const context = inRegex ? this.regexContext_ : this.matchContext_;
-        const textElement = inRegex ? this.regexText_ : this.matchText_;
-
-        context.save();
-        context.font = window.getComputedStyle( textElement, null ).getPropertyValue( "font" );
-
-        const text = textElement.textContent;
-        const textLength = text.length;
-
-        //compute box sizing
-        const computedStyle = window.getComputedStyle( textElement, null );
-        const spacingWidth = Number.parseInt(computedStyle.letterSpacing);
-        const lineHeight = Number.parseInt(computedStyle.lineHeight);
-
-        // compute letter measurements
-        const letterMeasure = context.measureText("i");
-        const letterWidth = letterMeasure.width ;
-        const letterHeight = letterMeasure.fontBoundingBoxDescent + letterMeasure.fontBoundingBoxAscent;
-
-        const maxLineSize = textElement.clientWidth;
-
-        let outputRows = [];
-        let yOffset = 0;
-        let scrollOffset = textElement.scrollTop;
-        let lastRowSize = 0;
-        let currentRowSize = 0;
-
-        for(let i = 0 ; i <= textLength ; i++)
-        {
-            if(i > to || maxLineSize <= 1)
-                break;
-
-            lastRowSize = currentRowSize;
-            currentRowSize += letterWidth + spacingWidth;
-
-            if(currentRowSize > maxLineSize)
-            {
-                i--;
-                currentRowSize = 0;
-                yOffset++;
-                continue;
-            }
-
-            const yPos = (yOffset * lineHeight) - scrollOffset;
-
-            // skip unvisible rows
-            if(yPos + letterHeight < 0)
-            {
-                if(text[i] === '\n')
-                {
-                    currentRowSize = 0;
-                    yOffset++;
-                }
-                continue;
-            }
-            else if(yPos > textElement.clientHeight)
-            {
-                break;
-            }
-
-            // add new row or update existing
-            if(i >= from && i < to)
-            {
-                if(outputRows.length === 0 || outputRows[outputRows.length-1][1] < yPos) 
-                    outputRows.push([lastRowSize + spacingWidth, yPos, currentRowSize - lastRowSize - spacingWidth, letterHeight]);
-                else
-                    outputRows[outputRows.length-1][2] = currentRowSize - outputRows[outputRows.length-1][0];
-            }
-
-            if(i === to && i === from)
-                outputRows.push([lastRowSize, yPos, spacingWidth, letterHeight]);
-
-            if(text[i] === '\n')
-            {
-                currentRowSize = 0;
-                yOffset++;
-            }
-        }
-
-        context.restore();
-
-        return outputRows;
     }
 
     private registerListeners()

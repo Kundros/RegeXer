@@ -1,7 +1,7 @@
-@base-color: #352F44;
-@darker-color: #5C5470;
+@base-color: #24292e;
 @light-color: #B9B4C7;
 @lighter-color: #FAF0E6;
+@selection-color: #403566;
 
 @gray-color: #1f1f1f;
 
@@ -16,7 +16,7 @@ body {
 
 ::selection {
     color: var(--vscode-editor-selectionForeground);
-    background: var(--vscode-editor-selectionBackground, @light-color);
+    background: var(--vscode-editor-selectionBackground, @selection-color);
 }
 
 #main-wrapper {
@@ -32,7 +32,7 @@ body {
         font-size: 16px;
         font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
         font-weight: var(--vscode-editor-font-weight, 400);
-        letter-spacing: 1px;
+        letter-spacing: 2px;
         white-space: break-spaces;
         tab-size: 2;
         line-height: 21px;
@@ -56,7 +56,7 @@ body {
         box-sizing: border-box;
         display: flex;
         max-width: 100%;
-        padding: 10px 10px 10px 0;
+        padding: 10px 10px 10px 0px;
         background: #00000066;
         border-radius: 10px;
     }
@@ -67,6 +67,18 @@ body {
 
         & > span {
             width: 100%;
+            margin-left: 2px;
+        }
+
+        & .regex-match-highlighting{
+            width: -webkit-fill-available;
+            height: -webkit-fill-available;
+            position: absolute;
+            pointer-events: none;
+            margin: 10px 10px 40px 10px;
+            top: 0;
+            left: 0;
+            z-index: -1;
         }
     }
 
@@ -115,10 +127,13 @@ body {
 }
 
 body.vscode-light {
-    & #main-wrapper > div > span {
+    & #main-wrapper {
         caret-color: var(--vscode-editorCursor-foreground, #000);
         color: var(--vscode-editor-foreground, #000);
-        background: #B9B4C7;
+
+        & #regex-wrapper, #match-wrapper{
+            background: #00000015;
+        }
     }
 
     & .tab-symbol{
@@ -233,7 +248,7 @@ body.vscode-light {
         color: #999999;
         font-size: 13px;
         font-family: var(--vscode-font-family, 'Roboto'), monospace;
-        font-weight: 300;
+        font-weight: var(--vscode-editor-font-weight, 400);
 
         & > .match-num-matches, > .match-num-steps{
             margin-right: .3rem;

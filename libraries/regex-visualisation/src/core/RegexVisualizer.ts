@@ -122,6 +122,8 @@ export class RegexVisualizer {
         /* --- update match --- */
         this.resetMatches();
 
+        this.stringMatchEditor_.clearMatchesCanvas();
+
         const that = this;
         this.regexer_.matchInBatches(matchString, {
             batchCallback(batchData : MatchBatchData) {
@@ -137,6 +139,11 @@ export class RegexVisualizer {
 
                 that.steps_ += matchData.statesCount;
                 that.debuggerWindow_.steps = that.steps_;
+
+                if(matchData.start !== undefined && matchData.end !== undefined)
+                {
+                    that.stringMatchEditor_.highlightMatch(matchData.start, matchData.end);
+                }
 
                 that.stringMatchEditor_.updateMatchStatesMessage(matchData.statesCount, that.matches_.length - (matchData.success ? 0 : 1));
             },
