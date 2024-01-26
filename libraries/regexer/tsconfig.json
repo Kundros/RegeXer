@@ -15,12 +15,13 @@
       "@exceptions/*": ["./src/exceptions/*"],
       "@structures/*": ["./src/structures/*"],
       "@helpers/*": ["./src/helpers/*"],
-      "@browser/*": ["./src/browser/*"]
+      "@browser/*": ["./src/browser/*"],
+      "@loaders/*": ["./src/loaders/*"]
     }
   },
   "tsc-alias": {
     "resolveFullPaths": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "**/MatchingWorkerEntry.ts"]
+  "exclude": ["node_modules", "**/WorkeWebpackEntry.ts", "./loaders/**/*", "./types/**/*"]
 }
