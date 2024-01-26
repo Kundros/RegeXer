@@ -16,8 +16,6 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@kundros/regex-visualisation": "file:./libraries/regex-visualisation",
-    "@kundros/regex-visualizer-extension": "file:./libraries/regex-visualizer-extension",
-    "@kundros/regexer": "file:./libraries/regexer"
+    "@kundros/regex-visualizer-extension": "file:./libraries/regex-visualizer-extension"
   }
 }
