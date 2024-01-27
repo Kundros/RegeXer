@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-export class HoverHelper
+export class RegexHover
 {
     public testRegexHover(document : vscode.TextDocument, position : vscode.Position, token : vscode.CancellationToken)
     {
@@ -86,10 +86,19 @@ export class HoverHelper
 
     private createHover(regex : string, valid: boolean = true, addShlashed : boolean = true)
     {
-        const commentCommandUri = vscode.Uri.parse(`command:regex-visualizer-extension.regexvisualizer?${encodeURIComponent(JSON.stringify([regex]))}`);
-        const markdown = new vscode.MarkdownString(`[Open in Regex visualiser & debugger](${commentCommandUri})`);
-        const slash = addShlashed ? "/" : "";
+        let commentCommandUri : vscode.Uri;
 
+        if(vscode.workspace.getConfiguration().get('regexVisualizer.webview.newWindow'))
+        {
+            commentCommandUri = vscode.Uri.parse(`command:regex-visualizer-extension.openRegexVisualizer?${encodeURIComponent(JSON.stringify([regex]))}`);
+        }
+        else
+        {
+            commentCommandUri = vscode.Uri.parse(`command:regex-visualizer-extension.updateRegRegexVisualizer?${encodeURIComponent(JSON.stringify([regex]))}`);
+        }
+
+        const markdown = new vscode.MarkdownString(`[Open with Regex visualizer & debugger](${commentCommandUri})`);
+        const slash = addShlashed ? "/" : "";
         markdown.isTrusted = true;
         markdown.appendCodeblock(slash + regex + slash + (valid ? "✅": "❌"), "typescript");
         return new vscode.Hover(markdown);

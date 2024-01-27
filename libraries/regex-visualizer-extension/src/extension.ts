@@ -1,15 +1,19 @@
 import * as vscode from 'vscode';
 import { VisualizerWebview } from './VisualizerWebview';
-import { HoverHelper } from './HoverHelper';
+import { RegexHover } from './RegexHover';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log("regex visualizer extension is active now!");
 
 	const visualizer = new VisualizerWebview(context);
-	const hoverHelper = new HoverHelper();
+	const hoverHelper = new RegexHover();
 
-	const regexvisualizerDisposable = vscode.commands.registerCommand('regex-visualizer-extension.regexvisualizer', (regex? : string) => {
+	const openRegexVisualizerDisposable = vscode.commands.registerCommand('regex-visualizer-extension.openRegexVisualizer', (regex? : string) => {
 		visualizer.show(regex);
+	});
+
+	const updateRegRegexVisualizerDisposable = vscode.commands.registerCommand('regex-visualizer-extension.updateRegRegexVisualizer', (regex : string) => {
+		visualizer.updateRegex(regex);
 	});
 
 	const hoverRegexDisposable = vscode.languages.registerHoverProvider('typescript', {
@@ -19,7 +23,8 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(
-		regexvisualizerDisposable, 
+		openRegexVisualizerDisposable, 
+		updateRegRegexVisualizerDisposable,
 		hoverRegexDisposable
 	);
 }

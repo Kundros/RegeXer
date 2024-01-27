@@ -16,10 +16,36 @@
   "contributes": {
     "commands": [
       {
-        "command": "regex-visualizer-extension.regexvisualizer",
+        "command": "regex-visualizer-extension.openRegexVisualizer",
         "title": "Open Regex Visualizer & Debuger"
+      },
+      {
+        "command": "regex-visualizer-extension.updateRegRegexVisualizer",
+        "title": "Update Reg Regex Visualizer & Debuger"
       }
-    ]
+    ],
+
+    "configuration": {
+      "title": "RegexVisualizer",
+      "properties": {
+        "regexVisualizer.webview.newWindow": {
+          "type": "boolean",
+          "default": false,
+          "scope": "machine-overridable",
+          "editPresentation": "singlelineText",
+          "description": "Retain window for visualisation, if you load new regex from vscode."
+        }
+      }
+    },
+
+    "menus": {
+      "commandPalette": [
+          {
+            "command": "regex-visualizer-extension.updateRegRegexVisualizer",
+            "when": "false"
+          }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
