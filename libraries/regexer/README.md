@@ -11,7 +11,23 @@ Main goal of this library is to implement executable regex (with integrated pars
 
 ## Enviroment
 
-This library is primarly made for node enviroment compatible with ESM and CJS. Currently for browser enviroments some functionality, such as matching isn't working and will throw errors.
+This library is made for browser-like and node enviroment. If you're planning using this library, in browser enviroments you may need embed the built file as a blob if you don't want to deal with cors, if you're using webpack you may use custom-worker-loader.js in src/loaders directory with folowing usage:
+
+*add folowing code to your module: { rules: [] } section in webpack config*
+```js
+{
+    test: /\.(js|ts)$/,
+    use: [
+        {
+            loader: path.resolve('path/to/custom-worker-loader.js'),
+            options: {
+                target: "web"
+            },
+        }
+    ],
+}
+```
+*valid targets: web | node*
 
 <br>
 
@@ -139,9 +155,9 @@ format in regex notation:
 
 ## About matching
     
-Matching string to parsed regex is done using worker thread in node enviroment, the **browser version isn't functional yet thus don't plan to use matching on browser until functionality done otherwise you would get errors**. 
+Matching string to parsed regex is done by using threads.js which allows for both web worker and worker thread usage for browser-like and node enviroment respectivelly.
 
-Matching creates match structure (isn't fully done yet), which can be used for many applications, the structure should be sort of history how was match found and what operations regex had to do. **The structure isn't standardized and will probably change later for more polished version.**
+Matching creates match structure (isn't fully done yet), which can be used for many applications, the structure should be sort of history how was match found and what operations regex had to do. The structure in now returned either as batch (small portion of final match), or as the final match with assigned prototype to it. The batch variant is usefull for async loading when the match structure could be potentionally too big.
 
 Matching is done agains't parsed NFA (non-deterministic finite automata), which is returned from parser (used peggy for context-free grammar), the aditional information to match is added from AST (abstract syntax tree), which is also part of parsed structure.
 

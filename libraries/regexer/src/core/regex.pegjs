@@ -444,7 +444,7 @@ to_list
 
 escaped_primitive
 	=
-    [\\\.+*?\[^\]$(){}=!<>|:\-\/]
+    [^a-zA-Z0-9]
     
 escaped_ascii
 	= 
