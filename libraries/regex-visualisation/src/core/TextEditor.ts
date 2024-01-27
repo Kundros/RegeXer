@@ -43,6 +43,11 @@ export class TextEditor{
         return this.textInput_;
     }
     
+    public set text(newText: string)
+    {
+        this.textInput_.textContent = newText;
+    }
+
     protected handleHistory(event : InputEvent)
     {
         const historyCurrent = this.inputHistory_[this.historyAt_];

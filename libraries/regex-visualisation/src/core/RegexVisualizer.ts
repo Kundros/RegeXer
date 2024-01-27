@@ -1,5 +1,5 @@
 import { WebviewApi } from "vscode-webview";
-import { Message, MessageBatchData, MessageErrorRegex, MessageMatchComplete, MessageMatchData, MessageRegexData, RegexData } from "types";
+import { Message, MessageRegex } from "types";
 import { RegexEditor } from "./RegexEditor";
 import { MatchBatchData, MatchData, MatchFlags, MatchResponse, RegParseException, RegexMatch, Regexer } from "@kundros/regexer";
 import { StringMatchEditor } from "./StringMatchEditor";
@@ -35,7 +35,8 @@ export class RegexVisualizer {
             MatchFlags.OPTION_NO_ERROR_RETURN
         );
 
-        this.updateRegex();
+        if(this.stringMatchEditor_.isIdle)
+            this.updateRegex();
     }
 
     private registerListeners()
@@ -104,6 +105,7 @@ export class RegexVisualizer {
         try
         {
             await this.regexer_.parse(regexString);
+            this.debuggerWindow_.offset = regexString[0] === "/" ? 1 : 0;
 
             this.regexEditor_.highlight(this.regexer_.AST);
 
@@ -113,6 +115,7 @@ export class RegexVisualizer {
         catch(exception : unknown) // invalid regex
         {
             const parseError = exception as RegParseException;
+            this.stringMatchEditor_.setSignIdle();
             this.regexEditor_.highlightError(parseError.getPosition());
         }
     }
@@ -165,7 +168,12 @@ export class RegexVisualizer {
         const message = event.data as Message;
 
         switch(message.type){
-            
+            case 'send_regex': {
+                const regexMessage = message as MessageRegex;
+                this.regexEditor_.text = regexMessage.data;
+                this.updateRegex(regexMessage.data);
+                break;
+            }
         }
     }
     

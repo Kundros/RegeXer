@@ -16,6 +16,7 @@ export class StringMatchEditor extends TextEditor
         const boundingCanvas = this.canvas_.getBoundingClientRect();
         this.canvas_.width = boundingCanvas.width;
         this.canvas_.height = boundingCanvas.height;
+        this.matchesSpans_ = [];
 
         const observer = new ResizeObserver((entries) => {
             entries.forEach((entry) => {

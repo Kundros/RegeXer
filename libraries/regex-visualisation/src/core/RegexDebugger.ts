@@ -82,10 +82,11 @@ export class RegexDebugger {
             this.matchText_.append(children[i]);
     }
 
-
     public set matches(matches : RegexMatch[]){
         this.matches_ = matches;
     }
+
+
 
     public set steps(steps : number)
     {
@@ -112,7 +113,7 @@ export class RegexDebugger {
         this.regexCanvas_.height = boundingRegex.height;
 
         if(state.regAt[0] !== state.fromExact?.[0])
-            this.highlightPosition(state.regAt);
+            this.highlightPosition(state.regAt[0] - this.offset, state.regAt[1] - this.offset);
 
         if(step === 1 && state?.strAt === undefined)
             state.strAt = [0, 0];
@@ -124,30 +125,35 @@ export class RegexDebugger {
             this.matchCanvas_.width = boundingMatch.width;
             this.matchCanvas_.height = boundingMatch.height;
 
-            this.highlightPosition(state.strAt, HighlightingTypes.DEFAULT, false);
+            this.highlightPosition(state.strAt[0] - this.offset, state.strAt[1] - this.offset, HighlightingTypes.DEFAULT, false);
         }
 
         if(state.action & MatchAction.SHOWCASE)
         {
-            this.highlightPosition(state.regAt, HighlightingTypes.INFORMATIVE);
+            this.highlightPosition(state.regAt[0] - this.offset, state.regAt[1] - this.offset, HighlightingTypes.INFORMATIVE);
         }
 
         // handle backtracking
         if((state.action & MatchAction.BACKTRACKING) && state.fromExact)
         {
-            this.highlightPosition(state.fromExact, HighlightingTypes.ERROR);
+            this.highlightPosition(state.fromExact[0] - this.offset, state.fromExact[1] - this.offset, HighlightingTypes.ERROR);
             
             if(state.regAt[0] !== state.fromExact[0])
-                this.drawBacktracking(state.regAt[0], state.fromExact[1]);
+                this.drawBacktracking(state.regAt[0] - this.offset, state.fromExact[1]  - this.offset);
         }
     }
 
-    private highlightPosition(position : [number, number], highlightingType : HighlightingTypes = HighlightingTypes.DEFAULT, inRegex : boolean = true)
+    private highlightPosition(from : number, to: number, highlightingType : HighlightingTypes = HighlightingTypes.DEFAULT, inRegex : boolean = true)
     {
         const options = inRegex ? this.debuggerOptions_?.regexHighlighting : this.debuggerOptions_?.matchHighlighting;
         const context = inRegex ? this.regexContext_ : this.matchContext_;
         const textElement = inRegex ? this.regexText_ : this.matchText_;
         let color : string;
+
+        if(from < 0)
+            from = 0;
+        if(to < 0)
+            to = 0;
 
         if(highlightingType === HighlightingTypes.ERROR)
             color = options?.backtrackingPositionColor ?? "#FF0000";
@@ -156,7 +162,7 @@ export class RegexDebugger {
         else
             color = options?.positionColor ?? "#00FF00";
 
-        highlightPosition({context, textElement, from: position[0], to: position[1], highlightColor: color});
+        highlightPosition({context, textElement, from, to, highlightColor: color});
     }
 
     private drawBacktracking(from : number, to : number, inRegex : boolean = true)
@@ -212,6 +218,8 @@ export class RegexDebugger {
         
         observer.observe(this.overlay_);
     }
+    
+    public offset : number = 0;
 
     private overlay_ : HTMLElement;
     private openBtn_ : HTMLElement;
@@ -227,7 +235,6 @@ export class RegexDebugger {
     private matchContext_ : CanvasRenderingContext2D;
 
     private debuggerOptions_? : DebuggerOptions;
-
     private matches_? : RegexMatch[];
     private slider_ : Slider;
 }
