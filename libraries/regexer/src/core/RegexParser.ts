@@ -339,7 +339,7 @@ function peg$parse(input, options) {
   var peg$c32 = "$";
 
   var peg$r0 = /^[^\]\\]/;
-  var peg$r1 = /^[\\.+*?[\^\]$(){}=!<>|:\-\/]/;
+  var peg$r1 = /^[^a-zA-Z0-9]/;
   var peg$r2 = /^[0tnvrf]/;
   var peg$r3 = /^[dDwWsS]/;
   var peg$r4 = /^[0-9]/;
@@ -359,7 +359,7 @@ function peg$parse(input, options) {
   var peg$e7 = peg$literalExpectation("s", false);
   var peg$e8 = peg$literalExpectation("d", false);
   var peg$e9 = peg$classExpectation(["]", "\\"], true, false);
-  var peg$e10 = peg$classExpectation(["\\", ".", "+", "*", "?", "[", "^", "]", "$", "(", ")", "{", "}", "=", "!", "<", ">", "|", ":", "-", "/"], false, false);
+  var peg$e10 = peg$classExpectation([["a", "z"], ["A", "Z"], ["0", "9"]], true, false);
   var peg$e11 = peg$classExpectation(["0", "t", "n", "v", "r", "f"], false, false);
   var peg$e12 = peg$literalExpectation(".", false);
   var peg$e13 = peg$literalExpectation("\\", false);
