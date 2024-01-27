@@ -51,7 +51,6 @@
     "@kundros/regex-visualisation": "file:../regex-visualisation",
     "@kundros/regexer": "file:../regexer",
     "html-loader": "^4.2.0",
-    "threads": "^1.7.0",
-    "worker-loader": "^3.0.8"
+    "threads": "^1.7.0"
   }
 }

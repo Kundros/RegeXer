@@ -1,40 +1,27 @@
 import * as vscode from 'vscode';
+import { VisualizerWebview } from './VisualizerWebview';
+import { HoverHelper } from './HoverHelper';
 
 export function activate(context: vscode.ExtensionContext) {
-	const visualizerHtml = require("@kundros/regex-visualisation").default;
 	console.log("regex visualizer extension is active now!");
 
-	let disposable = vscode.commands.registerCommand('regex-visualizer-extension.regexvisualizer', async () => {
-		let panel = vscode.window.createWebviewPanel(
-			'regexVisualisation', 
-			'Regex Visualisation & Debugging', 
-			vscode.ViewColumn.Two, 
-			{
-				enableScripts: true,
-				localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, '..')]
-			});
+	const visualizer = new VisualizerWebview(context);
+	const hoverHelper = new HoverHelper();
 
-		/* workaround replacing paths to vscode plugin paths */
-		let fixedPathsHtml = visualizerHtml.replace(/file:\/\/\/(.*?\.(js|svg|png|jpg))/gm, (match : string, g1 : string) => { 
-			let rootPath = context.extensionUri.path;
-			if(rootPath[0] === '/' || rootPath[0] === '\\'){
-				rootPath = rootPath.slice(1);
-			}
-			return panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, g1.replace(rootPath, ""))).toString(); 
-		});
-
-		// Handle messages from the webview
-		/*panel.webview.onDidReceiveMessage(
-			async message => {
-			},
-			undefined,
-			context.subscriptions
-		);*/
-			
-		panel.webview.html = fixedPathsHtml;
+	const regexvisualizerDisposable = vscode.commands.registerCommand('regex-visualizer-extension.regexvisualizer', (regex? : string) => {
+		visualizer.show(regex);
 	});
 
-	context.subscriptions.push(disposable);
+	const hoverRegexDisposable = vscode.languages.registerHoverProvider('typescript', {
+		provideHover(document : vscode.TextDocument, position : vscode.Position, token : vscode.CancellationToken) {
+			return hoverHelper.testRegexHover(document, position, token);
+		}
+	});
+
+	context.subscriptions.push(
+		regexvisualizerDisposable, 
+		hoverRegexDisposable
+	);
 }
 
 // This method is called when your extension is deactivated
