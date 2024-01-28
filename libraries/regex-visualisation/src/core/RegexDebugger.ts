@@ -125,7 +125,7 @@ export class RegexDebugger {
             this.matchCanvas_.width = boundingMatch.width;
             this.matchCanvas_.height = boundingMatch.height;
 
-            this.highlightPosition(state.strAt[0] - this.offset, state.strAt[1] - this.offset, HighlightingTypes.DEFAULT, false);
+            this.highlightPosition(state.strAt[0] , state.strAt[1], HighlightingTypes.DEFAULT, false);
         }
 
         if(state.action & MatchAction.SHOWCASE)
