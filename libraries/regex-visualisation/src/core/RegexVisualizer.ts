@@ -64,7 +64,6 @@ export class RegexVisualizer {
         if(this.regexWait_ != undefined)
             clearTimeout(this.regexWait_);
 
-        this.stringMatchEditor_.setLoading();
         if(this.options_.regexWait > 0)
         {
             this.regexWait_ = setTimeout(async () => {
@@ -102,6 +101,7 @@ export class RegexVisualizer {
 
     private async updateRegex(regexString : string = "")
     {
+        this.stringMatchEditor_.setLoading();
         try
         {
             await this.regexer_.parse(regexString);
@@ -124,8 +124,8 @@ export class RegexVisualizer {
     {
         /* --- update match --- */
         this.resetMatches();
-
         this.stringMatchEditor_.clearMatchesCanvas();
+        this.stringMatchEditor_.setLoading();
 
         const that = this;
         this.regexer_.matchInBatches(matchString, {
