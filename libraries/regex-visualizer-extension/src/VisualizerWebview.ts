@@ -43,10 +43,21 @@ export class VisualizerWebview
 
         if(regex !== undefined)
         {
-            await panel.webview.postMessage({
-                type: "send_regex",
-                data: regex
-            });
+            panel.webview.onDidReceiveMessage(
+                async (message) => {
+                    switch(message.type)
+                    {
+                        case 'ready':
+                        {
+                            await panel.webview.postMessage({
+                                type: "send_regex",
+                                data: regex
+                            });
+                            break;
+                        }
+                    }
+                }
+            );
         }
     }
 
