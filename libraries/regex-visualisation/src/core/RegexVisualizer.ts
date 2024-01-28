@@ -123,6 +123,12 @@ export class RegexVisualizer {
             this.stringMatchEditor_.setSignIdle();
             this.regexEditor_.highlightError(parseError.getPosition());
         }
+
+        if(this.debuggerWindow_.visible)
+        {
+            this.debuggerWindow_.setRegexText(this.regexEditor_.textInput);
+            this.debuggerWindow_.resetSteps();
+        }
     }
 
     private async updateMatch(matchString : string)

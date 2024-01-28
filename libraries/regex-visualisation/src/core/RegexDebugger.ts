@@ -82,20 +82,23 @@ export class RegexDebugger {
             this.matchText_.append(children[i]);
     }
 
+    public resetSteps()
+    {
+        this.slider_.value = this.slider_.min;
+    }
+
+    public get visible()
+    {
+        return !this.overlay_.classList.contains("hidden");
+    }
+
     public set matches(matches : RegexMatch[]){
         this.matches_ = matches;
     }
 
-
-
     public set steps(steps : number)
     {
         this.slider_.max = steps;
-    }
-
-    public resetSteps()
-    {
-        this.slider_.value = this.slider_.min;
     }
 
     private visualizeStep(step : number)
