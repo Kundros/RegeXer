@@ -35,8 +35,13 @@ export class RegexVisualizer {
             MatchFlags.OPTION_NO_ERROR_RETURN
         );
 
-        if(this.stringMatchEditor_.isIdle)
-            this.updateRegex();
+        window.addEventListener("load", async () => {
+            await this.updateRegex();
+            if(this.vscode_ !== undefined)
+            {
+                this.vscode_.postMessage({ type: "ready" }); // tell vscode that web is loaded
+            }
+        });
     }
 
     private registerListeners()
@@ -189,5 +194,5 @@ export class RegexVisualizer {
     private debuggerWindow_ : RegexDebugger;
     private regexer_ : Regexer;
 
-    private vscode_ : WebviewApi<unknown>;
+    private vscode_ ?: WebviewApi<unknown>;
 }
