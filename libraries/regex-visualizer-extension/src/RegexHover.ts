@@ -9,7 +9,7 @@ export class RegexHover
         const rIgnoreEndConstruct = /(?<!\s*\+\s*)(?=\s*\))/;
         const rfindString = /(?<comma>[\"\'])(?:\\\k<comma>|(?!\k<comma>)[^\\\n\r]|\\(?!\k<comma>).)*?\k<comma>/g;
         const rfindStrings = /(?:(?<comma>[\"\'])(?:\\\k<comma>|(?!\k<comma>)[^\\\n\r]|\\(?!\k<comma>).)*?\k<comma>(?!\s*(\"|\'))\s*?\+?\s*?)+/;
-        const rfindRegex = /(?<!\/)\/(?!\*)([^\/\\\n\r]|\\[^\n\r])+\/(g|m|i|x|s|u|U|A|J|D)*/g;
+        const rfindRegex = /(?<!\/)\/(?!\*)(?<val>([^\/\\\n\r]|\\[^\n\r])+)\/(g|m|i|x|s|u|U|A|J|D)*/g;
         const rfindRegexWConstructorFlags = /(,\s*(?<comma2>[\"\'])(g|m|i|x|s|u|U|A|J|D)*\k<comma2>)?/;
 
         const rfindRegexWConstructor = new RegExp(
@@ -21,11 +21,13 @@ export class RegexHover
             rIgnoreEndConstruct.source
         );
 
-        const rfindRegexWConstructorString = new RegExp(
+        const rfindRegexWConstructorMultiple = new RegExp(
             rIgnoreStartConstruct.source + 
-            "(?<regex>" +
-            rfindStrings.source + 
-            ")" +
+            "(?<regex>(?:(?:" +
+            rfindString.source +
+            "|" +
+            rfindRegex.source +
+            "\\s*\\.\\s*source\\s*)(?!\\s*(\\\"|\\'))\\s*?\\+?\\s*?)+)" +
             rfindRegexWConstructorFlags.source + 
             rIgnoreEndConstruct.source
         );
@@ -45,27 +47,33 @@ export class RegexHover
                 return this.createHover(regex, true, false);
             }	
 
-            /* with string */
-            if((match = rfindRegexWConstructorString.exec(searchInText)) !== null) {
+            /* with multiple */
+            if((match = rfindRegexWConstructorMultiple.exec(searchInText)) !== null) {
                 let regex = match.groups?.regex ?? "";
                 let final = "";
                 let one : RegExpExecArray | null;
-                while((one = rfindString.exec(regex)) !== null)
+
+                let findOne = new RegExp("(?<str>" + rfindString.source + ")|" + rfindRegex.source, "g");
+                while((one = findOne.exec(regex)) !== null)
                 {
-                    final += one[0].substring(1, one[0].length-1);
+                    if(one.groups?.str)
+                    {
+                        final += one.groups?.str.substring(1, one.groups?.str.length-1);
+                    }
+                    else if(one.groups?.val)
+                    {
+                        final += one.groups?.val;
+                    }
                 }
 
                 try{
-                    RegExp(final);
-                    return this.createHover(final);
+                    return this.createHover(RegExp(final).source);
                 }
                 catch(e)
                 {
                     return this.createHover(final, false);
                 }
             }
-
-            return; // None valid
         }
 
         /* regex with literal notation */
@@ -88,7 +96,7 @@ export class RegexHover
     {
         let commentCommandUri : vscode.Uri;
 
-        if(vscode.workspace.getConfiguration().get('regexVisualizer.webview.newWindow'))
+        if(vscode.workspace.getConfiguration().get('regexVisualizer.editor.hover.newWindow'))
         {
             commentCommandUri = vscode.Uri.parse(`command:regex-visualizer-extension.openRegexVisualizer?${encodeURIComponent(JSON.stringify([regex]))}`);
         }
@@ -100,7 +108,7 @@ export class RegexHover
         const markdown = new vscode.MarkdownString(`[Open with Regex visualizer & debugger](${commentCommandUri})`);
         const slash = addShlashed ? "/" : "";
         markdown.isTrusted = true;
-        markdown.appendCodeblock(slash + regex + slash + (valid ? "✅": "❌"), "typescript");
+        markdown.appendCodeblock(slash + regex + slash + (valid ? "🟢": "🔴"), "typescript");
         return new vscode.Hover(markdown);
     }
 
