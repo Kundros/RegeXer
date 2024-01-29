@@ -24,6 +24,7 @@ class MatcherInternal
             this.pid = pid;
             this.regexPosStack = new Stack<number>([0]);
             this.stringPosStack = new Stack<number>([0]);
+            this.iterationStack = new Stack<number>([]);
             this.statesStack = new Stack<matchingState>();
             this.matchBuilder = new MatchBuilder(flags, batchSize ?? -1);
             this.matchBuilder.matchData.start = 0;
@@ -121,17 +122,43 @@ class MatcherInternal
             /* --- applying transition --- */
             /* --- ------------------- --- */
 
-            const transition = transitions[this.statesStack.top().transition];
+            let transition = transitions[this.statesStack.top().transition];
 
             // handle null transition (without moving position in string)
             if(transition[0] === null)
             {
+                // if the transition is end of iteration we check if we have moved in string since last iteration
+                if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.ITERATION_END)
+                {
+                    const lastPosition = this.iterationStack.pop();
+                    const currentPosition = this.stringPosStack.top();
+
+                    // if we didn't moved then proceed to first positive transition (move out of iteration)
+                    if(lastPosition === currentPosition)
+                    {
+                        for(let i = 0; i < transitions.length;i++)
+                        {
+                            if(transitions[i][1] > 0)
+                            {
+                                this.statesStack.top().transition = i;
+                                transition = transitions[i];
+                                break;
+                            }
+                        }
+                    }
+                    else
+                        this.iterationStack.push(currentPosition);
+                }
+
                 this.regexPosStack.push(this.regexPosStack.top() + transition[1]);
                 this.stringPosStack.push(this.stringPosStack.top());
 
                 if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP)
                     this.groups.push(<ASTGroup>nfaState?.ASTelement);
 
+                // if the transition is iteration then we push current string position (to further check if we loop "null" transition over and over)
+                if(nfaState?.ASTelement?.type & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE))
+                    this.iterationStack.push(this.stringPosStack.top());
 
                 let canAddToMatch = false;
 
@@ -321,6 +348,7 @@ class MatcherInternal
     public pid : number;
     private stringPosStack : Stack<number>;
     private regexPosStack : Stack<number>;
+    private iterationStack : Stack<number>;
     private statesStack : Stack<matchingState>;
     private matchBuilder : MatchBuilder;
     private groups : Stack<ASTGroup>;

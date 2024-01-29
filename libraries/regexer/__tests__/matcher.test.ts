@@ -343,3 +343,48 @@ test("any symbol", async () => {
 
     regexer.clear();
 });
+
+
+test("test 'null' iteration infinite loop 1", async () => {
+    const regexer = new Regexer();
+    await regexer.parse("()+");
+
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match("Z"))[0].success).toBe(true);
+    expect((await regexer.match("ZaaaBCD"))[0].success).toBe(true);
+
+    regexer.clear();
+});
+
+test("test 'null' iteration infinite loop 2", async () => {
+    const regexer = new Regexer();
+    await regexer.parse("()*");
+
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match("Z"))[0].success).toBe(true);
+    expect((await regexer.match("ZaaaBCD"))[0].success).toBe(true);
+
+    regexer.clear();
+});
+
+test("test 'null' iteration infinite loop 3", async () => {
+    const regexer = new Regexer();
+    await regexer.parse("(a|b|)*");
+
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match("abbbc"))[0].success).toBe(true);
+    expect((await regexer.match("gabbbdcdddd"))[0].success).toBe(true);
+
+    regexer.clear();
+});
+
+test("test nested 'null' iteration infinite loop", async () => {
+    const regexer = new Regexer();
+    await regexer.parse("((a|b|()+)*|a|b|)+");
+
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match("abbbc"))[0].success).toBe(true);
+    expect((await regexer.match("gabbbdcdddd"))[0].success).toBe(true);
+
+    regexer.clear();
+});
