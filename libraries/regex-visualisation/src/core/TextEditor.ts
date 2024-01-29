@@ -2,7 +2,7 @@ import { ElementHelper } from "./other/ElementHelper";
 import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
 
 export type TextEditorOptions = {
-    historyLimit?: number
+    historyLimit?: number,
 }
 
 export class TextEditor{

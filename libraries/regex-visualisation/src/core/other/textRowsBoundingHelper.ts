@@ -12,22 +12,21 @@ export type HighlighTextOptions = RowsBoundingOptions & {
 export function getTextRowsBounding(options : RowsBoundingOptions) : [number, number, number, number][] // x, y, width, height
 {
     options.context.save();
-    options.context.font = window.getComputedStyle( options.textElement, null ).getPropertyValue( "font" );
 
     const text = options.textElement.textContent;
     const textLength = text.length;
 
     //compute box sizing
     const computedStyle = window.getComputedStyle( options.textElement, null );
+    options.context.font = computedStyle.font;
     const spacingWidth = Number.parseInt(computedStyle.letterSpacing);
     const lineHeight = Number.parseInt(computedStyle.lineHeight);
+    const maxLineSize = Number.parseInt(computedStyle.width);
 
     // compute letter measurements
     const letterMeasure = options.context.measureText("i");
-    const letterWidth = letterMeasure.width ;
+    const letterWidth = letterMeasure.width;
     const letterHeight = letterMeasure.fontBoundingBoxDescent + letterMeasure.fontBoundingBoxAscent;
-
-    const maxLineSize = options.textElement.clientWidth;
 
     let outputRows = [];
     let yOffset = 0;

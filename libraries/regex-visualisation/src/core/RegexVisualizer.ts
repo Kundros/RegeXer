@@ -90,6 +90,8 @@ export class RegexVisualizer {
             clearTimeout(this.matchWait_);
 
         this.stringMatchEditor_.setLoading();
+        this.stringMatchEditor_.highlightMatches(this.regexEditor_.textInput.textContent);
+        
         if(this.options_.matchWait > 0)
         {
             this.matchWait_ = setTimeout(() => {
@@ -107,6 +109,7 @@ export class RegexVisualizer {
     private async updateRegex(regexString : string = "")
     {
         this.stringMatchEditor_.setLoading();
+
         try
         {
             await this.regexer_.parse(regexString);
@@ -120,7 +123,9 @@ export class RegexVisualizer {
         catch(exception : unknown) // invalid regex
         {
             const parseError = exception as RegParseException;
+
             this.stringMatchEditor_.setSignIdle();
+            this.stringMatchEditor_.clearMatchesCanvas();
             this.regexEditor_.highlightError(parseError.getPosition());
         }
 
@@ -135,7 +140,6 @@ export class RegexVisualizer {
     {
         /* --- update match --- */
         this.resetMatches();
-        this.stringMatchEditor_.clearMatchesCanvas();
         this.stringMatchEditor_.setLoading();
 
         const that = this;
@@ -153,11 +157,6 @@ export class RegexVisualizer {
 
                 that.steps_ += matchData.statesCount;
                 that.debuggerWindow_.steps = that.steps_;
-
-                if(matchData.start !== undefined && matchData.end !== undefined)
-                {
-                    that.stringMatchEditor_.highlightMatch(matchData.start, matchData.end);
-                }
 
                 that.stringMatchEditor_.updateMatchStatesMessage(matchData.statesCount, that.matches_.length - (matchData.success ? 0 : 1));
             },

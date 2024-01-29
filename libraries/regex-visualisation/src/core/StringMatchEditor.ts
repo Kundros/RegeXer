@@ -2,11 +2,16 @@ import { TextEditor, TextEditorOptions } from "./TextEditor";
 import { ElementHelper } from "./other/ElementHelper";
 import { highlightPosition } from "./other/textRowsBoundingHelper";
 
+export type MatchEditorOptions = TextEditorOptions & {
+    highlightColor?: string
+}
+
 export class StringMatchEditor extends TextEditor
 {
-    constructor(textInput : HTMLElement, canvasElement : HTMLCanvasElement, options?: TextEditorOptions)
+    constructor(textInput : HTMLElement, canvasElement : HTMLCanvasElement, options?: MatchEditorOptions)
     {
-        super(textInput, options);
+        super(textInput);
+        this.matchOptions_ = options;
 
         this.matchSign_ = textInput.parentNode.querySelector(".match-sign");
         this.matchSteps_ = textInput.parentNode.querySelector(".match-steps");
@@ -29,7 +34,7 @@ export class StringMatchEditor extends TextEditor
                 const matchesCount = this.matchesSpans_.length;
                 for(let i = 0 ; i < matchesCount ; i++)
                 {
-                    highlightPosition({context: this.context_, textElement: this.textInput_, from: this.matchesSpans_[i][0], to: this.matchesSpans_[i][1], highlightColor: "#622c96"});
+                    highlightPosition({context: this.context_, textElement: this.textInput_, from: this.matchesSpans_[i][0], to: this.matchesSpans_[i][1], highlightColor: options?.highlightColor ?? "#2b85c2"});
                 }
             });    
         });
@@ -40,7 +45,7 @@ export class StringMatchEditor extends TextEditor
     public highlightMatch(from: number, to: number)
     {
         this.matchesSpans_.push([from, to]);
-        highlightPosition({context: this.context_, textElement: this.textInput_, from, to, highlightColor: "#622c96"});
+        highlightPosition({context: this.context_, textElement: this.textInput_, from, to, highlightColor: this.matchOptions_?.highlightColor ?? "#2b85c2"});
     }
 
     public clearMatchesCanvas()
@@ -49,6 +54,29 @@ export class StringMatchEditor extends TextEditor
         this.matchesSpans_ = [];
 
         this.context_.clearRect(0, 0, bounding.width, bounding.height);
+    }
+
+    public highlightMatches(regexText : string, flags?: string)
+    {
+        const regex = new RegExp(regexText, flags);
+        const textToMatch = this.textInput_.textContent;
+
+        let match : RegExpExecArray;
+        let lastIndex = 0;
+
+        this.clearMatchesCanvas();
+
+        while((match = regex.exec(textToMatch)) !== null)
+        {
+            if(lastIndex === regex.lastIndex)
+                regex.lastIndex += 1;
+            
+            this.highlightMatch(match.index, match.index + match[0].length)
+            lastIndex = regex.lastIndex;
+            
+            if(!flags?.includes('g'))
+                break;
+        }
     }
 
     public updateMatchStatesMessage(steps: number, matches : number)
@@ -98,6 +126,7 @@ export class StringMatchEditor extends TextEditor
         return this.matchSign_.classList.contains("match-idle");
     }
 
+    private matchOptions_ ?: MatchEditorOptions;
     private matchesSpans_ : [number, number][];
     private matchSign_ : Element;
     private matchSteps_ : Element;

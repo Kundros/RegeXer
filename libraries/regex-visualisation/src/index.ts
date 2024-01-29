@@ -21,13 +21,13 @@ import { RegexDebugger } from "./core/RegexDebugger";
                 informativeColor: "#075f91"
             },
             matchHighlighting: {
-                positionColor: "#622c96"
+                positionColor: "#2b85c2"
             }
         }),
         vscode,
         {
             regexWait: 0,
-            matchWait: 500
+            matchWait: 300
         }
     );
 }());
