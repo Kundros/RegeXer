@@ -1,4 +1,4 @@
-import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, ASTtype, AstEscapedSpecial, GroupTypes, RegexStates } from "@kundros/regexer";
+import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, ASTtype, AstAnyCharacter, AstEscapedSpecial, GroupTypes, RegexStates } from "@kundros/regexer";
 import { TextEditor, TextEditorOptions } from "./TextEditor";
 import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
 import { ElementHelper } from "./other/ElementHelper";
@@ -160,6 +160,12 @@ export class RegexEditor extends TextEditor
                 return ElementHelper.wrapElement([document.createTextNode(char)], "span", ["escaped-char"]);
 
             return document.createTextNode(char);
+        }
+
+        if(AST.type & RegexStates.ANY)
+        {
+            const any = AST as AstAnyCharacter;
+            return ElementHelper.wrapElement(text.slice(any.start, any.end), "span", ["any-symbol"]);
         }
 
         if(AST.type & RegexStates.SPECIAL)
