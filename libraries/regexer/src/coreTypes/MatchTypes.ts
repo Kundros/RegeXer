@@ -1,5 +1,6 @@
 import { RegexTypes } from "@regexer/core/RegexParser"
 import { MatchResponse } from "./MatchWorkerTypes"
+import { ASTGroup } from "./parserTypes"
 
 export type MatchBatchData = {
     batchSize: number,
@@ -20,6 +21,7 @@ export type BatchMatchOptions =
 export type MatchData =
 {
      states: MatchState[],
+     groups?: Map<number | string, MatchGroup>, 
      start?: number,
      end?: number,
      statesCount: number,
@@ -30,11 +32,19 @@ export type MatchState =
 {
      type: RegexTypes.RegexStates,
      regAt: [number, number],
-     strAt?: [number, number],
+     strAt: [number, number],
 
      action?: MatchAction,
      fromExact?: [number, number]
 }
+
+export type MatchGroup =
+{
+     index: number | string,
+     regAt: [number, number],
+     strAt: [number, number]
+}
+
 /**
  * @property {number} BACKTRACKING signalize that the state is backtracking
  * @property {number} FORWARD_START signalize that the start of the match in string has moved forward

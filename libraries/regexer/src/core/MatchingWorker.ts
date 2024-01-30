@@ -28,7 +28,7 @@ class MatcherInternal
             this.statesStack = new Stack<matchingState>();
             this.matchBuilder = new MatchBuilder(flags, batchSize ?? -1);
             this.matchBuilder.matchData.start = 0;
-            this.groups = new Stack<ASTGroup>();
+            this.groups = new Stack<{strStart: number, regAt: [number, number]}>();
             this.batchSize_ = batchSize ?? -1;
             this.matchString_ = matchString;
             this.isMatching = true;
@@ -146,18 +146,19 @@ class MatcherInternal
                             }
                         }
                     }
-                    else
+                    // if going forward then the iteration is completed we don't renew the iteration
+                    else if(transition[1] < 0)
                         this.iterationStack.push(currentPosition);
                 }
+
+                // handle group stact
+                this.handleGroupEnterOrLeave(nfaState);
 
                 this.regexPosStack.push(this.regexPosStack.top() + transition[1]);
                 this.stringPosStack.push(this.stringPosStack.top());
 
-                if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP)
-                    this.groups.push(<ASTGroup>nfaState?.ASTelement);
-
                 // if the transition is iteration then we push current string position (to further check if we loop "null" transition over and over)
-                if(nfaState?.ASTelement?.type & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE))
+                if(nfaState?.ASTelement?.type & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE) && transition[1] == 1)
                     this.iterationStack.push(this.stringPosStack.top());
 
                 let canAddToMatch = false;
@@ -204,7 +205,8 @@ class MatcherInternal
         const regexEnd = (NFA[0] as NFAState)?.ASTelement?.end ?? 0;
         this.matchBuilder.addState({
             type: RegexTypes.RegexStates.ROOT,
-            regAt: [regexEnd, regexEnd]
+            regAt: [regexEnd, regexEnd],
+            strAt: [this.matchBuilder.matchData.start, this.matchBuilder.matchData.end]
         });
 
         // send last batch
@@ -217,6 +219,40 @@ class MatcherInternal
         this.matchBuilder.success = true;
         this.isMatching = false;
         return <ReturnMatch>{ type: MatchResponse.SUCCESS, pid: this.pid, data: this.matchBuilder.finalize() };
+    }
+
+    private handleGroupEnterOrLeave(nfaState : NFAtype, backtracking: boolean = false)
+    {
+        if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP)
+        {
+            if(backtracking)
+            {
+                this.groups.pop();
+            }
+            else
+            {
+                const groupAST = <ASTGroup>nfaState?.ASTelement;
+                this.groups.push({strStart: this.stringPosStack.top(), regAt: [groupAST.start, groupAST.end]});
+            }
+        }
+        else if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END)
+        {
+            if(backtracking)
+            {
+                const group = this.matchBuilder.popGroup(this.groups.size());
+                this.groups.push({strStart: this.stringPosStack.top(), regAt: group.regAt});
+            }
+            else
+            {
+                const currentGroup = this.groups.pop();
+
+                this.matchBuilder.newIncomingGroup({
+                    index: this.groups.size(),
+                    regAt: currentGroup.regAt,
+                    strAt: [currentGroup.strStart, this.stringPosStack.top()]
+                });
+            }
+        }
     }
 
     private handleOptionTransitioning(nfaState : NFAtype)
@@ -282,6 +318,14 @@ class MatcherInternal
             this.statesStack.pop();
             this.regexPosStack.pop();
         }
+
+        if(NFA[this.regexPosStack.top()]?.ASTelement?.type & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE | RegexTypes.RegexStates.ITERATION_END))
+        {   
+            this.iterationStack.pop();
+        }
+
+        // handle group stact
+        this.handleGroupEnterOrLeave(nfaState, true);
 
         if(this.statesStack.size() === 0)
         {
@@ -351,7 +395,7 @@ class MatcherInternal
     private iterationStack : Stack<number>;
     private statesStack : Stack<matchingState>;
     private matchBuilder : MatchBuilder;
-    private groups : Stack<ASTGroup>;
+    private groups : Stack<{strStart: number, regAt: [number, number]}>;
     private batchSize_ : number;
     
     public isMatching ?: boolean;

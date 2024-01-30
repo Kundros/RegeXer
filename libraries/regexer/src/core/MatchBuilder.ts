@@ -1,5 +1,6 @@
 import { MatchResponse } from "@regexer/coreTypes/MatchWorkerTypes";
-import { MatchAction, MatchBatchData, MatchData, MatchFlags, MatchState } from "@regexer/coreTypes/MatchTypes";
+import { MatchAction, MatchBatchData, MatchData, MatchFlags, MatchGroup, MatchState } from "@regexer/coreTypes/MatchTypes";
+import { Stack } from "@regexer/structures/Stack";
 
 export class MatchBuilder
 {
@@ -9,10 +10,12 @@ export class MatchBuilder
         this.matchData = {
             states: [],
             statesCount: 0,
+            groups: new Map<number | string, MatchGroup>(),
             success: false
         }
 
         this.batchSize_ = batchSize;
+        this.groups_ = new Map<number | string, Stack<MatchGroup>>();
     }
 
     public addState(state : MatchState) : MatchBuilder
@@ -108,15 +111,42 @@ export class MatchBuilder
             states[states.length-1].regAt = [optionStart, optionStart];
     }
 
+    public newIncomingGroup(matchGroup: MatchGroup)
+    {
+        if(!this.groups_.has(matchGroup.index))
+            this.groups_.set(matchGroup.index, new Stack<MatchGroup>());
+
+        this.groups_.get(matchGroup.index).push(matchGroup);
+    }
+
+    public popGroup(index: number | string)
+    {
+        console.log(this.groups_.get(index).top());
+        return this.groups_.get(index).pop();
+    }
+
     public finalize() : MatchData
     {
         if(this.batchSize_ > 0)
             this.matchData.states = [];
+        
+        for (let value of this.groups_.values())
+        {
+            const topState = value.pop();
+
+            if(topState)
+                this.matchData.groups.set(topState.index, topState); 
+        };
+
+        if(this.matchData.groups.size <= 0)
+            delete(this.matchData.groups);
 
         return this.matchData;
     }
 
     public matchData: MatchData;
+    
+    private groups_ : Map<number | string, Stack<MatchGroup>>;
     private flags_ ?: number | MatchFlags;
     private batchPosition_ : [number, number] = [0, 0];
     private batchSize_: number;

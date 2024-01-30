@@ -17,6 +17,11 @@ export class RegexMatch
           this.matchData_.states.push(...batch.matchStates);
      }
 
+     public get groups()
+     {
+          return this.matchData_.groups;
+     }
+
      public changeMatchInformation(match : MatchData)
      {
           this.matchData_.end = match.end;
