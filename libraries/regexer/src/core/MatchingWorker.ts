@@ -230,7 +230,9 @@ class MatcherInternal
             if(backtracking)
             {
                 this.popedGroupIndices_.push(this.groups_.top()?.name ?? this.groups_.top()?.index ?? null);
-                this.groups_.pop();
+                // pop group and check if was non-capturing to adjust counter
+                if(this.groups_.pop() === null)
+                    this.nonCapturingGroupCounter_--;
             }
             else
             {
@@ -242,10 +244,8 @@ class MatcherInternal
                     this.groups_.push(null); 
                     this.nonCapturingGroupCounter_++;
                 }
-                else if(groupAST.detailedType === 'C')
-                    this.groups_.push({index: this.groups_.size() - this.nonCapturingGroupCounter_, strAt: [this.stringPosStack_.top(), 0], regAt: [groupAST.start, groupAST.end]});
-                else
-                    this.groups_.push({index: this.groups_.size(), name: groupAST.name, strAt: [this.stringPosStack_.top(), 0], regAt: [groupAST.start, groupAST.end]});
+                else // fallback for capturing and named group
+                    this.groups_.push({index: this.groups_.size() - this.nonCapturingGroupCounter_, name: groupAST.name, strAt: [this.stringPosStack_.top(), 0], regAt: [groupAST.start, groupAST.end]});
             }
         }
         else if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END)
@@ -255,6 +255,7 @@ class MatcherInternal
                 if(this.popedGroupIndices_.size() <= 0)
                     return;
                 
+                //get last index of group and then get the stored group in match builder
                 const popedIndex = this.popedGroupIndices_.pop();
                 if(popedIndex !== null)
                 {
@@ -262,7 +263,10 @@ class MatcherInternal
                     this.groups_.push({index: group.index, strAt: group.strAt, regAt: group.regAt});
                 }
                 else
+                {
                     this.groups_.push(null);
+                    this.nonCapturingGroupCounter_++;
+                }
             }
             else
             {
@@ -430,7 +434,7 @@ class MatcherInternal
     private batchSize_ : number;
     private nonCapturingGroupCounter_ : number;
     private matchString_ : string;
-    
+
     // capturing : number, named : string, non-capturing : null
     private popedGroupIndices_ : Stack<number | string | null>;
     
