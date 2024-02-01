@@ -388,3 +388,22 @@ test("test nested 'null' iteration infinite loop", async () => {
 
     regexer.clear();
 });
+
+test("nested non 'null' iteration infinite loop wierd scenario", async () => {
+    const regexer = new Regexer();
+    await regexer.parse('(ab(c)*)+_');
+
+    let match = (await regexer.match('abab_'))[0];
+    expect(match.start).toBe(0);
+    expect(match.end).toBe(5);
+
+    match = (await regexer.match('abababab_'))[0];
+    expect(match.start).toBe(0);
+    expect(match.end).toBe(9);
+
+    match = (await regexer.match('abcabababcccc_'))[0];
+    expect(match.start).toBe(0);
+    expect(match.end).toBe(14);
+
+    regexer.clear();
+});
