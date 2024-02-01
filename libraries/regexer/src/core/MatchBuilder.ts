@@ -138,7 +138,17 @@ export class MatchBuilder
 
     public popGroup(index: number | string)
     {
-        return this.groups_.get(index).pop();
+        let poped = this.groups_.get(index).pop();
+        if(poped === null)
+            return this.groups_.get(index).pop();
+        return poped;
+    }
+
+    public pushNullGroupOnIndex(index: number | string)
+    { 
+        if(!this.groups_.has(index))
+            this.groups_.set(index, new Stack());
+        return this.groups_.get(index).push(null);
     }
 
     public finalize() : MatchData
@@ -156,11 +166,18 @@ export class MatchBuilder
     {
         for (let value of this.groups_.values())
         {
-            const topState = value.top();
+            let topState = value.top();
+
+            if(topState === null)
+            {
+                const popped = value.pop();
+                topState = value.top();
+                value.push(popped);
+            }
 
             if(topState)
                 groupsTo.set(topState.name ?? topState.index, topState); 
-        };
+        }
 
         if(groupsTo.size <= 0)
             return false;
@@ -169,7 +186,7 @@ export class MatchBuilder
 
     public matchData: MatchData;
     
-    private groups_ : Map<number | string, Stack<MatchGroup>>;
+    private groups_ : Map<number | string, Stack<MatchGroup | null>>;
     private flags_ ?: number | MatchFlags;
     private batchPosition_ : [number, number] = [0, 0];
     private batchSize_: number;

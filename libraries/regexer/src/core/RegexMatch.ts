@@ -28,6 +28,7 @@ export class RegexMatch
           this.matchData_.start = match.start;
           this.matchData_.statesCount = match.statesCount;
           this.matchData_.success = match.success;
+          this.matchData_.groups = match.groups;
      }
 
      public moveForward(num?: number) : null | MatchState

@@ -19,21 +19,24 @@ class MatcherInternal
 
     public match(pid : number, matchString? : string, batchSize?: number)
     {
+        // init data
         if(matchString !== undefined)
         {
             this.pid_ = pid;
+
             this.regexPosStack_ = new Stack([0]);
             this.stringPosStack_ = new Stack([0]);
             this.iterationStack_ = new Stack([]);
             this.statesStack_ = new Stack();
             this.popedGroupIndices_ = new Stack();
+            this.groups_ = new Stack();
+            this.groupIndices_ = new Map();
+
             this.matchBuilder_ = new MatchBuilder(flags, batchSize ?? -1);
             this.matchBuilder_.matchData.start = 0;
-            this.groups_ = new Stack();
             this.batchSize_ = batchSize ?? -1;
             this.matchString_ = matchString;
             this.isMatching = true;
-            this.nonCapturingGroupCounter_ = 0;
             delete(this.response);
 
             this.matchBuilder_.addState({
@@ -46,6 +49,7 @@ class MatcherInternal
         if(this.pid_ !== pid)
             return null;
 
+        // test abortion if is aborted then stop executing on this thread
         if(this.response === MatchResponse.ABORTED)
         {
             this.isMatching = false;
@@ -60,7 +64,7 @@ class MatcherInternal
             return <ReturnMatch>{ type: this.response, pid: this.pid_, data: this.matchBuilder_.finalize() };
         }
 
-
+        // main loop for matching
         while(true) 
         {
             const nfaState = NFA[this.regexPosStack_.top()] as NFAtype;
@@ -229,10 +233,14 @@ class MatcherInternal
         {
             if(backtracking)
             {
-                this.popedGroupIndices_.push(this.groups_.top()?.name ?? this.groups_.top()?.index ?? null);
-                // pop group and check if was non-capturing to adjust counter
-                if(this.groups_.pop() === null)
-                    this.nonCapturingGroupCounter_--;
+                const index = this.groups_.top()?.name ?? this.groups_.top()?.index ?? null;
+                this.popedGroupIndices_.push(index);
+
+                // this is needed to test '*' iteration on backtracking
+                if(index !== null)
+                    this.matchBuilder_.pushNullGroupOnIndex(index);
+
+                this.groups_.pop();
             }
             else
             {
@@ -242,16 +250,19 @@ class MatcherInternal
                 {
                     // null symbolizes non-capturing group (needed because event this type of group has state GROUP_END, to be poped)
                     this.groups_.push(null); 
-                    this.nonCapturingGroupCounter_++;
                 }
-                else // fallback for capturing and named group
-                    this.groups_.push({index: this.groups_.size() - this.nonCapturingGroupCounter_, name: groupAST.name, strAt: [this.stringPosStack_.top(), 0], regAt: [groupAST.start, groupAST.end]});
+                else{ // fallback for 'capturing' and 'named' group
+                    if(!this.groupIndices_.has(groupAST.start))
+                        this.groupIndices_.set(groupAST.start, this.groupIndices_.size);
+                    this.groups_.push({index: this.groupIndices_.get(groupAST.start), name: groupAST.name, strAt: [this.stringPosStack_.top(), 0], regAt: [groupAST.start, groupAST.end]});
+                }
             }
         }
         else if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END)
         {
             if(backtracking)
             {
+                // prevention
                 if(this.popedGroupIndices_.size() <= 0)
                     return;
                 
@@ -259,32 +270,28 @@ class MatcherInternal
                 const popedIndex = this.popedGroupIndices_.pop();
                 if(popedIndex !== null)
                 {
-                    const group = this.matchBuilder_.popGroup(popedIndex);
-                    this.groups_.push({index: group.index, strAt: group.strAt, regAt: group.regAt});
+                    let group : MatchGroup | null;
+                    // skip nulls
+                    while((group = this.matchBuilder_.popGroup(popedIndex)) === null){};
+
+                    if(group)
+                        this.groups_.push({index: group.index, strAt: group.strAt, regAt: group.regAt, name: group.name});
                 }
                 else
                 {
                     this.groups_.push(null);
-                    this.nonCapturingGroupCounter_++;
                 }
             }
             else
             {
                 const currentGroup = this.groups_.pop();
                 if(currentGroup === null)
-                {
-                    this.nonCapturingGroupCounter_--;
                     return;
-                }
 
                 if(nfaState)
                 {
-                    this.matchBuilder_.newIncomingGroup({
-                        index: currentGroup.index,
-                        regAt: currentGroup.regAt,
-                        strAt: [currentGroup.strAt[0], this.stringPosStack_.top()],
-                        name: currentGroup.name
-                    });
+                    currentGroup.strAt[1] = this.stringPosStack_.top();
+                    this.matchBuilder_.newIncomingGroup(currentGroup);
                 }
             }
         }
@@ -431,8 +438,8 @@ class MatcherInternal
     private statesStack_ : Stack<matchingState>;
     private matchBuilder_ : MatchBuilder;
     private groups_ : Stack<MatchGroup | null>;
+    private groupIndices_ : Map<number, number>;
     private batchSize_ : number;
-    private nonCapturingGroupCounter_ : number;
     private matchString_ : string;
 
     // capturing : number, named : string, non-capturing : null
