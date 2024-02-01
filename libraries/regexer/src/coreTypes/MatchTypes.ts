@@ -1,6 +1,5 @@
 import { RegexTypes } from "@regexer/core/RegexParser"
 import { MatchResponse } from "./MatchWorkerTypes"
-import { ASTGroup } from "./parserTypes"
 
 export type MatchBatchData = {
     batchSize: number,
@@ -33,6 +32,7 @@ export type MatchState =
      type: RegexTypes.RegexStates,
      regAt: [number, number],
      strAt: [number, number],
+     groups?: Map<number | string, MatchGroup>,
 
      action?: MatchAction,
      fromExact?: [number, number]
@@ -40,7 +40,8 @@ export type MatchState =
 
 export type MatchGroup =
 {
-     index: number | string,
+     index: number,
+     name?: string,
      regAt: [number, number],
      strAt: [number, number]
 }
@@ -76,7 +77,8 @@ export type MatchAction = typeof MatchAction[keyof typeof MatchAction];
  * @property {number} OPTION_NO_ERROR_RETURN 
  *   if single option cannot be matched the return of backtracking isn't updated to start of the regex option, \
  *   but stays at the same position just with action of backtracking set
- * @property {number} REMOVE_STATES_WO_EFFECT if 2 or more states share same regex position and string position, those will be reduced to single state 
+ * @property {number} REMOVE_STATES_WO_EFFECT if 2 or more states share same regex position and string position, those will be reduced to single state
+ * @property {number} ADD_GROUPS_TO_STATES all states that have at least one group will contain groups information
  */
 export const MatchFlags = 
 {
@@ -92,7 +94,8 @@ export const MatchFlags =
      IGNORE_STR_START_POSITION_CHANGE: 0x100,
      OPTION_SHOW_FIRST_ENTER: 0x200,
      OPTION_NO_ERROR_RETURN: 0x400,
-     REMOVE_STATES_WO_EFFECT: 0x800
+     REMOVE_STATES_WO_EFFECT: 0x800,
+     ADD_GROUPS_TO_STATES: 0x1000
 } as const;
 
 /**

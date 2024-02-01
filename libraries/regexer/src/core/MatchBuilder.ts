@@ -1,4 +1,3 @@
-import { MatchResponse } from "@regexer/coreTypes/MatchWorkerTypes";
 import { MatchAction, MatchBatchData, MatchData, MatchFlags, MatchGroup, MatchState } from "@regexer/coreTypes/MatchTypes";
 import { Stack } from "@regexer/structures/Stack";
 
@@ -10,12 +9,12 @@ export class MatchBuilder
         this.matchData = {
             states: [],
             statesCount: 0,
-            groups: new Map<number | string, MatchGroup>(),
+            groups: new Map(),
             success: false
         }
 
         this.batchSize_ = batchSize;
-        this.groups_ = new Map<number | string, Stack<MatchGroup>>();
+        this.groups_ = new Map();
     }
 
     public addState(state : MatchState) : MatchBuilder
@@ -46,6 +45,14 @@ export class MatchBuilder
 
         if(state?.strAt === undefined)
             state.strAt = top.strAt;
+
+        if(this.flags_ & MatchFlags.ADD_GROUPS_TO_STATES)
+        {
+            state.groups = new Map();
+
+            if(!this.handleGenerateGroupsData(state.groups))
+                delete(state.groups);
+        }
         
         this.matchData.statesCount++;
         this.matchData.states.push(state);
@@ -113,15 +120,24 @@ export class MatchBuilder
 
     public newIncomingGroup(matchGroup: MatchGroup)
     {
+        if(matchGroup.name !== undefined)
+        {
+            if(!this.groups_.has(matchGroup.name))
+                this.groups_.set(matchGroup.name, new Stack());
+            this.groups_.get(matchGroup.name).push(matchGroup);
+            return;
+        }
+        else
+            delete(matchGroup.name);
+
         if(!this.groups_.has(matchGroup.index))
-            this.groups_.set(matchGroup.index, new Stack<MatchGroup>());
+            this.groups_.set(matchGroup.index, new Stack());
 
         this.groups_.get(matchGroup.index).push(matchGroup);
     }
 
     public popGroup(index: number | string)
     {
-        console.log(this.groups_.get(index).top());
         return this.groups_.get(index).pop();
     }
 
@@ -129,19 +145,26 @@ export class MatchBuilder
     {
         if(this.batchSize_ > 0)
             this.matchData.states = [];
-        
-        for (let value of this.groups_.values())
-        {
-            const topState = value.pop();
 
-            if(topState)
-                this.matchData.groups.set(topState.index, topState); 
-        };
-
-        if(this.matchData.groups.size <= 0)
+        if(!this.handleGenerateGroupsData(this.matchData.groups))
             delete(this.matchData.groups);
 
         return this.matchData;
+    }
+
+    private handleGenerateGroupsData(groupsTo: Map<number | string, MatchGroup>)
+    {
+        for (let value of this.groups_.values())
+        {
+            const topState = value.top();
+
+            if(topState)
+                groupsTo.set(topState.name ?? topState.index, topState); 
+        };
+
+        if(groupsTo.size <= 0)
+            return false;
+        return true;
     }
 
     public matchData: MatchData;
