@@ -17,3 +17,16 @@ All notable changes to the "Regex Visualizer" extension will be documented in th
 - Setting: enable/disable new webview on new regex from vscode.
 - Visualizer window supports some level of debugging
 - Matching is async and can be interupted
+
+## [0.0.2] - 2024-02-01
+
+### Added
+
+- groups while matching, on final match and each state of groups (not visualizing yet)
+- flag to disable/enable groups on each state if there is at least one (not visualizing yet)
+- highlighting of any symbol '.'
+- Matches are displayed even if the matching wasn't finished
+
+### Fixed
+
+- infinite loop prevention while matching. For example: ()+
