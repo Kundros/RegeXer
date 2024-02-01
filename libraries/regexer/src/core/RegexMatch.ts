@@ -17,12 +17,18 @@ export class RegexMatch
           this.matchData_.states.push(...batch.matchStates);
      }
 
+     public get groups()
+     {
+          return this.matchData_.groups;
+     }
+
      public changeMatchInformation(match : MatchData)
      {
           this.matchData_.end = match.end;
           this.matchData_.start = match.start;
           this.matchData_.statesCount = match.statesCount;
           this.matchData_.success = match.success;
+          this.matchData_.groups = match.groups;
      }
 
      public moveForward(num?: number) : null | MatchState

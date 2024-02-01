@@ -2,13 +2,13 @@ import { test, expect } from '@jest/globals';
 
 import { Regexer } from '../src/core/Regexer';
 import { RegexTypes } from '../src/core/RegexParser';
-import { MatchBatchData, MatchData, MatchFlags } from '../src/coreTypes/MatchTypes';
+import { MatchBatchData, MatchData, MatchFlags, MatchState } from '../src/coreTypes/MatchTypes';
 import { RegexMatch } from '../src/core/RegexMatch';
 import { MatchResponse } from '../src/coreTypes/MatchWorkerTypes';
 
 global.__filename = "dist/cjs/core/Regexer";
 
-test("match setting (SHORTEN_BACKTRACKING + BACKTRACKED_FROM_EXACT)", async () => {
+test("match setting (SHORTEN_BACKTRACKING + BACKTRACKED_FROM_EXACT + IGNORE_STR_START_POSITION_CHANGE)", async () => {
     const regexer = new Regexer(
         MatchFlags.SHORTEN_BACKTRACKING | 
         MatchFlags.BACKTRACKED_FROM_EXACT | 
@@ -63,7 +63,7 @@ test("match setting (SHORTEN_BACKTRACKING + BACKTRACKED_FROM_EXACT)", async () =
     regexer.clear();
 });
 
-test("-", async () => {
+test("groups correct ranges 1", async () => {
     const regexer = new Regexer(
         MatchFlags.SHORTEN_BACKTRACKING | 
         MatchFlags.BACKTRACKED_FROM_EXACT |
@@ -71,45 +71,232 @@ test("-", async () => {
         MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
         MatchFlags.OPTION_SHOW_FIRST_ENTER |
         MatchFlags.OPTION_NO_ERROR_RETURN |
-        MatchFlags.REMOVE_STATES_WO_EFFECT
+        MatchFlags.REMOVE_STATES_WO_EFFECT |
+        MatchFlags.ADD_GROUPS_TO_STATES
     );
 
-    await regexer.parse("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    await regexer.parse('(?:ab(?<name>c)*)+_');
+    const match = (await regexer.match('abcdabababcccc_'))[0];
 
-    let match = new RegexMatch();
-    regexer.matchInBatches("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", {
+    const nameGroup = match?.groups?.get("name");
+    expect(nameGroup.index).toStrictEqual(0);
+    expect(nameGroup.name).toStrictEqual("name");
+    expect(nameGroup.regAt).toStrictEqual([5, 15]);
+    expect(nameGroup.strAt).toStrictEqual([13, 14]);
+    expect(match?.groups?.get(0)).toStrictEqual(undefined);
+
+    regexer.clear();
+});
+
+test("groups correct ranges 2", async () => {
+    const regexer = new Regexer(
+        MatchFlags.SHORTEN_BACKTRACKING | 
+        MatchFlags.BACKTRACKED_FROM_EXACT |
+        MatchFlags.BACKTRACK_TRIM_POSITION |
+        MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
+        MatchFlags.OPTION_SHOW_FIRST_ENTER |
+        MatchFlags.OPTION_NO_ERROR_RETURN |
+        MatchFlags.REMOVE_STATES_WO_EFFECT |
+        MatchFlags.ADD_GROUPS_TO_STATES
+    );
+
+    await regexer.parse('(ab(?<name>c)*()*)+(_)');
+    const match = (await regexer.match('abccabc_'))[0];
+
+    const nameGroup = match?.groups.get("name");
+    expect(nameGroup.index).toStrictEqual(1);
+    expect(nameGroup.name).toStrictEqual("name");
+    expect(nameGroup.regAt).toStrictEqual([3, 13]);
+    expect(nameGroup.strAt).toStrictEqual([6, 7]);
+
+    const group0 = match?.groups.get(0);
+    expect(group0.index).toStrictEqual(0);
+    expect(group0.name).toStrictEqual(undefined);
+    expect(group0.regAt).toStrictEqual([0, 18]);
+    expect(group0.strAt).toStrictEqual([4, 7]);
+
+    const group2 = match?.groups.get(2);
+    expect(group2.index).toStrictEqual(2);
+    expect(group2.name).toStrictEqual(undefined);
+    expect(group2.regAt).toStrictEqual([14, 16]);
+    expect(group2.strAt).toStrictEqual([7, 7]);
+
+    const group3 = match?.groups.get(3);
+    expect(group3.index).toStrictEqual(3);
+    expect(group3.name).toStrictEqual(undefined);
+    expect(group3.regAt).toStrictEqual([19, 22]);
+    expect(group3.strAt).toStrictEqual([7, 8]);
+
+    regexer.clear();
+});
+
+test("groups correct ranges 3", async () => {
+    const regexer = new Regexer(
+        MatchFlags.SHORTEN_BACKTRACKING | 
+        MatchFlags.BACKTRACKED_FROM_EXACT |
+        MatchFlags.BACKTRACK_TRIM_POSITION |
+        MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
+        MatchFlags.OPTION_SHOW_FIRST_ENTER |
+        MatchFlags.OPTION_NO_ERROR_RETURN |
+        MatchFlags.REMOVE_STATES_WO_EFFECT |
+        MatchFlags.ADD_GROUPS_TO_STATES
+    );
+
+    await regexer.parse('(?:ab(?<name>c)*()*)+(_)');
+    const match = (await regexer.match('abccab_'))[0];
+
+    const group1 = match?.groups.get(1);
+    expect(group1.index).toStrictEqual(1);
+    expect(group1.name).toStrictEqual(undefined);
+    expect(group1.regAt).toStrictEqual([16, 18]);
+    expect(group1.strAt).toStrictEqual([6, 6]);
+
+    const group2 = match?.groups.get(2);
+    expect(group2.index).toStrictEqual(2);
+    expect(group2.name).toStrictEqual(undefined);
+    expect(group2.regAt).toStrictEqual([21, 24]);
+    expect(group2.strAt).toStrictEqual([6, 7]);
+
+    regexer.clear();
+});
+
+test("test correct batches 1", async () => {
+    const regexer = new Regexer(
+        MatchFlags.SHORTEN_BACKTRACKING | 
+        MatchFlags.BACKTRACKED_FROM_EXACT |
+        MatchFlags.BACKTRACK_TRIM_POSITION |
+        MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
+        MatchFlags.OPTION_SHOW_FIRST_ENTER |
+        MatchFlags.OPTION_NO_ERROR_RETURN |
+        MatchFlags.REMOVE_STATES_WO_EFFECT |
+        MatchFlags.ADD_GROUPS_TO_STATES
+    );
+
+    await regexer.parse("(a|b|c)+(?:ab)+[a-z]_");
+
+    let match1 = new RegexMatch();
+    await regexer.matchInBatches("abcbbbcccbbccbbccbbababababgjgrehjb", {
         batchCallback: (batch: MatchBatchData) => {
-            match.addBatch(batch);
+            match1.addBatch(batch);
         },
         matchCallback: (matchFinal: MatchData) => {
-            match.changeMatchInformation(matchFinal);
+            match1.changeMatchInformation(matchFinal);
         },
         completeCallback: (flag: MatchResponse) => {
-            console.log("completed: " + flag);
         },
-        batchSize: 50000
+        batchSize: 7
     });
 
-    await regexer.matchInBatches("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", {
-        batchCallback: (batch: MatchBatchData) => {
-            match.addBatch(batch);
-            console.log(match.statesCount);
-        },
-        matchCallback: (matchFinal: MatchData) => {
-            match.changeMatchInformation(matchFinal);
-        },
-        completeCallback: (flag: MatchResponse) => {
-            console.log("completed: " + flag);
-        },
-        batchSize: 1000,
-        forceStopRunning: true
-    });
+    let match2 = (await regexer.match("abcbbbcccbbccbbccbbababababgjgrehjb"))[0];
+    
+    expect(match1.statesCount).toStrictEqual(match2.statesCount);
 
-    /*while(matches2[0].currentState !== null)
+    let match1State : MatchState;
+    while((match1State = match1.currentState) !== null)
     {
-        console.log(matches2[0].currentState);
-        matches2[0].moveForward();
-    }*/
+        expect(match1State.action).toStrictEqual(match2.currentState.action);
+        expect(match1State.regAt).toStrictEqual(match2.currentState.regAt);
+        expect(match1State.strAt).toStrictEqual(match2.currentState.strAt);
+        expect(match1State.type).toStrictEqual(match2.currentState.type);
+        match1.moveBackward();
+        match2.moveForward();
+    }
+
+    regexer.clear();
+});
+
+test("test correct batches 2", async () => {
+    const regexer = new Regexer(
+        MatchFlags.SHORTEN_BACKTRACKING | 
+        MatchFlags.BACKTRACKED_FROM_EXACT |
+        MatchFlags.BACKTRACK_TRIM_POSITION |
+        MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
+        MatchFlags.OPTION_SHOW_FIRST_ENTER |
+        MatchFlags.OPTION_NO_ERROR_RETURN |
+        MatchFlags.REMOVE_STATES_WO_EFFECT |
+        MatchFlags.ADD_GROUPS_TO_STATES
+    );
+
+    await regexer.parse("(a|b|c)+(?:ab)+([a-z])*_");
+
+    let match1 = new RegexMatch();
+    await regexer.matchInBatches("abcbbbcccbbccbbccbbababababgjgrehjb_", {
+        batchCallback: (batch: MatchBatchData) => {
+            match1.addBatch(batch);
+        },
+        matchCallback: (matchFinal: MatchData) => {
+            match1.changeMatchInformation(matchFinal);
+        },
+        completeCallback: (flag: MatchResponse) => {
+        },
+        batchSize: 7
+    });
+
+    let match2 = (await regexer.match("abcbbbcccbbccbbccbbababababgjgrehjb_"))[0];
+    
+    expect(match1.statesCount).toStrictEqual(match2.statesCount);
+    expect(match1.success).toStrictEqual(match2.success);
+
+    expect(match1.groups.get(0).index).toStrictEqual(match2.groups.get(0).index);
+    expect(match1.groups.get(0).strAt).toStrictEqual(match2.groups.get(0).strAt);
+    expect(match1.groups.get(0).regAt).toStrictEqual(match2.groups.get(0).regAt);
+    expect(match1.groups.get(1).index).toStrictEqual(match2.groups.get(1).index);
+    expect(match1.groups.get(1).strAt).toStrictEqual(match2.groups.get(1).strAt);
+    expect(match1.groups.get(1).regAt).toStrictEqual(match2.groups.get(1).regAt);
+
+    let match1State : MatchState;
+    while((match1State = match1.currentState) !== null)
+    {
+        expect(match1State.action).toStrictEqual(match2.currentState.action);
+        expect(match1State.regAt).toStrictEqual(match2.currentState.regAt);
+        expect(match1State.strAt).toStrictEqual(match2.currentState.strAt);
+        expect(match1State.type).toStrictEqual(match2.currentState.type);
+        match1.moveBackward();
+        match2.moveForward();
+    }
+
+    regexer.clear();
+});
+
+test("test correct batches without one await (not terminating the job)", async () => {
+    const regexer = new Regexer(
+        MatchFlags.SHORTEN_BACKTRACKING | 
+        MatchFlags.BACKTRACKED_FROM_EXACT |
+        MatchFlags.BACKTRACK_TRIM_POSITION |
+        MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
+        MatchFlags.OPTION_SHOW_FIRST_ENTER |
+        MatchFlags.OPTION_NO_ERROR_RETURN |
+        MatchFlags.REMOVE_STATES_WO_EFFECT |
+        MatchFlags.ADD_GROUPS_TO_STATES
+    );
+
+    await regexer.parse("(a|b|c)+(?:ab)+([a-z])*_");
+
+    let match1 = new RegexMatch();
+    regexer.matchInBatches("abcbbbcccbbccbbccbbababababgjgrehjb_", {
+        batchCallback: (batch: MatchBatchData) => {
+            match1.addBatch(batch);
+        },
+        matchCallback: (matchFinal: MatchData) => {
+            match1.changeMatchInformation(matchFinal);
+        },
+        completeCallback: (flag: MatchResponse) => {
+        },
+        batchSize: 7
+    });
+
+    let match2 = (await regexer.match("abcbbbcccbbccbbccbbababababgjgrehjb_"))[0];
+
+    let match1State : MatchState;
+    while((match1State = match1.currentState) !== null)
+    {
+        expect(match1State.action).toStrictEqual(match2.currentState.action);
+        expect(match1State.regAt).toStrictEqual(match2.currentState.regAt);
+        expect(match1State.strAt).toStrictEqual(match2.currentState.strAt);
+        expect(match1State.type).toStrictEqual(match2.currentState.type);
+        match1.moveBackward();
+        match2.moveForward();
+    }
 
     regexer.clear();
 });
