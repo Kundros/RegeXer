@@ -2,7 +2,7 @@ import { MatchBatchData, MatchData, MatchFlags, MatchState } from "@regexer/core
 
 export class RegexMatch
 {
-     constructor(matchData?: MatchData, flags?: MatchFlags)
+     constructor(matchData?: MatchData)
      {
           this.matchData_ = matchData ?? {
                states: [],
@@ -80,7 +80,7 @@ export class RegexMatch
 
      public get statesLength()
      {
-          return this.matchData_.states.length;
+          return this.matchData_.statesCount;
      }
 
      public get currentState() : null | MatchState

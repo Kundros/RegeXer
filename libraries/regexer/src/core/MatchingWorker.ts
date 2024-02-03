@@ -285,7 +285,7 @@ class MatcherInternal
             else
             {
                 const currentGroup = this.groups_.pop();
-                if(currentGroup === null)
+                if(!currentGroup)
                     return;
 
                 if(nfaState)
@@ -371,6 +371,9 @@ class MatcherInternal
 
         if(this.statesStack_.size() === 0)
         {
+            /* clear groups because we start matching from zero in nfa */
+            this.matchBuilder_.clearGroups();
+
             /* match from any position wasn't found */
             if(this.stringPosStack_.top() + 1 >= this.matchString_.length)
             {
@@ -379,7 +382,7 @@ class MatcherInternal
 
                 this.matchBuilder_.addState({
                     type: RegexTypes.RegexStates.ROOT,
-                    regAt: [0, 0],
+                    regAt: [NFA[0]?.ASTelement?.end ?? 0, NFA[0]?.ASTelement?.end ?? 0],
                     strAt: [this.matchString_.length, this.matchString_.length]
                 });
 
