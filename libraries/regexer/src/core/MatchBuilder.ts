@@ -136,6 +136,11 @@ export class MatchBuilder
         this.groups_.get(matchGroup.index).push(matchGroup);
     }
 
+    public clearGroups()
+    {
+        this.groups_.clear();
+    }
+
     public popGroup(index: number | string)
     {
         let poped = this.groups_.get(index).pop();
