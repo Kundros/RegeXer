@@ -32,7 +32,8 @@ export class RegexVisualizer {
             MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
             MatchFlags.OPTION_SHOW_FIRST_ENTER |
             MatchFlags.REMOVE_STATES_WO_EFFECT |
-            MatchFlags.OPTION_NO_ERROR_RETURN
+            MatchFlags.OPTION_NO_ERROR_RETURN |
+            MatchFlags.ADD_GROUPS_TO_STATES
         );
 
         window.addEventListener("load", async () => {

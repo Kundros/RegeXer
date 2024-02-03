@@ -21,7 +21,17 @@ import { RegexDebugger } from "./core/RegexDebugger";
                 informativeColor: "#075f91"
             },
             matchHighlighting: {
-                positionColor: "#2b85c2"
+                positionColor: "#2b85c2",
+                groupColors: [
+                    "#ad55b5",
+                    "#8358b8",
+                    "#576db5",
+                    "#57a4b5",
+                    "#57b591",
+                    "#72b557",
+                    "#a5b557",
+                    "#b59a57"
+                ]
             }
         }),
         vscode,
