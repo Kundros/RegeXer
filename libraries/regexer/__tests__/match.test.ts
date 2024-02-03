@@ -294,9 +294,31 @@ test("test correct batches without one await (not terminating the job)", async (
         expect(match1State.regAt).toStrictEqual(match2.currentState.regAt);
         expect(match1State.strAt).toStrictEqual(match2.currentState.strAt);
         expect(match1State.type).toStrictEqual(match2.currentState.type);
-        match1.moveBackward();
+        match1.moveForward();
         match2.moveForward();
     }
+
+    regexer.clear();
+});
+
+test("test halt on invalid regex with groups", async () => {
+    const regexer = new Regexer(
+        MatchFlags.SHORTEN_BACKTRACKING | 
+        MatchFlags.BACKTRACKED_FROM_EXACT |
+        MatchFlags.BACKTRACK_TRIM_POSITION |
+        MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
+        MatchFlags.OPTION_SHOW_FIRST_ENTER |
+        MatchFlags.OPTION_NO_ERROR_RETURN |
+        MatchFlags.REMOVE_STATES_WO_EFFECT |
+        MatchFlags.ADD_GROUPS_TO_STATES
+    );
+
+    await regexer.parse("(ab(?<name>c)*()*)+(_)");
+
+    const match = (await regexer.match("ab"))[0];
+
+    expect(match.success).toBe(false);
+    expect(match.groups).toBe(undefined);
 
     regexer.clear();
 });
