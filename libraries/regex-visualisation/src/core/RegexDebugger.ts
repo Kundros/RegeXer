@@ -1,34 +1,20 @@
-import { MatchAction, MatchGroup, RegexMatch } from "@kundros/regexer";
+import { MatchAction, RegexMatch } from "@kundros/regexer";
 import { Slider, SliderEvent } from "./Slider";
 import { sliderSettings } from "./settings/SliderSettings";
-import { getTextRowsBounding, highlightPosition } from "./other/textRowsBoundingHelper";
+import { getTextRowsBounding, highlightGroups, highlightPosition } from "./other/textRowsBoundingHelper";
+import { MatchHighlightingOptions } from "./coreTypes/MatchHighlightOptions";
+import { RegexHighlightingOptions } from "./coreTypes/RegexHighlightOptions";
 
 export type DebuggerOptions = {
-    regexHighlighting?: RegexHighlightingOption,
-    matchHighlighting?: MatchHighlightingOption
+    regexHighlighting?: RegexHighlightingOptions,
+    matchHighlighting?: MatchHighlightingOptions
 }
-
-export type RegexHighlightingOption = {
-    positionColor?: string,
-    backtrackingPositionColor?: string,
-    backtrackingDirectionColor?: string,
-    informativeColor?: string
-};
-
-export type MatchHighlightingOption = {
-    positionColor?: string,
-    backtrackingPositionColor?: string,
-    backtrackingDirectionColor?: string,
-    groupFallbackColor?: string,
-    groupColors?: string[]
-};
 
 const HighlightingTypes = 
 {
     DEFAULT: 0x0,
     ERROR: 0x1,
-    INFORMATIVE: 0x2,
-    GROUP: 0x4
+    INFORMATIVE: 0x2
 } as const;
 
 type HighlightingTypes = typeof HighlightingTypes[keyof typeof HighlightingTypes];
@@ -49,7 +35,6 @@ export class RegexDebugger {
         this.matchText_ = this.matchTextContainer_.querySelector('.regex-debugger-string-text');
         this.matchCanvas_ = this.matchTextContainer_.querySelector('.regex-debugger-string-canvas');
         this.matchContext_ = this.matchCanvas_.getContext("2d");
-        this.groupIndex_ = 0;
 
         this.debuggerOptions_ = debuggerOptions;
 
@@ -104,6 +89,11 @@ export class RegexDebugger {
     {
         this.slider_.max = steps;
     }
+    
+    public set options(newOptions : DebuggerOptions)
+    {
+         this.debuggerOptions_ = newOptions;
+    }
 
     private visualizeStep(step : number)
     {
@@ -138,11 +128,13 @@ export class RegexDebugger {
         // string groups highlight
         if(state?.groups !== undefined)
         {
-            this.groupIndex_ = 0;
-            for(let group of state.groups.values())
-            {
-                this.highlightPosition(group.strAt[0], group.strAt[1], HighlightingTypes.GROUP, false);
-            }
+            highlightGroups({
+                textElement: this.matchText_,
+                groups: state?.groups,
+                colors: this.debuggerOptions_.matchHighlighting.groupColors,
+                fallbackColor: this.debuggerOptions_.matchHighlighting.groupFallbackColor,
+                context: this.matchContext_
+            });
         }
 
         // informative regex highlight
@@ -176,20 +168,9 @@ export class RegexDebugger {
         if(highlightingType === HighlightingTypes.ERROR)
             color = options?.backtrackingPositionColor ?? "#FF0000";
         else if(highlightingType === HighlightingTypes.INFORMATIVE && options)
-            color = (options as RegexHighlightingOption)?.informativeColor ?? options?.backtrackingPositionColor ?? "#00FF00";
-        else if(highlightingType === HighlightingTypes.DEFAULT)
-            color = options?.positionColor ?? "#00FF00";
+            color = (options as RegexHighlightingOptions)?.informativeColor ?? options?.backtrackingPositionColor ?? "#00FF00";
         else
-        {
-            const stringOptions = <MatchHighlightingOption> options;
-
-            if(stringOptions.groupColors === undefined || stringOptions.groupColors.length === 0)
-                color = stringOptions?.groupFallbackColor ?? "#EBB044";
-            else
-                color = stringOptions.groupColors[this.groupIndex_ % stringOptions.groupColors.length];
-
-            this.groupIndex_++;
-        }
+            color = options?.positionColor ?? "#00FF00";
 
         highlightPosition({context, textElement, from, to, highlightColor: color});
     }
@@ -263,7 +244,6 @@ export class RegexDebugger {
     private matchCanvas_ : HTMLCanvasElement;
     private matchContext_ : CanvasRenderingContext2D;
 
-    private groupIndex_ : number;
     private debuggerOptions_? : DebuggerOptions;
     private matches_? : RegexMatch[];
     private slider_ : Slider;
