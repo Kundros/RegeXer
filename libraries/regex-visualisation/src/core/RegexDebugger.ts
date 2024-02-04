@@ -1,25 +1,14 @@
 import { MatchAction, RegexMatch } from "@kundros/regexer";
 import { Slider, SliderEvent } from "./Slider";
 import { sliderSettings } from "./settings/SliderSettings";
-import { getTextRowsBounding, highlightPosition } from "./other/textRowsBoundingHelper";
+import { getTextRowsBounding, highlightGroups, highlightPosition } from "./other/textRowsBoundingHelper";
+import { MatchHighlightingOptions } from "./coreTypes/MatchHighlightOptions";
+import { RegexHighlightingOptions } from "./coreTypes/RegexHighlightOptions";
 
 export type DebuggerOptions = {
-    regexHighlighting?: RegexHighlightingOption,
-    matchHighlighting?: MatchHighlightingOption
+    regexHighlighting?: RegexHighlightingOptions,
+    matchHighlighting?: MatchHighlightingOptions
 }
-
-export type RegexHighlightingOption = {
-    positionColor?: string,
-    backtrackingPositionColor?: string,
-    backtrackingDirectionColor?: string,
-    informativeColor?: string
-};
-
-export type MatchHighlightingOption = {
-    positionColor?: string,
-    backtrackingPositionColor?: string,
-    backtrackingDirectionColor?: string
-};
 
 const HighlightingTypes = 
 {
@@ -100,6 +89,11 @@ export class RegexDebugger {
     {
         this.slider_.max = steps;
     }
+    
+    public set options(newOptions : DebuggerOptions)
+    {
+         this.debuggerOptions_ = newOptions;
+    }
 
     private visualizeStep(step : number)
     {
@@ -121,7 +115,7 @@ export class RegexDebugger {
         if(step === 1 && state?.strAt === undefined)
             state.strAt = [0, 0];
 
-        // position has changed
+        // string position highlight
         if(state?.strAt !== undefined)
         {
             this.matchContext_.clearRect(0, 0, boundingMatch.width, boundingMatch.height);
@@ -131,6 +125,19 @@ export class RegexDebugger {
             this.highlightPosition(state.strAt[0] , state.strAt[1], HighlightingTypes.DEFAULT, false);
         }
 
+        // string groups highlight
+        if(state?.groups !== undefined)
+        {
+            highlightGroups({
+                textElement: this.matchText_,
+                groups: state?.groups,
+                colors: this.debuggerOptions_.matchHighlighting.groupColors,
+                fallbackColor: this.debuggerOptions_.matchHighlighting.groupFallbackColor,
+                context: this.matchContext_
+            });
+        }
+
+        // informative regex highlight
         if(state.action & MatchAction.SHOWCASE)
         {
             this.highlightPosition(state.regAt[0] - this.offset, state.regAt[1] - this.offset, HighlightingTypes.INFORMATIVE);
@@ -161,7 +168,7 @@ export class RegexDebugger {
         if(highlightingType === HighlightingTypes.ERROR)
             color = options?.backtrackingPositionColor ?? "#FF0000";
         else if(highlightingType === HighlightingTypes.INFORMATIVE && options)
-            color = (options as RegexHighlightingOption)?.informativeColor ?? options?.backtrackingPositionColor ?? "#00FF00";
+            color = (options as RegexHighlightingOptions)?.informativeColor ?? options?.backtrackingPositionColor ?? "#00FF00";
         else
             color = options?.positionColor ?? "#00FF00";
 

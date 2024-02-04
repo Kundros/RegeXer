@@ -1,3 +1,5 @@
+import { MatchGroup } from "@kundros/regexer"
+
 export type RowsBoundingOptions = {
     context : CanvasRenderingContext2D, 
     textElement : HTMLElement, 
@@ -7,6 +9,14 @@ export type RowsBoundingOptions = {
 
 export type HighlighTextOptions = RowsBoundingOptions & {
     highlightColor ?: string
+}
+
+export type HighlighGroupsOptions = {
+    context : CanvasRenderingContext2D, 
+    textElement : HTMLElement,
+    colors?: string[],
+    fallbackColor?: string,
+    groups: Map<string | number, MatchGroup>
 }
 
 export function getTextRowsBounding(options : RowsBoundingOptions) : [number, number, number, number][] // x, y, width, height
@@ -92,20 +102,36 @@ export function getTextRowsBounding(options : RowsBoundingOptions) : [number, nu
 }
 
 export function highlightPosition(options : HighlighTextOptions)
+{
+    options.context.save();
+
+    options.context.fillStyle = options.highlightColor ?? "#00FF00";
+
+    const dimensions = getTextRowsBounding(options);;
+
+    for(let i = 0 ; i < dimensions.length ; i++)
     {
-        options.context.save();
-
-        options.context.fillStyle = options.highlightColor ?? "#00FF00";
-
-        const dimensions = getTextRowsBounding(options);;
-
-        for(let i = 0 ; i < dimensions.length ; i++)
-        {
-            // offset the highlight 2 pixels down
-            options.context.fillRect(dimensions[i][0], dimensions[i][1] + 2 , dimensions[i][2], dimensions[i][3]);
-        }
-
-        options.context.stroke();
-
-        options.context.restore();
+        // offset the highlight 2 pixels down
+        options.context.fillRect(dimensions[i][0], dimensions[i][1] + 2 , dimensions[i][2], dimensions[i][3]);
     }
+
+    options.context.stroke();
+
+    options.context.restore();
+}
+
+export function highlightGroups(options : HighlighGroupsOptions)
+{
+    let groups = [...options.groups.values()].sort((a : MatchGroup, b : MatchGroup) => { return a.index - b.index});
+
+    for(let group of groups)
+    {
+        let color : string;
+        if(options.colors === undefined || options.colors.length === 0)
+            color = options?.fallbackColor ?? "#EBB044";
+        else
+            color = options.colors[group.index % options.colors.length];
+
+        highlightPosition({context: options.context, textElement: options.textElement, from: group.strAt[0], to: group.strAt[1], highlightColor: color});
+    }
+}

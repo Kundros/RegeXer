@@ -1,10 +1,15 @@
+import { RegexMatch } from "@kundros/regexer";
 import { TextEditor, TextEditorOptions } from "./TextEditor";
 import { ElementHelper } from "./other/ElementHelper";
-import { highlightPosition } from "./other/textRowsBoundingHelper";
+import { highlightGroups, highlightPosition } from "./other/textRowsBoundingHelper";
+import { MatchHighlightingOptions } from "./coreTypes/MatchHighlightOptions";
 
-export type MatchEditorOptions = TextEditorOptions & {
-    highlightColor?: string
-}
+export type MatchEditorOptions = 
+    TextEditorOptions & 
+    MatchHighlightingOptions & 
+    {
+        highlightColor?: string
+    };
 
 export class StringMatchEditor extends TextEditor
 {
@@ -23,23 +28,7 @@ export class StringMatchEditor extends TextEditor
         this.canvas_.height = boundingCanvas.height;
         this.matchesSpans_ = [];
 
-        const observer = new ResizeObserver((entries) => {
-            entries.forEach((entry) => {
-                const boundingCanvas = this.canvas_.getBoundingClientRect();
-                this.canvas_.width = boundingCanvas.width;
-                this.canvas_.height = boundingCanvas.height;
-
-                this.context_.clearRect(0, 0, boundingCanvas.width, boundingCanvas.height);
-
-                const matchesCount = this.matchesSpans_.length;
-                for(let i = 0 ; i < matchesCount ; i++)
-                {
-                    highlightPosition({context: this.context_, textElement: this.textInput_, from: this.matchesSpans_[i][0], to: this.matchesSpans_[i][1], highlightColor: options?.highlightColor ?? "#2b85c2"});
-                }
-            });    
-        });
-
-        observer.observe(this.canvas_);
+        this.registerMatchListeners();
     }
 
     public highlightMatch(from: number, to: number)
@@ -76,6 +65,23 @@ export class StringMatchEditor extends TextEditor
             
             if(!flags?.includes('g'))
                 break;
+        }
+    }
+
+    public highlightGroups()
+    {
+        if(!this.matches_)
+            return;
+
+        for(let match of this.matches_)
+        {
+            highlightGroups({
+                textElement: this.textInput_,
+                groups: match.groups,
+                colors: this.matchOptions_.groupColors,
+                fallbackColor: this.matchOptions_.groupFallbackColor,
+                context: this.context_
+            });
         }
     }
 
@@ -121,13 +127,50 @@ export class StringMatchEditor extends TextEditor
         }
     }
 
+    public set matches(data : RegexMatch[])
+    {
+        this.matches_ = data;
+    }
+
     public get isIdle()
     {
         return this.matchSign_.classList.contains("match-idle");
     }
 
+    private registerMatchListeners()
+    {
+        const observer = new ResizeObserver((entries) => {
+            entries.forEach((entry) => {
+                const boundingCanvas = this.canvas_.getBoundingClientRect();
+                this.canvas_.width = boundingCanvas.width;
+                this.canvas_.height = boundingCanvas.height;
+
+                this.context_.clearRect(0, 0, boundingCanvas.width, boundingCanvas.height);
+
+                const matchesCount = this.matchesSpans_.length;
+                for(let i = 0 ; i < matchesCount ; i++)
+                {
+                    highlightPosition({
+                        context: this.context_, 
+                        textElement: this.textInput_, 
+                        from: this.matchesSpans_[i][0], 
+                        to: this.matchesSpans_[i][1], 
+                        highlightColor: this.matchOptions_?.highlightColor ?? "#2b85c2"
+                    });
+                }
+
+                this.highlightGroups();
+            });    
+        });
+
+        observer.observe(this.canvas_);
+    }
+
     private matchOptions_ ?: MatchEditorOptions;
+
+    private matches_?: RegexMatch[];
     private matchesSpans_ : [number, number][];
+
     private matchSign_ : Element;
     private matchSteps_ : Element;
     private context_ : CanvasRenderingContext2D;

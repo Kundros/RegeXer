@@ -4,11 +4,7 @@ import { RegexEditor } from "./RegexEditor";
 import { MatchBatchData, MatchData, MatchFlags, MatchResponse, RegParseException, RegexMatch, Regexer } from "@kundros/regexer";
 import { StringMatchEditor } from "./StringMatchEditor";
 import { RegexDebugger } from "./RegexDebugger";
-
-export type RegexVisualizerOptions = {
-    regexWait?: number,
-    matchWait?: number,
-}
+import { RegexVisualizerOptions } from "./coreTypes/RegexVisualizerOptions";
 
 export class RegexVisualizer {
     constructor(regexEditor : RegexEditor, stringMatchEditor : StringMatchEditor, debuggerWindow: RegexDebugger, vscode : WebviewApi<unknown> | undefined, options? : RegexVisualizerOptions)
@@ -32,7 +28,8 @@ export class RegexVisualizer {
             MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
             MatchFlags.OPTION_SHOW_FIRST_ENTER |
             MatchFlags.REMOVE_STATES_WO_EFFECT |
-            MatchFlags.OPTION_NO_ERROR_RETURN
+            MatchFlags.OPTION_NO_ERROR_RETURN |
+            MatchFlags.ADD_GROUPS_TO_STATES
         );
 
         window.addEventListener("load", async () => {
@@ -142,37 +139,53 @@ export class RegexVisualizer {
         this.resetMatches();
         this.stringMatchEditor_.setLoading();
 
-        const that = this;
         this.regexer_.matchInBatches(matchString, {
-            batchCallback(batchData : MatchBatchData) {
-                const lastMatch = that.matches_[that.matches_.length-1];
-
-                lastMatch.addBatch(batchData);
-
-                that.debuggerWindow_.steps = lastMatch.statesCount;
-                that.stringMatchEditor_.updateMatchStatesMessage(lastMatch.statesCount, 0);
-            },
-            matchCallback(matchData : MatchData) {
-                that.matches_[that.matches_.length-1].changeMatchInformation(matchData);
-
-                that.steps_ += matchData.statesCount;
-                that.debuggerWindow_.steps = that.steps_;
-
-                that.stringMatchEditor_.updateMatchStatesMessage(matchData.statesCount, that.matches_.length - (matchData.success ? 0 : 1));
-            },
-            completeCallback(flag: MatchResponse)
-            {
-                if(flag & ~(MatchResponse.SUCCESS | MatchResponse.NO_MATCH))
-                    return;
-
-                that.stringMatchEditor_.updateSignSuccess(that.matches_.length > 0 ? that.matches_[0].success : false);
-            },
-            batchSize: 50000,
+            batchCallback: this.batchCallback.bind(this),
+            matchCallback: this.matchCallback.bind(this),
+            completeCallback: this.completeCallback.bind(this),
+            batchSize: this.options_.batchSize ?? 50000,
             forceStopRunning: true
         });
     }
 
+    private batchCallback(batchData : MatchBatchData)
+    {
+        const lastMatch = this.matches_[this.matches_.length-1];
 
+        lastMatch.addBatch(batchData);
+
+        this.debuggerWindow_.steps = lastMatch.statesCount;
+        this.stringMatchEditor_.updateMatchStatesMessage(lastMatch.statesCount, 0);
+    }
+
+    private matchCallback(matchData : MatchData) 
+    {
+        const topMatch = this.matches_[this.matches_.length-1];
+        topMatch.changeMatchInformation(matchData);
+
+        if(topMatch?.groups !== undefined)
+        {
+            this.stringMatchEditor_.matches = this.matches_;
+            this.stringMatchEditor_.highlightGroups();
+        }
+
+        this.steps_ += matchData.statesCount;
+        this.debuggerWindow_.steps = this.steps_;
+
+        this.stringMatchEditor_.updateMatchStatesMessage(matchData.statesCount, this.matches_.length - (matchData.success ? 0 : 1));
+    }
+
+    private completeCallback(flag: MatchResponse)
+    {
+        if(flag & ~(MatchResponse.SUCCESS | MatchResponse.NO_MATCH))
+            return;
+
+        this.stringMatchEditor_.updateSignSuccess(this.matches_.length > 0 ? this.matches_[0].success : false);
+    }
+
+    /** 
+     * Recieve message from vscode
+     */
     private async messageRecieve(event : MessageEvent)
     {
         const message = event.data as Message;
