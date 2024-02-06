@@ -2385,6 +2385,7 @@
     <bcf:citekey order="1" intorder="1">Dib</bcf:citekey>
     <bcf:citekey order="1" intorder="2">Regexper</bcf:citekey>
     <bcf:citekey order="1" intorder="3">RegExr</bcf:citekey>
+    <bcf:citekey order="2" intorder="1">Havrlant</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">

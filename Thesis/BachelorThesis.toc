@@ -7,7 +7,10 @@
 \contentsline {chapter}{Seznam obr\'azk\r {u}}{5}{chapter*.2}%
 \contentsline {chapter}{Seznam tabulek}{6}{chapter*.3}%
 \contentsline {chapter}{\numberline {1}Úvod}{7}{chapter.1}%
-\contentsline {chapter}{Literatura}{8}{chapter*.4}%
+\contentsline {chapter}{\numberline {2}Princip fungování regulárních výrazů}{8}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Definice}{8}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Původ a vznik}{9}{section.2.2}%
+\contentsline {chapter}{Literatura}{10}{chapter*.6}%
 \babel@toc {czech}{}\relax 
 \babel@toc {czech}{}\relax 
 \babel@toc {czech}{}\relax 
@@ -26,4 +29,10 @@
 \babel@toc {czech}{}\relax 
 \babel@toc {czech}{}\relax 
 \babel@toc {czech}{}\relax 
-\contentsline {chapter}{Přílohy}{8}{chapter*.4}%
+\babel@toc {czech}{}\relax 
+\babel@toc {czech}{}\relax 
+\babel@toc {czech}{}\relax 
+\babel@toc {czech}{}\relax 
+\babel@toc {czech}{}\relax 
+\babel@toc {czech}{}\relax 
+\contentsline {chapter}{Přílohy}{10}{chapter*.6}%

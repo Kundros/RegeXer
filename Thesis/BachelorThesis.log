@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.12) (preloaded format=pdflatex 2024.1.25)  25 JAN 2024 20:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.12) (preloaded format=pdflatex 2024.1.25)  6 FEB 2024 21:53
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1094,7 +1094,7 @@ File: t1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 
 pdfTeX warning: pdflatex (file ./Figures/FEI_CZ.pdf): PDF inclusion: found PDF version <1.6>, but at most version <1.5> allowed
-<Figures/FEI_CZ.pdf, id=25, 350.70023pt x 109.21pt>
+<Figures/FEI_CZ.pdf, id=37, 350.70023pt x 109.21pt>
 File: Figures/FEI_CZ.pdf Graphic file (type pdf)
 <use Figures/FEI_CZ.pdf>
 Package pdftex.def Info: Figures/FEI_CZ.pdf  used on input line 51.
@@ -1130,7 +1130,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 
 
 {C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc} <./Figures/FEI_CZ.pdf>]
-<ThesisSpecification_KUN0161.pdf, id=58, 597.23125pt x 845.1575pt>
+<ThesisSpecification_KUN0161.pdf, id=70, 597.23125pt x 845.1575pt>
 File: ThesisSpecification_KUN0161.pdf Graphic file (type pdf)
 <use ThesisSpecification_KUN0161.pdf>
 Package pdftex.def Info: ThesisSpecification_KUN0161.pdf  used on input line 51.
@@ -1139,7 +1139,7 @@ File: ThesisSpecification_KUN0161.pdf Graphic file (type pdf)
 <use ThesisSpecification_KUN0161.pdf>
 Package pdftex.def Info: ThesisSpecification_KUN0161.pdf  used on input line 51.
 (pdftex.def)             Requested size: 597.22978pt x 845.15544pt.
-<ThesisSpecification_KUN0161.pdf, id=61, page=1, 597.23125pt x 845.1575pt>
+<ThesisSpecification_KUN0161.pdf, id=73, page=1, 597.23125pt x 845.1575pt>
 File: ThesisSpecification_KUN0161.pdf Graphic file (type pdf)
 <use ThesisSpecification_KUN0161.pdf, page 1>
 Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input line 51.
@@ -1163,7 +1163,14 @@ Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input l
  [2
 
 
- <./ThesisSpecification_KUN0161.pdf>] [3] (BachelorThesis.toc)
+ <./ThesisSpecification_KUN0161.pdf>] [3] (BachelorThesis.toc
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10.95> on input line 11.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <8> on input line 11.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <6> on input line 11.
+)
 \tf@toc=\write6
 \openout6 = `BachelorThesis.toc'.
 
@@ -1187,23 +1194,43 @@ Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input l
 ] (Chapters/Introduction.tex
 Kapitola 1.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 15.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 15.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 15.
-LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <9> on input line 15.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 15.
-) [7
+) (Chapters/Principle.tex [7
 
 
 ]
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 68.
+Kapitola 2.
+<Figures/DFA_example.pdf, id=152, 295.47891pt x 127.22531pt>
+File: Figures/DFA_example.pdf Graphic file (type pdf)
+<use Figures/DFA_example.pdf>
+Package pdftex.def Info: Figures/DFA_example.pdf  used on input line 25.
+(pdftex.def)             Requested size: 283.22162pt x 121.95047pt.
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<Figures/NFA_example.pdf, id=153, 306.03333pt x 179.54578pt>
+File: Figures/NFA_example.pdf Graphic file (type pdf)
+<use Figures/NFA_example.pdf>
+Package pdftex.def Info: Figures/NFA_example.pdf  used on input line 32.
+(pdftex.def)             Requested size: 283.22162pt x 166.16217pt.
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+Underfull \vbox (badness 2318) has occurred while \output is active []
+
+ [8
+
+{C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc}]) [9 <./Figures/DFA_example.pdf> <./Figures/NFA_example.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/NFA_example.pdf): PDF inclusion: multiple pdfs with page group included in a single page
+>]
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 69.
  (C:\Users\domin\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [8
+) [10
 
 ] (BachelorThesis.aux)
  ***********
@@ -1211,23 +1238,23 @@ LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
 Package rerunfilecheck Info: File `BachelorThesis.out' has not changed.
-(rerunfilecheck)             Checksum: 91566576E76AE5DC4659A64FC880691C;485.
+(rerunfilecheck)             Checksum: DB30C159583CC17FD19E1C19DD8678CF;957.
 Package logreq Info: Writing requests to 'BachelorThesis.run.xml'.
 \openout1 = `BachelorThesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 27271 strings out of 474486
- 469520 string characters out of 5743755
- 1931542 words of memory out of 5000000
- 49106 multiletter control sequences out of 15000+600000
+ 27320 strings out of 474486
+ 470664 string characters out of 5743755
+ 1932542 words of memory out of 5000000
+ 49143 multiletter control sequences out of 15000+600000
  627366 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 107i,17n,109p,1375b,2839s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr6.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss12.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss17.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on BachelorThesis.pdf (8 pages, 1083633 bytes).
+ 107i,17n,109p,1375b,2841s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr6.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss12.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss17.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
+Output written on BachelorThesis.pdf (10 pages, 1131852 bytes).
 PDF statistics:
- 191 PDF objects out of 1000 (max. 8388607)
- 19 named destinations out of 1000 (max. 500000)
- 78 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 254 PDF objects out of 1000 (max. 8388607)
+ 27 named destinations out of 1000 (max. 500000)
+ 112 words of extra memory for PDF output out of 10000 (max. 10000000)
 

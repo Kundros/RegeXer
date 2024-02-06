@@ -94,6 +94,37 @@
       \verb https://regexr.com/
       \endverb
     \endentry
+    \entry{Havrlant}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=f4a07d26deada2e91f3038f85bd81ff4}{%
+           family={Havrlant},
+           familyi={H\bibinitperiod},
+           given={Lukáš},
+           giveni={L\bibinitperiod}}}%
+      }
+      \strng{namehash}{f4a07d26deada2e91f3038f85bd81ff4}
+      \strng{fullhash}{f4a07d26deada2e91f3038f85bd81ff4}
+      \strng{bibnamehash}{f4a07d26deada2e91f3038f85bd81ff4}
+      \strng{authorbibnamehash}{f4a07d26deada2e91f3038f85bd81ff4}
+      \strng{authornamehash}{f4a07d26deada2e91f3038f85bd81ff4}
+      \strng{authorfullhash}{f4a07d26deada2e91f3038f85bd81ff4}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{- Matematika polopatě}
+      \field{title}{Konečný Automat}
+      \field{urlday}{6}
+      \field{urlmonth}{2}
+      \field{urlyear}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.matweb.cz/konecny-automat/
+      \endverb
+      \verb{url}
+      \verb https://www.matweb.cz/konecny-automat/
+      \endverb
+    \endentry
   \enddatalist
 \endrefsection
 \endinput
