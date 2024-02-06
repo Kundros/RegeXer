@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
-export class RegexHover
+export class RegexHover implements vscode.HoverProvider
 {
-    public testRegexHover(document : vscode.TextDocument, position : vscode.Position, token : vscode.CancellationToken)
+    public provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) : vscode.ProviderResult<vscode.Hover> 
     {
         /* init regex finder regexes */
         const rIgnoreStartConstruct = /(?<=^RegExp\s*\(\s*)/;

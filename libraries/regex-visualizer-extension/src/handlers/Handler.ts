@@ -1,6 +1,11 @@
 import * as vscode from 'vscode';
 
-export abstract class Registerer
+export interface Handler
+{
+    onDidChangeConfiguration?(event : vscode.ConfigurationChangeEvent) : void;
+}
+
+export abstract class Handler
 {
     constructor(context : vscode.ExtensionContext)
     {

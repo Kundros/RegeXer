@@ -1,6 +1,6 @@
 {
   "name": "regex-visualizer-extension",
-  "displayName": "Regex Visualizer",
+  "displayName": "Regex Visualizer / Debugger",
   "icon": "logo.png",
   "author": {
     "name": "Dominik Kundra"
@@ -8,7 +8,9 @@
   "publisher": "Kundros",
   "description": "Regex Visualizer & Debugger",
   "version": "0.0.2",
-  "repository": {"url": "https://github.com/Kundros/regex-visualisation-thesis/tree/master/libraries/regex-visualizer-extension"},
+  "repository": {
+    "url": "https://github.com/Kundros/regex-visualisation-thesis/tree/master/libraries/regex-visualizer-extension"
+  },
   "engines": {
     "vscode": "^1.84.0"
   },
@@ -30,7 +32,6 @@
         "title": "Update Reg Regex Visualizer & Debuger"
       }
     ],
-
     "configuration": {
       "title": "RegexVisualizer",
       "properties": {
@@ -48,31 +49,30 @@
           "editPresentation": "singlelineText",
           "description": "Retain window for visualisation, if you load new regex from vscode."
         },
-        "regexVisualizer.webview.autoSave": {
+        "regexVisualizer.webview.autoSave.enable": {
           "type": "boolean",
           "default": true,
           "scope": "machine-overridable",
           "editPresentation": "singlelineText",
           "description": "Auto save webview data."
         },
-        "regexVisualizer.webview.autoSave.wait": {
+        "regexVisualizer.webview.autoSave.delay": {
           "type": "number",
           "default": 500,
           "minimum": 0,
           "maximum": 100000,
           "scope": "machine-overridable",
           "editPresentation": "multilineText",
-          "description": "Wait in ms (miliseconds) before saving webview while typing"
+          "description": "Delay in ms (miliseconds) before saving webview while typing"
         }
       }
     },
-
     "menus": {
       "commandPalette": [
-          {
-            "command": "regex-visualizer-extension.updateRegRegexVisualizer",
-            "when": "false"
-          }
+        {
+          "command": "regex-visualizer-extension.updateRegRegexVisualizer",
+          "when": "false"
+        }
       ]
     }
   },

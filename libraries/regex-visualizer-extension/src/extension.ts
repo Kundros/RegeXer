@@ -1,12 +1,25 @@
 import * as vscode from 'vscode';
-import { CommandRegisterer } from './registers/CommandRegisterer';
-import { HoverRegisterer } from './registers/HoverRegisterer';
+import { CommandHandler } from './handlers/CommandHandler';
+import { ProvidersHandler } from './handlers/ProvidersHandler';
+import { Handler } from './handlers/Handler';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log("Regex visualizer extension is active!");
 
-	new CommandRegisterer(context).register();
-	new HoverRegisterer(context).register();
+	const handlers : Handler[] = [
+		new CommandHandler(context),
+		new ProvidersHandler(context)
+	];
+
+	for(let handler of handlers)
+	{
+		handler.register();
+		
+		if(handler.onDidChangeConfiguration)
+		{
+			vscode.workspace.onDidChangeConfiguration(handler.onDidChangeConfiguration.bind(handler));
+		}
+	}
 }
 
 // This method is called when your extension is deactivated
