@@ -1,7 +1,7 @@
 import { expose } from 'threads/worker';
 import { RegexTypes } from '@core/RegexParser';
 import { Stack } from '@regexer/structures/Stack';
-import { ASTGroup, ASTOption, NFAState, NFAStateList, NFAtype } from '../coreTypes/parserTypes';
+import { ASTGroup, ASTIteration, ASTOption, NFAState, NFAStateList, NFAtype } from '../coreTypes/parserTypes';
 import { MatchBuilder } from './MatchBuilder';
 import { MatchResponse, NewData, ReturnAborted, ReturnBatch, ReturnMatch } from '../coreTypes/MatchWorkerTypes';
 import { MatchAction, MatchFlags, MatchGroup } from '@regexer/coreTypes/MatchTypes';
@@ -26,10 +26,12 @@ class MatcherInternal
 
             this.regexPosStack_ = new Stack([0]);
             this.stringPosStack_ = new Stack([0]);
-            this.iterationStack_ = new Stack([]);
+            this.iterationLastPositionStack_ = new Stack([]);
+            this.iterationCountStack_ = new Stack([]);
             this.statesStack_ = new Stack();
             this.popedGroupIndices_ = new Stack();
             this.groups_ = new Stack();
+            this.iterationCountHistoryStack_ = new Stack();
             this.groupIndices_ = new Map();
 
             this.matchBuilder_ = new MatchBuilder(flags, batchSize ?? -1);
@@ -87,22 +89,22 @@ class MatcherInternal
                 this.statesStack_.top().transition++;
             
 
-            const astState = this.statesStack_.top().state?.ASTelement?.type;
+            const ASTtype = this.statesStack_.top().state?.ASTelement?.type;
 
             /* if the state is list we transition differently */
-            if(astState & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL | RegexTypes.RegexStates.ANY)) 
+            if(ASTtype & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL | RegexTypes.RegexStates.ANY)) 
             {
                 const returned = this.handleList();
                 if(returned !== null) return returned;
                 continue;
             }
-            else if((astState & RegexTypes.RegexStates.END_STRING) && this.stringPosStack_.top() != this.matchString_.length) 
+            else if((ASTtype & RegexTypes.RegexStates.END_STRING) && this.stringPosStack_.top() != this.matchString_.length) 
             {
                 const returned = this.handleBacktracking();
                 if(returned !== null) return returned;
                 continue;
             }
-            else if((astState & RegexTypes.RegexStates.START_STRING) && this.stringPosStack_.top() != 0) 
+            else if((ASTtype & RegexTypes.RegexStates.START_STRING) && this.stringPosStack_.top() != 0) 
             {
                 const returned = this.handleBacktracking();
                 if(returned !== null) return returned;
@@ -136,47 +138,86 @@ class MatcherInternal
                 // if the transition is end of iteration we check if we have moved in string since last iteration
                 if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.ITERATION_END)
                 {
-                    const lastPosition = this.iterationStack_.pop();
+                    const lastPosition = this.iterationLastPositionStack_.pop();
                     const currentPosition = this.stringPosStack_.top();
 
                     // if we didn't moved then proceed to first positive transition (move out of iteration)
                     if(lastPosition === currentPosition)
                     {
-                        for(let i = 0; i < transitions.length;i++)
-                        {
-                            if(transitions[i][1] > 0)
-                            {
-                                this.statesStack_.top().transition = i;
-                                transition = transitions[i];
-                                break;
-                            }
-                        }
+                        const positive = transitions[0][1] > 0 ? 0 : 1;
+                        this.statesStack_.top().transition = positive;
+                        transition = transitions[positive];
                     }
                     // if going forward then the iteration is completed we don't renew the iteration
                     else if(transition[1] < 0)
-                        this.iterationStack_.push(currentPosition);
+                    {
+                        this.iterationLastPositionStack_.push(currentPosition);
+                    }
+
+                    if (transition[1] < 0) 
+                    {
+                        const currentIteration = this.iterationCountStack_.top();
+
+                        if (currentIteration[1] + 1 === currentIteration[0].range[1])
+                            continue;
+                        if(currentIteration[1] + 1 > currentIteration[0].range[1])
+                        {
+                            const returned = this.handleBacktracking();
+                            if (returned !== null)
+                                return returned;
+                            continue;
+                        }
+
+                        currentIteration[1]++;
+                    }
+                    else 
+                    {
+                        const currentIteration = this.iterationCountStack_.top();
+                        if ((currentIteration[0].type & RegexTypes.RegexStates.ITERATION_RANGE) && (currentIteration[1] + 1 < currentIteration[0].range[0] || currentIteration[1] + 1 > currentIteration[0].range[1])) {
+                            const returned = this.handleBacktracking();
+                            if (returned !== null)
+                                return returned;
+                            continue;
+                        }
+                        currentIteration[1]++;
+                        this.iterationCountHistoryStack_.push(this.iterationCountStack_.pop());
+                    }
+                }
+
+                // if the transition is iteration then we push current string position (to further check if we loop "null" transition over and over)
+                if(nfaState?.ASTelement?.type & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE))
+                {
+                    if(transition[1] === 1)
+                    {
+                        this.iterationCountStack_.push([<ASTIteration>nfaState?.ASTelement, 0]);
+                        this.iterationLastPositionStack_.push(this.stringPosStack_.top());
+                    }
+                    else
+                    {
+                        if ((nfaState?.ASTelement?.type & RegexTypes.RegexStates.ITERATION_RANGE) && (<ASTIteration>nfaState?.ASTelement)?.range[0] > 0)
+                        {
+                            continue;
+                        }
+                        this.iterationCountHistoryStack_.push([<ASTIteration>nfaState?.ASTelement, 0]);
+                    }
                 }
 
                 // handle group stact
                 this.handleGroupEnterOrLeave(nfaState);
+                this.handleOptionTransitioning(nfaState);
 
                 this.regexPosStack_.push(this.regexPosStack_.top() + transition[1]);
                 this.stringPosStack_.push(this.stringPosStack_.top());
 
-                // if the transition is iteration then we push current string position (to further check if we loop "null" transition over and over)
-                if(nfaState?.ASTelement?.type & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE) && transition[1] == 1)
-                    this.iterationStack_.push(this.stringPosStack_.top());
-
                 let canAddToMatch = false;
 
+                // handle different flags to mutate the final match structure data
                 if((~flags & MatchFlags.IGNORE_OPTION_LEAVES) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION_END))
                     canAddToMatch = true;
                 else if((~flags & MatchFlags.IGNORE_GROUP_ENTERS) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP))
                     canAddToMatch = true;
                 else if((~flags & MatchFlags.IGNORE_GROUP_LEAVES) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END))
                     canAddToMatch = true;
-
-                this.handleOptionTransitioning(nfaState);
 
                 if(canAddToMatch)
                 {
@@ -315,7 +356,7 @@ class MatcherInternal
             this.matchBuilder_.addState({
                 type: nfaState.ASTelement.type, 
                 regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
-                strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()]
+                strAt: [this.matchBuilder_.matchData.start ?? 0, this.stringPosStack_.top()]
             });
 
         if((flags & MatchFlags.OPTION_ENTERS_SHOW_ACTIVE))
@@ -350,20 +391,36 @@ class MatcherInternal
 
     private handleBacktracking() : ReturnMatch | ReturnBatch | null
     {
-        const nfaState = NFA[this.regexPosStack_.top()];
-        this.statesStack_.pop();
-        this.regexPosStack_.pop();
+        let lastRegexPos = this.regexPosStack_.pop();
+        let lastState = this.statesStack_.pop();
+        const nfaState = NFA[lastRegexPos];
 
         /* If backtracking List or Special character has been processed thus we need to backtrack it too */
         while(this.statesStack_.top()?.state?.ASTelement?.type & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL))
         {
-            this.statesStack_.pop();
-            this.regexPosStack_.pop();
+            lastState = this.statesStack_.pop();
+            lastRegexPos = this.regexPosStack_.pop();
+            this.stringPosStack_.pop();
         }
 
         if(NFA[this.regexPosStack_.top()]?.ASTelement?.type & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE | RegexTypes.RegexStates.ITERATION_END))
-        {   
-            this.iterationStack_.pop();
+        {  
+            if(NFA[this.regexPosStack_.top()]?.ASTelement?.type & RegexTypes.RegexStates.ITERATION_END)
+            {
+                if (lastRegexPos > this.regexPosStack_.top())
+                    this.iterationCountStack_.push(this.iterationCountHistoryStack_.pop());
+                
+                this.iterationCountStack_.top()[1]--;
+            }
+            else
+            {
+                if(lastRegexPos - this.regexPosStack_.top() > 1)
+                    this.iterationCountHistoryStack_.pop();
+                else
+                    this.iterationCountStack_.pop();
+            } 
+
+            this.iterationLastPositionStack_.pop();
         }
 
         // handle group stact
@@ -435,18 +492,21 @@ class MatcherInternal
     }
 
     public pid_ : number;
+
     private stringPosStack_ : Stack<number>;
     private regexPosStack_ : Stack<number>;
-    private iterationStack_ : Stack<number>;
+    private iterationLastPositionStack_ : Stack<number>;
+    private iterationCountStack_ : Stack<[RegexTypes.ASTIteration, number]>; // holds information of current iteration count
+    private iterationCountHistoryStack_ : Stack<[RegexTypes.ASTIteration, number]>; 
     private statesStack_ : Stack<matchingState>;
-    private matchBuilder_ : MatchBuilder;
     private groups_ : Stack<MatchGroup | null>;
+    // capturing : number, named : string, non-capturing : null
+    private popedGroupIndices_ : Stack<number | string | null>;
+
+    private matchBuilder_ : MatchBuilder;
     private groupIndices_ : Map<number, number>;
     private batchSize_ : number;
     private matchString_ : string;
-
-    // capturing : number, named : string, non-capturing : null
-    private popedGroupIndices_ : Stack<number | string | null>;
     
     public isMatching ?: boolean;
     public response ?: MatchResponse;

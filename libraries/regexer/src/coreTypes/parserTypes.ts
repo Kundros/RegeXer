@@ -73,8 +73,7 @@ export type AstEscapedSpecial = ASTNoChildren & {
 export type ASTIteration = AST & 
 {
     lazy: boolean,
-    start: number,
-    end: number | undefined
+    range: [number, number | undefined]
 }
 
 export type ASTList = ASTNoChildren & 
