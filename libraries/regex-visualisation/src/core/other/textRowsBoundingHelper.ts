@@ -24,8 +24,6 @@ export function getTextRowsBounding(options : RowsBoundingOptions) : [number, nu
 {
     options.context.save();
 
-    const text = options.textElement.textContent;
-
     //compute box sizing
     const computedStyle = window.getComputedStyle( options.textElement, null );
     options.context.font = computedStyle.font;
