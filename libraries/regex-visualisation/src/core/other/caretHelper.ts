@@ -36,51 +36,61 @@ export function getCursorPosition(parent : HTMLElement | ChildNode) {
   }
   
   //find the child node and relative position and set it on range
-  export function setCursorPosition(parent : HTMLElement | ChildNode, pos : number) 
+  export function setCursorPosition(parent : HTMLElement | ChildNode, pos : number, newRange: boolean = false) 
   {
     const sel = window.getSelection();
 
     let saveRange : Range | undefined;
-    if(sel.rangeCount > 0)
-      saveRange = sel.getRangeAt(0).cloneRange();
-    sel.removeAllRanges();
+    
+    if(!newRange)
+    {
+      if(sel.rangeCount > 0)
+        saveRange = sel.getRangeAt(0).cloneRange();
+
+      sel.removeAllRanges();
+    }
     
     let stat = { pos, done: false };
     const range = internalSetCursor(parent, document.createRange(), stat);
 
-    if(!stat.done)
+    if(!stat.done && !newRange)
     {
       if(saveRange !== undefined)
         sel.addRange(saveRange);
-      return;
+      return saveRange;
     }
 
     range.collapse(true);
-    sel.addRange(range);
-
-    const tempElement = document.createElement('br');
-
-    const caretBound = range.getBoundingClientRect();
-    const parentBound = document.activeElement.getBoundingClientRect();
-
-    if(caretBound.y - parentBound.y > parentBound.height - caretBound.height*2 || caretBound.y - parentBound.y < 0)
+    if(!newRange)
     {
-      range.cloneRange().insertNode(tempElement);
+      sel.addRange(range);
 
-      if(caretBound.y - parentBound.y - caretBound.height < 0)
+      const tempElement = document.createElement('br');
+
+      const caretBound = range.getBoundingClientRect();
+      const parentBound = document.activeElement.getBoundingClientRect();
+
+      if(caretBound.y - parentBound.y > parentBound.height - caretBound.height*2 || caretBound.y - parentBound.y < 0)
       {
-        tempElement.scrollIntoView({
-          block: 'start',
-        });
-        document.activeElement.scrollBy(0, caretBound.height);
-      }
-      else
-        tempElement.scrollIntoView({
-          block: 'end',
-        });
+        range.cloneRange().insertNode(tempElement);
 
-        tempElement.remove();
+        if(caretBound.y - parentBound.y - caretBound.height < 0)
+        {
+          tempElement.scrollIntoView({
+            block: 'start',
+          });
+          document.activeElement.scrollBy(0, caretBound.height);
+        }
+        else
+          tempElement.scrollIntoView({
+            block: 'end',
+          });
+
+          tempElement.remove();
+      }
     }
+
+    return range;
   }
 
   function internalSetCursor(parent : HTMLElement | ChildNode, range : Range, stat : CursorStat){

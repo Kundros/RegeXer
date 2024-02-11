@@ -1,4 +1,5 @@
 import { MatchGroup } from "@kundros/regexer"
+import { setCursorPosition } from "./caretHelper"
 
 export type RowsBoundingOptions = {
     context : CanvasRenderingContext2D, 
@@ -24,77 +25,56 @@ export function getTextRowsBounding(options : RowsBoundingOptions) : [number, nu
     options.context.save();
 
     const text = options.textElement.textContent;
-    const textLength = text.length;
 
     //compute box sizing
     const computedStyle = window.getComputedStyle( options.textElement, null );
     options.context.font = computedStyle.font;
     const spacingWidth = Number.parseInt(computedStyle.letterSpacing);
-    const lineHeight = Number.parseInt(computedStyle.lineHeight);
-    const maxLineSize = Number.parseInt(computedStyle.width);
 
     // compute letter measurements
     const letterMeasure = options.context.measureText("i");
-    const letterWidth = letterMeasure.width;
     const letterHeight = letterMeasure.fontBoundingBoxDescent + letterMeasure.fontBoundingBoxAscent;
 
     let outputRows = [];
-    let yOffset = 0;
-    let scrollOffset = options.textElement.scrollTop;
-    let lastRowSize = 0;
-    let currentRowSize = 0;
 
-    for(let i = 0 ; i <= textLength ; i++)
+    let range = setCursorPosition(options.textElement, 0, true);
+
+    const firstX = range.getBoundingClientRect().x;
+    let lastOffsetX = firstX;
+    const firstY = range.getBoundingClientRect().y;
+    let lastOffsetY : undefined | number;
+    let rowStart : undefined | number;
+
+    console.log(options);
+
+    for(let i = options.from ; i <= options.to ; i++)
     {
-        if(i > options.to || maxLineSize <= 1)
-            break;
+        range = setCursorPosition(options.textElement, i, true);
 
-        lastRowSize = currentRowSize;
-        currentRowSize += letterWidth + spacingWidth;
+        if(rowStart === undefined)
+            rowStart = range.getBoundingClientRect().x - firstX;
+        if(lastOffsetY === undefined)
+            lastOffsetY = range.getBoundingClientRect().y;
 
-        if(currentRowSize > maxLineSize)
-        {
-            i--;
-            currentRowSize = 0;
-            yOffset++;
-            continue;
+        if(range.getBoundingClientRect().y > lastOffsetY)
+        {   
+            let lengthBounding = lastOffsetX - firstX - rowStart;
+            if(lengthBounding === 0)
+                lengthBounding = spacingWidth;
+
+            outputRows.push([rowStart, lastOffsetY - firstY, lengthBounding, letterHeight]);
+
+            lastOffsetY = range.getBoundingClientRect().y;
+            rowStart = 0;
         }
-
-        const yPos = (yOffset * lineHeight) - scrollOffset;
-
-        // skip unvisible rows
-        if(yPos + letterHeight < 0)
-        {
-            if(text[i] === '\n')
-            {
-                currentRowSize = 0;
-                yOffset++;
-            }
-            continue;
-        }
-        else if(yPos > options.textElement.clientHeight)
-        {
-            break;
-        }
-
-        // add new row or update existing
-        if(i >= options.from && i < options.to)
-        {
-            if(outputRows.length === 0 || outputRows[outputRows.length-1][1] < yPos) 
-                outputRows.push([lastRowSize + spacingWidth, yPos, currentRowSize - lastRowSize - spacingWidth, letterHeight]);
-            else
-                outputRows[outputRows.length-1][2] = currentRowSize - outputRows[outputRows.length-1][0];
-        }
-
-        if(i === options.to && i === options.from)
-            outputRows.push([lastRowSize, yPos, spacingWidth, letterHeight]);
-
-        if(text[i] === '\n')
-        {
-            currentRowSize = 0;
-            yOffset++;
-        }
+        
+        lastOffsetX = range.getBoundingClientRect().x;
     }
+
+    let lengthBounding = lastOffsetX - firstX - rowStart;
+    if(lengthBounding === 0)
+        lengthBounding = spacingWidth;
+    outputRows.push([rowStart, lastOffsetY - firstY, lengthBounding, letterHeight]);
 
     options.context.restore();
 
