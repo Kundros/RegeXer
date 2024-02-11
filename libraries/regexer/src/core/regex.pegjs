@@ -180,7 +180,7 @@
             if(state & States.GROUP)
                 this.handleGroupAfter(outputElements.NFA);
 
-            if(state & (States.ITERATION_ZERO | States.ITERATION_ONE))
+            if(state & (States.ITERATION_ZERO | States.ITERATION_ONE | States.ITERATION_RANGE))
                 this.handleIterationAfter(outputElements.NFA, state);
                 
             return outputElements;
@@ -307,7 +307,7 @@
                 ]).NFA[0]
             );
 
-            if(state & States.ITERATION_ZERO)
+            if(state & (States.ITERATION_ZERO | States.ITERATION_RANGE))
             	this.addTransitionToElement(outputNFA[0], null, outputNFA.length);
         }
         
@@ -655,7 +655,7 @@ iteration
             { 
                 return {
                     start,
-                    end
+                    end: (end === null ? start : end)
                 }
             }
         )

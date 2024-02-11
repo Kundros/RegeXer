@@ -663,7 +663,7 @@ return [esc, 2]};// @ts-ignore
 // @ts-ignore
                     start,
 // @ts-ignore
-                    end
+                    end: (end === null ? start : end)
                 }
             };// @ts-ignore
 
@@ -4234,7 +4234,7 @@ peg$parseSOS() {
                 this.handleGroupAfter(outputElements.NFA);
 
 // @ts-ignore
-            if(state & (States.ITERATION_ZERO | States.ITERATION_ONE))
+            if(state & (States.ITERATION_ZERO | States.ITERATION_ONE | States.ITERATION_RANGE))
 // @ts-ignore
                 this.handleIterationAfter(outputElements.NFA, state);
                 
@@ -4431,7 +4431,7 @@ peg$parseSOS() {
             );
 
 // @ts-ignore
-            if(state & States.ITERATION_ZERO)
+            if(state & (States.ITERATION_ZERO | States.ITERATION_RANGE))
 // @ts-ignore
             	this.addTransitionToElement(outputNFA[0], null, outputNFA.length);
         }

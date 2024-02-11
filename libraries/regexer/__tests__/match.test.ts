@@ -322,3 +322,33 @@ test("test halt on invalid regex with groups", async () => {
 
     regexer.clear();
 });
+
+/*test("-", async () => {
+    const regexer = new Regexer(
+        MatchFlags.SHORTEN_BACKTRACKING | 
+        MatchFlags.BACKTRACKED_FROM_EXACT |
+        MatchFlags.BACKTRACK_TRIM_POSITION |
+        MatchFlags.OPTION_ENTERS_SHOW_ACTIVE |
+        MatchFlags.OPTION_SHOW_FIRST_ENTER |
+        MatchFlags.OPTION_NO_ERROR_RETURN |
+        MatchFlags.REMOVE_STATES_WO_EFFECT |
+        MatchFlags.ADD_GROUPS_TO_STATES
+    );
+
+    //await regexer.parse('^(a{2,}|b{3}|(x+)){3,9}$');
+    await regexer.parse('^(\\+ ?\\d{3} ?)?(\\d{3} ?){3}$');
+
+    //const match = (await regexer.match("aaa"))[0];
+    const match = (await regexer.match("+ 111 111 111 111 122 "))[0];
+    console.log(match.success);
+    console.log(match.statesCount);
+
+    let state : MatchState | null;
+    while((state = match.currentState) !== null)
+    {
+        console.log(state);
+        match.moveForward();
+    }
+
+    regexer.clear();
+});*/
