@@ -1,4 +1,4 @@
-import { AST, ASTGroup, ASTIteration, ASTOption, ASTPrimitive, ASTtype, AstAnyCharacter, AstEscapedSpecial, GroupTypes, RegexStates } from "@kundros/regexer";
+import { AST, ASTGroup, ASTIteration, ASTOption, ASTOptional, ASTPrimitive, ASTtype, AstAnyCharacter, AstEscapedSpecial, GroupTypes, RegexStates } from "@kundros/regexer";
 import { TextEditor, TextEditorOptions } from "./TextEditor";
 import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
 import { ElementHelper } from "./other/ElementHelper";
@@ -142,6 +142,38 @@ export class RegexEditor extends TextEditor
             return ElementHelper.wrapElement([
                 this.highlightInternal(iteration.children[0]),
                 ElementHelper.wrapElement(text.slice(iteration.end - 1, iteration.end), "span", ["iteration-symbol"])
+            ], "span", ["iteration"]);
+        }
+
+        if(AST.type & (RegexStates.ITERATION_RANGE))
+        {
+            const iteration = AST as ASTIteration;
+
+            const secondRange = []; 
+
+            if(iteration.range[0] !== iteration.range[1])
+            {
+                secondRange.push(ElementHelper.wrapElement(",", "span", ["iteration-symbol"]))
+                if(iteration.range[1])
+                    secondRange.push(ElementHelper.wrapElement(iteration.range[1].toString(), "span", ["iteration-range"]))
+            }
+
+            return ElementHelper.wrapElement([
+                this.highlightInternal(iteration.children[0]),
+                ElementHelper.wrapElement("{", "span", ["iteration-symbol"]),
+                ElementHelper.wrapElement(iteration.range[0].toString(), "span", ["iteration-range"]),
+                ...secondRange,
+                ElementHelper.wrapElement("}", "span", ["iteration-symbol"])
+            ], "span", ["iteration"]);
+        }
+
+        if(AST.type & (RegexStates.OPTIONAL))
+        {
+            const optional = AST as ASTOptional;
+
+            return ElementHelper.wrapElement([
+                this.highlightInternal(optional.children[0]),
+                ElementHelper.wrapElement("?", "span", ["optional-symbol"])
             ], "span", ["iteration"]);
         }
 

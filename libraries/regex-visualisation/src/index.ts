@@ -47,7 +47,8 @@ import { MatchHighlightingOptions } from "./core/coreTypes/MatchHighlightOptions
         vscode,
         {
             regexWait: 0,
-            matchWait: 300
+            matchWait: 300,
+            batchSize: 20000
         }
     );
 }());

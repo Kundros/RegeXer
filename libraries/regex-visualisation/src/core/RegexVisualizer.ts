@@ -14,7 +14,7 @@ export class RegexVisualizer {
         this.vscode_ = vscode;
         this.debuggerWindow_ = debuggerWindow;
 
-        this.options_ = {};
+        this.options_ = options;
         this.options_.matchWait = options?.matchWait ?? 500;
         this.options_.regexWait = options?.regexWait ?? 500;
 
