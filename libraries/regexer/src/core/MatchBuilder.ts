@@ -96,7 +96,7 @@ export class MatchBuilder
     {
         if(state1.regAt[0] !== state2.regAt[0] || state1.regAt[1] !== state2.regAt[1])
             return false;
-        if(state1.strAt?.[0] !== state2.strAt?.[0] || state1.regAt?.[1] !== state2.regAt?.[1])
+        if(state1.strAt?.[0] !== state2.strAt?.[0] || state1.strAt?.[1] !== state2.strAt?.[1])
             return false;
         if(state1.fromExact?.[0] !== state2.fromExact?.[0] || state1.fromExact?.[1] !== state2.fromExact?.[1])
             return false;

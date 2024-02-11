@@ -407,3 +407,180 @@ test("nested non 'null' iteration infinite loop wierd scenario", async () => {
 
     regexer.clear();
 });
+
+test("optional 1", async () => {
+    const regexer = new Regexer();
+    await regexer.parse('(ab)?');
+
+    expect((await regexer.match("ab"))[0].success).toBe(true);
+    expect((await regexer.match(""))[0].success).toBe(true);
+
+    regexer.clear();
+});
+
+test("optional 2", async () => {
+    const regexer = new Regexer();
+    await regexer.parse('(ab)?a');
+
+    expect((await regexer.match("ab"))[0].success).toBe(true);
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match(""))[0].success).toBe(false);
+    expect((await regexer.match("bbbbabbb"))[0].success).toBe(true);
+
+    regexer.clear();
+});
+
+test("optional 3", async () => {
+    const regexer = new Regexer();
+    await regexer.parse('(?:(a+|b+)+)?');
+
+    expect((await regexer.match("ab"))[0].success).toBe(true);
+    expect((await regexer.match("a"))[0].success).toBe(true);
+    expect((await regexer.match(""))[0].success).toBe(true);
+    expect((await regexer.match("bbbbabbb"))[0].success).toBe(true);
+
+    regexer.clear();
+});
+
+test("iteration range 1", async () => {
+    const regexer = new Regexer();
+    await regexer.parse('a{3}');
+
+    expect((await regexer.match("aaa"))[0].success).toBe(true);
+    expect((await regexer.match("aab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbabaab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbaaab"))[0].success).toBe(true);
+    expect((await regexer.match("bbbaaaaaab"))[0].success).toBe(true);
+    expect((await regexer.match("aaaaaaaa"))[0].success).toBe(true);
+    expect((await regexer.match(""))[0].success).toBe(false);
+
+    regexer.clear();
+});
+
+test("iteration range 2", async () => {
+    const regexer = new Regexer();
+    await regexer.parse('a{3,}');
+
+    expect((await regexer.match("aaa"))[0].success).toBe(true);
+    expect((await regexer.match("aab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbabaab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbaaab"))[0].success).toBe(true);
+    expect((await regexer.match("bbbaaaaaab"))[0].success).toBe(true);
+    expect((await regexer.match(""))[0].success).toBe(false);
+
+    const match = (await regexer.match("baaaaaaaab"))[0];
+
+    expect(match.success).toBe(true);
+    expect(match.start).toStrictEqual(1);
+    expect(match.end).toStrictEqual(9);
+
+    regexer.clear();
+});
+
+test("iteration range 3", async () => {
+    const regexer = new Regexer();
+    await regexer.parse('^a{3,6}$');
+
+    expect((await regexer.match("aaa"))[0].success).toBe(true);
+    expect((await regexer.match("aab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbabaab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbaaab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbaaaaaab"))[0].success).toBe(false);
+    expect((await regexer.match("aaaaaa"))[0].success).toBe(true);
+    expect((await regexer.match("aaaaaaa"))[0].success).toBe(false);
+
+    regexer.clear();
+});
+
+test("iteration range complex 1", async () => {
+    const regexer = new Regexer();
+    await regexer.parse('^(a|b|(x+)){3,9}$');
+
+    expect((await regexer.match("aaa"))[0].success).toBe(true);
+    expect((await regexer.match("aab"))[0].success).toBe(true);
+    expect((await regexer.match("bbbabaab"))[0].success).toBe(true);
+    expect((await regexer.match("bbbaaab"))[0].success).toBe(true);
+    expect((await regexer.match("bbbaaaaaab"))[0].success).toBe(false);
+    expect((await regexer.match("aaaaaa"))[0].success).toBe(true);
+    expect((await regexer.match("aaaaaaa"))[0].success).toBe(true);
+    expect((await regexer.match("axxxxxxbxxxxxaxxxxxxbxxb"))[0].success).toBe(true);
+    expect((await regexer.match("axxxxxxbxxxxxaxxxxxxbxxbxxxx"))[0].success).toBe(false);
+    expect((await regexer.match("xxx"))[0].success).toBe(true);
+
+    regexer.clear();
+});
+
+test("iteration range complex 2", async () => {
+    const regexer = new Regexer();
+    await regexer.parse('^(a{2,}|b{3}|(x+)){3,9}$');
+
+    expect((await regexer.match("aaa"))[0].success).toBe(false);
+    expect((await regexer.match("aab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbabaab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbaababbb"))[0].success).toBe(false);
+    expect((await regexer.match("bbbaaab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbaaaab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbaaaabbb"))[0].success).toBe(true);
+    expect((await regexer.match("bbbaaaaaa"))[0].success).toBe(true);
+    expect((await regexer.match("aaaaaa"))[0].success).toBe(true);
+    expect((await regexer.match("aaaaaaa"))[0].success).toBe(true);
+    expect((await regexer.match("axxxxxxbxxxxxaxxxxxxbxxb"))[0].success).toBe(false);
+    expect((await regexer.match("axxxxxxbxxxxxaxxxxxxbxxbxxxx"))[0].success).toBe(false);
+    expect((await regexer.match("aaxxxx"))[0].success).toBe(true);
+    expect((await regexer.match("aaaxxxx"))[0].success).toBe(true);
+    expect((await regexer.match("aaaxxbxx"))[0].success).toBe(false);
+    expect((await regexer.match("aaaxxaxx"))[0].success).toBe(false);
+    expect((await regexer.match("xxx"))[0].success).toBe(true);
+
+    regexer.clear();
+});
+
+test("iteration range complex 3", async () => {
+    const regexer = new Regexer();
+    await regexer.parse('^(\\+ ?\\d{3} ?)?(\\d{3} ?){3}$');
+
+    expect((await regexer.match("aaa"))[0].success).toBe(false);
+    expect((await regexer.match("aab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbabaab"))[0].success).toBe(false);
+    expect((await regexer.match("+420"))[0].success).toBe(false);
+    expect((await regexer.match("+420123456"))[0].success).toBe(false);
+    expect((await regexer.match("420123456"))[0].success).toBe(true);
+    expect((await regexer.match("420 123456"))[0].success).toBe(true);
+    expect((await regexer.match("420 123 456"))[0].success).toBe(true);
+    expect((await regexer.match("+421 420 123 456"))[0].success).toBe(true);
+    expect((await regexer.match("+421420 123456"))[0].success).toBe(true);
+    expect((await regexer.match("+123420123456"))[0].success).toBe(true);
+    expect((await regexer.match("+123420123456 "))[0].success).toBe(true);
+    expect((await regexer.match(" +123420123456"))[0].success).toBe(false);
+    expect((await regexer.match("+ 123420123456"))[0].success).toBe(true);
+    expect((await regexer.match("+ 111 111111 111"))[0].success).toBe(true);
+    expect((await regexer.match("+ 111 111111 1111"))[0].success).toBe(false);
+    expect((await regexer.match("+ 111 111111 111122"))[0].success).toBe(false);
+    expect((await regexer.match("+ 111 111 111 111 122"))[0].success).toBe(false);
+    expect((await regexer.match("+111111111111122"))[0].success).toBe(false);
+
+    regexer.clear();
+});
+
+test("iteration range complex 4", async () => {
+    const regexer = new Regexer();
+    await regexer.parse('^(\\+ ?\\d{3})?( ?\\d{3}){3}$');
+
+    expect((await regexer.match("aaa"))[0].success).toBe(false);
+    expect((await regexer.match("aab"))[0].success).toBe(false);
+    expect((await regexer.match("bbbabaab"))[0].success).toBe(false);
+    expect((await regexer.match("+420"))[0].success).toBe(false);
+    expect((await regexer.match("+420123456"))[0].success).toBe(false);
+    expect((await regexer.match("420123456"))[0].success).toBe(true);
+    expect((await regexer.match("420 123456"))[0].success).toBe(true);
+    expect((await regexer.match("420 123 456"))[0].success).toBe(true);
+    expect((await regexer.match("+421 420 123 456"))[0].success).toBe(true);
+    expect((await regexer.match("+421420 123456"))[0].success).toBe(true);
+    expect((await regexer.match("+123420123456"))[0].success).toBe(true);
+    expect((await regexer.match("+123420123456 "))[0].success).toBe(false);
+    expect((await regexer.match("+123 420 123 456 "))[0].success).toBe(false);
+    expect((await regexer.match("420 123 456 "))[0].success).toBe(false);
+    expect((await regexer.match("+420 123 456"))[0].success).toBe(false);
+
+    regexer.clear();
+});
