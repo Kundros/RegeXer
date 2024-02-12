@@ -140,7 +140,7 @@ export class Slider{
         if(this.options_?.segments?.step != undefined && this.options_?.segments?.step <= 0)
             this.options_.segments.step = 1;
 
-        this.registerListeners();
+        this.registerEvents();
     }
 
     public updateSegments()
@@ -695,7 +695,7 @@ export class Slider{
         document.body.style.cursor = "unset";
     }
 
-    private registerListeners()
+    private registerEvents()
     {
         this.thumb_.addEventListener("mousedown", (event : MouseEvent) => this.hadnleMousedown(event));
         this.track_.addEventListener("mousedown", (event : MouseEvent) => this.hadnleMousedown(event));
