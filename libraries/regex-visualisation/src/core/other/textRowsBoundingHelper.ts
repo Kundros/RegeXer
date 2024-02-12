@@ -33,64 +33,7 @@ export type HighlighGroupsOptions = {
 
 export function getTextBounding(options : BoundingOptions) : Boundings // x, y, width, height
 {
-    //options.context.save();
-
-    //compute box sizing
-    //const computedStyle = window.getComputedStyle( options.textElement, null );
-    //options.context.font = computedStyle.font;
-    //const spacingWidth = Number.parseInt(computedStyle.letterSpacing);
-
-    // compute letter measurements
-    //const letterMeasure = options.context.measureText("i");
-    //const letterHeight = letterMeasure.fontBoundingBoxDescent + letterMeasure.fontBoundingBoxAscent;
-
     let outputRows : Boundings = [];
-
-    /*let range = setCursorPosition(options.textElement, 0, true);
-
-    const firstX = range.getBoundingClientRect().x;
-    let lastOffsetX = firstX;
-    const firstY = range.getBoundingClientRect().y;
-    let lastOffsetY : undefined | number;
-    let rowStart : undefined | number;
-
-    console.log(options);
-
-    for(let i = options.from ; i <= options.to ; i++)
-    {
-        range = setCursorPosition(options.textElement, i, true);
-
-        if(rowStart === undefined)
-            rowStart = range.getBoundingClientRect().x - firstX;
-        if(lastOffsetY === undefined)
-            lastOffsetY = range.getBoundingClientRect().y;
-
-        if(range.getBoundingClientRect().y > lastOffsetY)
-        {   
-            let lengthBounding = lastOffsetX - firstX - rowStart;
-            const yPosition = lastOffsetY - firstY;
-
-            if(lengthBounding === 0)
-                lengthBounding = spacingWidth;
-
-            outputRows.push([rowStart, yPosition, lengthBounding, letterHeight]);
-
-            lastOffsetY = range.getBoundingClientRect().y;
-            rowStart = 0;
-        }
-        
-        lastOffsetX = range.getBoundingClientRect().x;
-    }
-
-    let lengthBounding = lastOffsetX - firstX - rowStart;
-    const yPosition = lastOffsetY - firstY;
-
-    if(lengthBounding === 0)
-        lengthBounding = spacingWidth;
-    
-    outputRows.push([rowStart, yPosition, lengthBounding, letterHeight]);
-
-    options.context.restore();*/
 
     const textBounds = options.textElement.getBoundingClientRect();
     const scrollOffset = options.textElement.scrollTop;
