@@ -26,6 +26,7 @@ export class MatchBuilder
         }
         else if(top?.groups)
         {
+            top.groups = new Map(top.groups);
             this.matchData.groups = top.groups;
         }
 
