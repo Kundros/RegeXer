@@ -303,7 +303,28 @@ class MatcherInternal
         {
             if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP) // 1
             {
-                this.groupCurrentStack_.push([this.regexPosStack_.top(), this.stringPosStack_.top(), null]);
+                const regAt = this.regexPosStack_.top();
+
+                this.groupCurrentStack_.push([regAt, this.stringPosStack_.top(), null]);
+
+                const topGroupNFACurrent = NFA[regAt];
+                const topGroupASTCurrent = topGroupNFACurrent?.ASTelement;
+
+                // add nulls to positions inside current group to prevent keeping capture
+                for (const groupStack of this.newestGroupsMapStack_) {
+                    if(groupStack[0] === regAt)
+                        continue;
+                    const topGroupInfo = groupStack[1].top();
+
+                    if (!topGroupInfo)
+                        continue;
+
+                    const topGroupNFA = NFA[groupStack[0]];
+                    const topGroupAST = <ASTGroup>topGroupNFA?.ASTelement;
+
+                    if (topGroupASTCurrent.start < topGroupAST.start && topGroupASTCurrent.end > topGroupAST.end && topGroupAST.index !== null)
+                        this.newestGroupsMapStack_.get(groupStack[0])?.push([null, topGroupAST.start, topGroupAST.end]);
+                }
             }
             else if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END) // 2
             {
@@ -322,7 +343,24 @@ class MatcherInternal
         {
             if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP) // 3
             {
-                this.groupCurrentStack_.pop();
+                const popped = this.groupCurrentStack_.pop();
+
+                const topGroupNFA = NFA[popped[0]];
+                const topGroupAST = topGroupNFA?.ASTelement;
+
+                // pop nulls from the groups that are surrounded by this group
+                for (const groupStack of this.newestGroupsMapStack_) {
+                    if (popped[0] === groupStack[0])
+                        continue;
+
+                    const topGroupInfo = groupStack[1].top();
+
+                    if (!topGroupInfo || topGroupInfo[0] !== null)
+                        continue;
+
+                    if (topGroupAST.start < topGroupInfo[1] && topGroupAST.end > topGroupInfo[2])
+                        this.newestGroupsMapStack_.get(groupStack[0])?.pop();
+                }
             }
             else if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END) // 4
             {
@@ -341,7 +379,7 @@ class MatcherInternal
         {
             const topGroupInfo = groupStack[1].top();
 
-            if(!topGroupInfo)
+            if(!topGroupInfo || topGroupInfo[0] === null)
                 continue;
 
             const topGroupNFA = NFA[groupStack[0]];
@@ -540,7 +578,7 @@ class MatcherInternal
     // same as above
     private groupHistoryStack_ : Stack<[number, number, number]>;
     // history of all groups in map (to easily retrieve current groups): Map<nfa position, Stack<[str start, str end]>>
-    private newestGroupsMapStack_ : Map<number, Stack<[number, number]>>;
+    private newestGroupsMapStack_ : Map<number, Stack<[number, number] | [null, number, number]>>;
 
     private matchBuilder_ : MatchBuilder;
     private batchSize_ : number;
