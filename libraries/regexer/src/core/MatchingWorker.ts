@@ -346,7 +346,7 @@ class MatcherInternal
             const topGroupNFA = NFA[groupStack[0]];
             const topGroupAST = <ASTGroup>topGroupNFA?.ASTelement;
 
-            if(groupStack[0] <= this.regexPosStack_.top() && topGroupAST.index !== null)
+            if(groupStack[0] < this.regexPosStack_.top() && topGroupAST.index !== null)
                 this.finishedGroupsMap_.set(topGroupAST.index, {
                     name: topGroupAST.name,
                     regAt: [topGroupAST.start, topGroupAST.end],
