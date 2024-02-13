@@ -20,7 +20,7 @@ export type BatchMatchOptions =
 export type MatchData =
 {
      states: MatchState[],
-     groups?: Map<number | string, MatchGroup>, 
+     groups?: Map<number, MatchGroup>, 
      start?: number,
      end?: number,
      statesCount: number,
@@ -32,7 +32,7 @@ export type MatchState =
      type: RegexTypes.RegexStates,
      regAt: [number, number],
      strAt: [number, number],
-     groups?: Map<number | string, MatchGroup>,
+     groups?: Map<number, MatchGroup>,
 
      action?: MatchAction,
      fromExact?: [number, number]
@@ -40,7 +40,6 @@ export type MatchState =
 
 export type MatchGroup =
 {
-     index: number,
      name?: string,
      regAt: [number, number],
      strAt: [number, number]
