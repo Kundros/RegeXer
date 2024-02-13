@@ -9,17 +9,25 @@ export class MatchBuilder
         this.matchData = {
             states: [],
             statesCount: 0,
-            groups: new Map(),
             success: false
         }
 
         this.batchSize_ = batchSize;
-        this.groups_ = new Map();
     }
 
     public addState(state : MatchState) : MatchBuilder
     {
         const top : MatchState | undefined = this.matchData.states[this.matchData.states.length-1];
+
+        if(top && !top?.groups)
+        {
+            delete(this.matchData.groups);
+            delete(top.groups);
+        }
+        else if(top?.groups)
+        {
+            this.matchData.groups = top.groups;
+        }
 
         if((this.flags_ & MatchFlags.SHORTEN_BACKTRACKING))
         {
@@ -45,14 +53,6 @@ export class MatchBuilder
 
         if(state?.strAt === undefined)
             state.strAt = top.strAt;
-
-        if(this.flags_ & MatchFlags.ADD_GROUPS_TO_STATES)
-        {
-            state.groups = new Map();
-
-            if(!this.handleGenerateGroupsData(state.groups))
-                delete(state.groups);
-        }
         
         this.matchData.statesCount++;
         this.matchData.states.push(state);
@@ -118,80 +118,18 @@ export class MatchBuilder
             states[states.length-1].regAt = [optionStart, optionStart];
     }
 
-    public newIncomingGroup(matchGroup: MatchGroup)
-    {
-        if(matchGroup.name !== undefined)
-        {
-            if(!this.groups_.has(matchGroup.name))
-                this.groups_.set(matchGroup.name, new Stack());
-            this.groups_.get(matchGroup.name).push(matchGroup);
-            return;
-        }
-        else
-            delete(matchGroup.name);
-
-        if(!this.groups_.has(matchGroup.index))
-            this.groups_.set(matchGroup.index, new Stack());
-
-        this.groups_.get(matchGroup.index).push(matchGroup);
-    }
-
-    public clearGroups()
-    {
-        this.groups_.clear();
-    }
-
-    public popGroup(index: number | string)
-    {
-        let poped = this.groups_.get(index).pop();
-        if(poped === null)
-            return this.groups_.get(index).pop();
-        return poped;
-    }
-
-    public pushNullGroupOnIndex(index: number | string)
-    { 
-        if(!this.groups_.has(index))
-            this.groups_.set(index, new Stack());
-        return this.groups_.get(index).push(null);
-    }
-
     public finalize() : MatchData
     {
         if(this.batchSize_ > 0)
             this.matchData.states = [];
 
-        if(!this.handleGenerateGroupsData(this.matchData.groups))
+        if(!this.matchData?.groups)
             delete(this.matchData.groups);
 
         return this.matchData;
     }
 
-    private handleGenerateGroupsData(groupsTo: Map<number | string, MatchGroup>)
-    {
-        for (let value of this.groups_.values())
-        {
-            let topState = value.top();
-
-            if(topState === null)
-            {
-                const popped = value.pop();
-                topState = value.top();
-                value.push(popped);
-            }
-
-            if(topState)
-                groupsTo.set(topState.name ?? topState.index, topState); 
-        }
-
-        if(groupsTo.size <= 0)
-            return false;
-        return true;
-    }
-
     public matchData: MatchData;
-    
-    private groups_ : Map<number | string, Stack<MatchGroup | null>>;
     private flags_ ?: number | MatchFlags;
     private batchPosition_ : [number, number] = [0, 0];
     private batchSize_: number;
