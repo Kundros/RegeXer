@@ -78,8 +78,7 @@ test("groups correct ranges 1", async () => {
     await regexer.parse('(?:ab(?<name>c)*)+_');
     const match = (await regexer.match('abcdabababcccc_'))[0];
 
-    const nameGroup = match?.groups?.get("name");
-    expect(nameGroup.index).toStrictEqual(0);
+    const nameGroup = match?.groups?.get(1);
     expect(nameGroup.name).toStrictEqual("name");
     expect(nameGroup.regAt).toStrictEqual([5, 15]);
     expect(nameGroup.strAt).toStrictEqual([13, 14]);
@@ -103,26 +102,22 @@ test("groups correct ranges 2", async () => {
     await regexer.parse('(ab(?<name>c)*()*)+(_)');
     const match = (await regexer.match('abccabc_'))[0];
 
-    const nameGroup = match?.groups.get("name");
-    expect(nameGroup.index).toStrictEqual(1);
+    const nameGroup = match?.groups.get(2);
     expect(nameGroup.name).toStrictEqual("name");
     expect(nameGroup.regAt).toStrictEqual([3, 13]);
     expect(nameGroup.strAt).toStrictEqual([6, 7]);
 
-    const group0 = match?.groups.get(0);
-    expect(group0.index).toStrictEqual(0);
+    const group0 = match?.groups.get(1);
     expect(group0.name).toStrictEqual(undefined);
     expect(group0.regAt).toStrictEqual([0, 18]);
     expect(group0.strAt).toStrictEqual([4, 7]);
 
-    const group2 = match?.groups.get(2);
-    expect(group2.index).toStrictEqual(2);
+    const group2 = match?.groups.get(3);
     expect(group2.name).toStrictEqual(undefined);
     expect(group2.regAt).toStrictEqual([14, 16]);
     expect(group2.strAt).toStrictEqual([7, 7]);
 
-    const group3 = match?.groups.get(3);
-    expect(group3.index).toStrictEqual(3);
+    const group3 = match?.groups.get(4);
     expect(group3.name).toStrictEqual(undefined);
     expect(group3.regAt).toStrictEqual([19, 22]);
     expect(group3.strAt).toStrictEqual([7, 8]);
@@ -145,14 +140,12 @@ test("groups correct ranges 3", async () => {
     await regexer.parse('(?:ab(?<name>c)*()*)+(_)');
     const match = (await regexer.match('abccab_'))[0];
 
-    const group1 = match?.groups.get(1);
-    expect(group1.index).toStrictEqual(1);
+    const group1 = match?.groups.get(2);
     expect(group1.name).toStrictEqual(undefined);
     expect(group1.regAt).toStrictEqual([16, 18]);
     expect(group1.strAt).toStrictEqual([6, 6]);
 
-    const group2 = match?.groups.get(2);
-    expect(group2.index).toStrictEqual(2);
+    const group2 = match?.groups.get(3);
     expect(group2.name).toStrictEqual(undefined);
     expect(group2.regAt).toStrictEqual([21, 24]);
     expect(group2.strAt).toStrictEqual([6, 7]);
@@ -237,12 +230,10 @@ test("test correct batches 2", async () => {
     expect(match1.statesCount).toStrictEqual(match2.statesCount);
     expect(match1.success).toStrictEqual(match2.success);
 
-    expect(match1.groups.get(0).index).toStrictEqual(match2.groups.get(0).index);
-    expect(match1.groups.get(0).strAt).toStrictEqual(match2.groups.get(0).strAt);
-    expect(match1.groups.get(0).regAt).toStrictEqual(match2.groups.get(0).regAt);
-    expect(match1.groups.get(1).index).toStrictEqual(match2.groups.get(1).index);
     expect(match1.groups.get(1).strAt).toStrictEqual(match2.groups.get(1).strAt);
     expect(match1.groups.get(1).regAt).toStrictEqual(match2.groups.get(1).regAt);
+    expect(match1.groups.get(2).strAt).toStrictEqual(match2.groups.get(2).strAt);
+    expect(match1.groups.get(2).regAt).toStrictEqual(match2.groups.get(2).regAt);
 
     let match1State : MatchState;
     while((match1State = match1.currentState) !== null)
@@ -336,17 +327,19 @@ test("test halt on invalid regex with groups", async () => {
     );
 
     //await regexer.parse('^(a{2,}|b{3}|(x+)){3,9}$');
-    await regexer.parse('^(\\+ ?\\d{3} ?)?(\\d{3} ?){3}$');
+    await regexer.parse('(ab(?<name>c)*()*)+(_)');
 
     //const match = (await regexer.match("aaa"))[0];
-    const match = (await regexer.match("+ 111 111 111 111 122 "))[0];
+    const match = (await regexer.match("abccabc_"))[0];
     console.log(match.success);
     console.log(match.statesCount);
+
+    console.log(match.groups)
 
     let state : MatchState | null;
     while((state = match.currentState) !== null)
     {
-        console.log(state);
+        console.log(state.groups);
         match.moveForward();
     }
 

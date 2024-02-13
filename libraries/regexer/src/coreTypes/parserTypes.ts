@@ -53,6 +53,7 @@ export type ASTGroup = AST &
     name: string | undefined,
     start: number,
     end: number,
+    index: number | null,
     endNFA?: number
 }
 
