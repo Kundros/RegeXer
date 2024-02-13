@@ -20,7 +20,7 @@ export type HighlighTextOptions =
 export type GroupBoundingsOptions = {
     context : CanvasRenderingContext2D, 
     textElement : HTMLElement,
-    groups: Map<string | number, MatchGroup>
+    groups: Map<number, MatchGroup>
 }
 
 export type HighlighGroupsOptions = {
@@ -83,14 +83,14 @@ export function highlightPosition(options : HighlighTextOptions)
 
 export function getGroupBoundings(options : GroupBoundingsOptions) : Boundings[]
 {
-    let groups = [...options.groups.values()].sort((a : MatchGroup, b : MatchGroup) => { return a.index - b.index});
+    let groups = [...options.groups.entries()].sort((a, b) => { return a[0] - b[0]});
     let boundings : Boundings[] = [];
 
     for(let group of groups)
     {
         boundings.push(getTextBounding({
-            from: group.strAt[0],
-            to: group.strAt[1],
+            from: group[1].strAt[0],
+            to: group[1].strAt[1],
             textElement: options.textElement
         }));
     }
