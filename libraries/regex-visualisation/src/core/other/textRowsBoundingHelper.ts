@@ -98,8 +98,10 @@ export function getGroupBoundings(options : GroupBoundingsOptions) : Boundings[]
     return boundings;
 }
 
-export function highlightGroups(options : HighlighGroupsOptions)
+export function highlightGroups(options?: HighlighGroupsOptions)
 {
+    if(!options)
+        return;
     const groups = options.groupsBoundings;
     const groupsLength = groups.length;
 

@@ -151,6 +151,10 @@ export class RegexDebugger {
             for(const matchGroups of this.groupsHighlightings_)
                 highlightGroups(matchGroups);
         }
+        else
+        {
+            this.groupsHighlightings_[index] = undefined;
+        }
 
         // informative regex highlight
         if(state.action & MatchAction.SHOWCASE)
