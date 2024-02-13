@@ -19,17 +19,6 @@ export class MatchBuilder
     {
         const top : MatchState | undefined = this.matchData.states[this.matchData.states.length-1];
 
-        if(top && !top?.groups)
-        {
-            delete(this.matchData.groups);
-            delete(top.groups);
-        }
-        else if(top?.groups)
-        {
-            top.groups = new Map(top.groups);
-            this.matchData.groups = top.groups;
-        }
-
         if((this.flags_ & MatchFlags.SHORTEN_BACKTRACKING))
         {
             if(state?.action & MatchAction.BACKTRACKING)
@@ -78,6 +67,21 @@ export class MatchBuilder
     {
         this.batchPosition_[1] = this.matchData.statesCount;
         return this.getBatch();
+    }
+
+    public newGroups(groups : Map<number, MatchGroup>)
+    {
+        if(groups.size <= 0)
+        {
+            delete(this.matchData.groups);
+            return;
+        }
+
+        const top : MatchState | undefined = this.matchData.states[this.matchData.states.length-1];
+        this.matchData.groups = groups;
+
+        if(this.flags_ & (MatchFlags.ADD_GROUPS_TO_STATES))
+            top.groups = groups;
     }
 
     public getBatch() : MatchBatchData

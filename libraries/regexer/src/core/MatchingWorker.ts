@@ -31,7 +31,6 @@ class MatcherInternal
             this.iterationHistoryStack_ = new Stack();
             this.groupCurrentStack_ = new Stack();
             this.groupHistoryStack_ = new Stack();
-            this.finishedGroupsMap_ = new Map();
             this.newestGroupsMapStack_ = new Map();
 
             this.matchBuilder_ = new MatchBuilder(flags, batchSize ?? -1);
@@ -171,9 +170,9 @@ class MatcherInternal
                     this.matchBuilder_.addState({
                         type: nfaState.ASTelement.type, 
                         regAt : [nfaState.ASTelement.start, nfaState.ASTelement.end],
-                        groups: ((flags & MatchFlags.ADD_GROUPS_TO_STATES) && this.finishedGroupsMap_.size > 0 ? this.finishedGroupsMap_ : undefined),
                         strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()]
                     });
+                    this.matchBuilder_.newGroups(this.getGroups());
                 }
 
                 continue;
@@ -188,9 +187,9 @@ class MatcherInternal
                 this.matchBuilder_.addState({ 
                     type: nfaState.ASTelement.type, 
                     regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end], 
-                    strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()],
-                    groups: ((flags & MatchFlags.ADD_GROUPS_TO_STATES) && this.finishedGroupsMap_.size > 0 ? this.finishedGroupsMap_ : undefined)
+                    strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()]
                 });
+                this.matchBuilder_.newGroups(this.getGroups());
 
                 continue;
             }   
@@ -203,8 +202,8 @@ class MatcherInternal
             type: RegexTypes.RegexStates.ROOT,
             regAt: [regexEnd, regexEnd],
             strAt: [this.matchBuilder_.matchData.start, this.matchBuilder_.matchData.end],
-            groups: ((flags & MatchFlags.ADD_GROUPS_TO_STATES) && this.finishedGroupsMap_.size > 0 ? this.finishedGroupsMap_ : undefined)
         });
+        this.matchBuilder_.newGroups(this.getGroups());
 
         // send last batch
         if(this.batchSize_ > 0)
@@ -333,9 +332,11 @@ class MatcherInternal
                 this.newestGroupsMapStack_.get(popped[0])?.pop();
             }
         }
+    }
 
-        // we update the current matched groups
-        this.finishedGroupsMap_.clear();
+    private getGroups()
+    {
+        const groupsMap : Map<number, MatchGroup> = new Map();
         for(const groupStack of this.newestGroupsMapStack_)
         {
             const topGroupInfo = groupStack[1].top();
@@ -346,13 +347,15 @@ class MatcherInternal
             const topGroupNFA = NFA[groupStack[0]];
             const topGroupAST = <ASTGroup>topGroupNFA?.ASTelement;
 
-            if(groupStack[0] < this.regexPosStack_.top() && topGroupAST.index !== null)
-                this.finishedGroupsMap_.set(topGroupAST.index, {
+            if((groupStack[0] + topGroupAST.endNFA) < this.regexPosStack_.top() && topGroupAST.index !== null)
+                groupsMap.set(topGroupAST.index, {
                     name: topGroupAST.name,
                     regAt: [topGroupAST.start, topGroupAST.end],
                     strAt: [topGroupInfo[0], topGroupInfo[1]]
                 });
         }
+
+        return groupsMap;
     }
 
     private handleOptionTransitioning(nfaState : NFAtype)
@@ -370,12 +373,14 @@ class MatcherInternal
             return;
 
         if((flags & MatchFlags.OPTION_SHOW_FIRST_ENTER) && this.statesStack_.top()?.transition === 0)
+        {
             this.matchBuilder_.addState({
                 type: nfaState.ASTelement.type, 
                 regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
-                strAt: [this.matchBuilder_.matchData.start ?? 0, this.stringPosStack_.top()],
-                groups: ((flags & MatchFlags.ADD_GROUPS_TO_STATES) && this.finishedGroupsMap_.size > 0 ? this.finishedGroupsMap_ : undefined)
+                strAt: [this.matchBuilder_.matchData.start ?? 0, this.stringPosStack_.top()]
             });
+            this.matchBuilder_.newGroups(this.getGroups());
+        }
 
         if((flags & MatchFlags.OPTION_ENTERS_SHOW_ACTIVE))
         {
@@ -387,9 +392,9 @@ class MatcherInternal
                 type: nfaState.ASTelement.type, 
                 regAt : [optionSelectedArr[0].start, optionSelectedArr[optionSelectedArr.length-1].end],
                 strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()],
-                groups: ((flags & MatchFlags.ADD_GROUPS_TO_STATES) && this.finishedGroupsMap_.size > 0 ? this.finishedGroupsMap_ : undefined),
                 action: MatchAction.SHOWCASE
             });
+            this.matchBuilder_.newGroups(this.getGroups());
         }
     }
 
@@ -464,9 +469,9 @@ class MatcherInternal
                 this.matchBuilder_.addState({
                     type: RegexTypes.RegexStates.ROOT,
                     regAt: [NFA[0]?.ASTelement?.end ?? 0, NFA[0]?.ASTelement?.end ?? 0],
-                    groups: ((flags & MatchFlags.ADD_GROUPS_TO_STATES) && this.finishedGroupsMap_.size > 0 ? this.finishedGroupsMap_ : undefined),
                     strAt: [this.matchString_.length, this.matchString_.length]
                 });
+                this.matchBuilder_.newGroups(this.getGroups());
 
                 // send last batch
                 if(this.batchSize_ > 0)
@@ -492,9 +497,9 @@ class MatcherInternal
                 type: nfaState.ASTelement.type, 
                 regAt: [0, 0],
                 strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()],
-                groups: ((flags & MatchFlags.ADD_GROUPS_TO_STATES) && this.finishedGroupsMap_.size > 0 ? this.finishedGroupsMap_ : undefined),
                 action: MatchAction.FORWARD_START
             });
+            this.matchBuilder_.newGroups(this.getGroups());
 
             return null;
         }
@@ -508,9 +513,9 @@ class MatcherInternal
             type: nfaState.ASTelement.type, 
             regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
             strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()],
-            groups: ((flags & MatchFlags.ADD_GROUPS_TO_STATES) && this.finishedGroupsMap_.size > 0 ? this.finishedGroupsMap_ : undefined),
             action: MatchAction.BACKTRACKING
         });
+        this.matchBuilder_.newGroups(this.getGroups());
 
         const optionElement = this.statesStack_.top()?.state?.ASTelement;
         if(optionElement?.type === RegexTypes.RegexStates.OPTION)
@@ -536,7 +541,6 @@ class MatcherInternal
     private groupHistoryStack_ : Stack<[number, number, number]>;
     // history of all groups in map (to easily retrieve current groups): Map<nfa position, Stack<[str start, str end]>>
     private newestGroupsMapStack_ : Map<number, Stack<[number, number]>>;
-    private finishedGroupsMap_ : Map<number, MatchGroup>; // key is end position in regex
 
     private matchBuilder_ : MatchBuilder;
     private batchSize_ : number;
