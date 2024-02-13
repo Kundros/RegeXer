@@ -356,6 +356,8 @@
     }
     
     let locations = [];
+    let groupIndices = [];
+    let groupCounter = 0;
     const handler = new ParserHandler();
 }
 
@@ -559,11 +561,16 @@ group
     	locations.push(location());
         locations[locations.length-1].start.offset -= 1;
         locations[locations.length-1].start.column -= 1;
+        groupIndices.push(++groupCounter);
         return true;
     }
     //matching
         type:(
-            '?:' / 
+            '?:' {
+        		groupIndices.pop();
+                groupCounter--;
+            	return '?:';
+            } / 
             (
                 '?<' name:([_a-zA-Z][0-9a-zA-Z_]*) '>'
                 {
@@ -587,10 +594,11 @@ group
             type == undefined ? 'C' : 
             type == '?:' ? 'NC' :
             'N';
-    
+            
         const data = {
             detailedType,
-            name: detailedType == 'N' ? type : undefined
+            name: detailedType == 'N' ? type : undefined,
+            index: type == '?:' ? null : groupIndices.pop()
         };
       
 	    return handler.handle(data, elements, States.GROUP);
