@@ -5,12 +5,26 @@
 
 @gray-color: #1f1f1f;
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;400&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap');
+@font-face {
+    font-family: 'Roboto';
+    src:
+        url('../assets/fonts/Roboto-Light.ttf'),
+        url('../assets/fonts/Roboto-Regular.ttf'),
+        url('../assets//fonts/Roboto-Thin.ttf');
+}
+
+@font-face {
+    font-family: 'Roboto Mono';
+    src:
+        url('../assets/fonts/RobotoMono-Light.ttf'),
+        url('../assets/fonts/RobotoMono-Medium.ttf'),
+        url('../assets//fonts/RobotoMono-Thin.ttf');
+}
 
 body {
     background: var(--vscode-editor-background, @base-color);
     color: var(--vscode-editor-foreground, @lighter-color);
+    font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
     font-size: 16px;
 }
 
@@ -39,7 +53,7 @@ body {
         padding: 0 0 0 10px;
 
         caret-color: var(--vscode-editorCursor-foreground, white);
-        color: var(--vscode-editor-foreground, @light-color);
+        color: var(--vscode-editor-foreground, white);
 
         &:focus-visible {
             outline: none;
@@ -248,12 +262,12 @@ body.vscode-light {
         align-items: center;
         color: #999999;
         font-size: 13px;
-        font-family: var(--vscode-font-family, 'Roboto'), monospace;
+        font-family: var(--vscode-font-family, 'Roboto');
         font-weight: var(--vscode-editor-font-weight, 400);
 
         & > .match-num-matches, > .match-num-steps{
             margin-right: .3rem;
-            color: var(--vscode-editor-foreground, @light-color);
+            color: var(--vscode-editor-foreground, white);
         }
 
         & > .match-label-matches{
