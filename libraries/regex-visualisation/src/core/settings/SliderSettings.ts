@@ -1,4 +1,4 @@
-import { SliderOptions } from "../Slider";
+import { SliderOptions } from "../coreTypes/SliderOptions";
 
 export const sliderSettings : SliderOptions =
 {
