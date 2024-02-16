@@ -8,9 +8,16 @@ import { MatchAction, MatchFlags, MatchGroup } from '@regexer/coreTypes/MatchTyp
 
 let AST: RegexTypes.ASTRoot;
 let NFA: RegexTypes.NFAtype[];
-let flags : number | MatchFlags | undefined;
+let flags : number | MatchFlags = MatchFlags.NONE;
 
 type matchingState = {transition: number, state: RegexTypes.NFAtype};
+type iterationState = [RegexTypes.ASTIteration, number, number];
+
+/*
+    This file is worker for matching regular expressions and creating states output structure
+    Notes:
+        - Some variables that can contain number | undefined | null are type asserted to number, because some operations against them are resulting correct output
+*/  
 
 class MatcherInternal
 {
@@ -54,7 +61,8 @@ class MatcherInternal
         if(this.response === MatchResponse.ABORTED)
         {
             this.isMatching = false;
-            this.abortResolve();
+            if(this.abortResolve)
+                this.abortResolve();
             return <ReturnAborted>{ type: this.response, pid: this.pid_, data: undefined };
         }
         else if(this.response !== undefined)
@@ -68,12 +76,16 @@ class MatcherInternal
         // main loop for matching
         while(true) 
         {
-            const nfaState = NFA[this.regexPosStack_.top()] as NFAtype;
+            const nfaState = NFA[<number>this.regexPosStack_.top()] as NFAtype;
+
+            if(nfaState === undefined)
+                return <ReturnMatch>{ type: MatchResponse.ERROR, pid: this.pid_, data: [] };
 
             /* If we are at the last nfa node aka. END we're done matching */
             if(nfaState?.ASTelement?.type === RegexTypes.RegexStates.END)
                 break;
             
+            /* If the batch size is filled, we can return current batch */
             if(this.matchBuilder_.isBatchReady())
                 return <ReturnBatch>{ type: MatchResponse.BATCH, pid: this.pid_, data: this.matchBuilder_.getBatch() };
 
@@ -82,27 +94,30 @@ class MatcherInternal
                     + we add starting transition position at 0
                 otherwise we move transition position by 1
             */
-            if(this.statesStack_.top()?.state !== nfaState)
+            let topState = this.statesStack_.top();
+            if(topState?.state !== nfaState)
                 this.statesStack_.push({transition: 0, state: nfaState});
             else
-                this.statesStack_.top().transition++;
+                topState.transition++;
             
 
-            const ASTtype = this.statesStack_.top().state?.ASTelement?.type;
+            const ASTtype = nfaState?.ASTelement?.type ?? 0;
 
-            /* if the state is list we transition differently */
+            /* if the state has set transition, we handle it differently */
             if(ASTtype & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL | RegexTypes.RegexStates.ANY)) 
             {
                 const returned = this.handleSetTransition();
                 if(returned !== null) return returned;
                 continue;
             }
+            /* Handle $ or End of String that is matched (must be end string) */
             else if((ASTtype & RegexTypes.RegexStates.END_STRING) && this.stringPosStack_.top() != this.matchString_.length) 
             {
                 const returned = this.handleBacktracking();
                 if(returned !== null) return returned;
                 continue;
             }
+            /* Handle ^ or Start of String that is matched (must be start string) */
             else if((ASTtype & RegexTypes.RegexStates.START_STRING) && this.stringPosStack_.top() != 0) 
             {
                 const returned = this.handleBacktracking();
@@ -110,6 +125,7 @@ class MatcherInternal
                 continue;
             }
 
+            // we already handeled Set and it shouldn't be set here, but just to be sure
             if(nfaState.transitions instanceof Set) 
                 continue;
 
@@ -118,7 +134,7 @@ class MatcherInternal
                 + if we tried all paths and failed exit matching and send error message
             */ 
             const transitions = (nfaState as NFAState).transitions;
-            if(transitions.length <= this.statesStack_.top().transition)
+            if(transitions.length <= <number>this.statesStack_.top()?.transition)
             {
                 const returned = this.handleBacktracking();
                 if(returned !== null) return returned;
@@ -129,12 +145,12 @@ class MatcherInternal
             /* --- applying transition --- */
             /* --- ------------------- --- */
 
-            let transition = transitions[this.statesStack_.top().transition];
+            let transition = transitions[<number>this.statesStack_.top()?.transition];
 
             // handle null transition (without moving position in string)
             if(transition[0] === null)
             {
-                if(nfaState?.ASTelement?.type & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE | RegexTypes.RegexStates.ITERATION_END))
+                if(ASTtype & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE | RegexTypes.RegexStates.ITERATION_END))
                 {
                     const returnedIteration = this.handleItaration(nfaState, transitions);
 
@@ -144,7 +160,7 @@ class MatcherInternal
                         continue;
                     
                     // update transition if was changed
-                    transition = transitions[this.statesStack_.top().transition];
+                    transition = transitions[<number>this.statesStack_.top()?.transition];
                 }
 
                 // handle group
@@ -152,25 +168,28 @@ class MatcherInternal
                 // handle option
                 this.handleOptionTransitioning(nfaState);
 
-                this.regexPosStack_.push(this.regexPosStack_.top() + transition[1]);
-                this.stringPosStack_.push(this.stringPosStack_.top());
+                if(this.regexPosStack_.top() === undefined || this.stringPosStack_.top() === undefined)
+                    return <ReturnMatch>{ type: MatchResponse.ERROR, pid: this.pid_, data: [] };
+
+                this.regexPosStack_.push(<number>this.regexPosStack_.top() + transition[1]);
+                this.stringPosStack_.push(<number>this.stringPosStack_.top());
 
                 let canAddToMatch = false;
 
                 // handle different flags to mutate the final match structure data
-                if((~flags & MatchFlags.IGNORE_OPTION_LEAVES) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION_END))
+                if((~flags & MatchFlags.IGNORE_OPTION_LEAVES) && (ASTtype & RegexTypes.RegexStates.OPTION_END))
                     canAddToMatch = true;
-                else if((~flags & MatchFlags.IGNORE_GROUP_ENTERS) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP))
+                else if((~flags & MatchFlags.IGNORE_GROUP_ENTERS) && (ASTtype & RegexTypes.RegexStates.GROUP))
                     canAddToMatch = true;
-                else if((~flags & MatchFlags.IGNORE_GROUP_LEAVES) && (nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END))
+                else if((~flags & MatchFlags.IGNORE_GROUP_LEAVES) && (ASTtype & RegexTypes.RegexStates.GROUP_END))
                     canAddToMatch = true;
 
-                if(canAddToMatch)
+                if(canAddToMatch && nfaState?.ASTelement)
                 {
                     this.matchBuilder_.addState({
                         type: nfaState.ASTelement.type, 
                         regAt : [nfaState.ASTelement.start, nfaState.ASTelement.end],
-                        strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()]
+                        strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top() ?? 0]
                     });
                     this.matchBuilder_.newGroups(this.getGroups());
                 }
@@ -179,17 +198,25 @@ class MatcherInternal
             }
 
             /* we now try if we can transition into new state */
-            if(this.matchString_[this.stringPosStack_.top()] === transition[0] && this.stringPosStack_.top() < this.matchString_.length)
+            let currentStringPos = <number>this.stringPosStack_.top();
+            if(this.matchString_[currentStringPos] === transition[0] && currentStringPos < this.matchString_.length)
             {
-                this.regexPosStack_.push(this.regexPosStack_.top() + transition[1]);
-                this.stringPosStack_.push(this.stringPosStack_.top() + 1);
+                if(this.regexPosStack_.top() === undefined || this.stringPosStack_.top() === undefined)
+                    return <ReturnMatch>{ type: MatchResponse.ERROR, pid: this.pid_, data: [] };
 
-                this.matchBuilder_.addState({ 
-                    type: nfaState.ASTelement.type, 
-                    regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end], 
-                    strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()]
-                });
-                this.matchBuilder_.newGroups(this.getGroups());
+                this.regexPosStack_.push(<number>this.regexPosStack_.top() + transition[1]);
+                this.stringPosStack_.push(currentStringPos + 1);
+                currentStringPos = <number>this.stringPosStack_.top();
+
+                if(nfaState.ASTelement)
+                    {
+                    this.matchBuilder_.addState({ 
+                        type: nfaState.ASTelement.type, 
+                        regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end], 
+                        strAt: [this.matchBuilder_.matchData.start ?? 0 ,currentStringPos]
+                    });
+                    this.matchBuilder_.newGroups(this.getGroups());
+                }
 
                 continue;
             }   
@@ -201,7 +228,7 @@ class MatcherInternal
         this.matchBuilder_.addState({
             type: RegexTypes.RegexStates.ROOT,
             regAt: [regexEnd, regexEnd],
-            strAt: [this.matchBuilder_.matchData.start, this.matchBuilder_.matchData.end],
+            strAt: [this.matchBuilder_.matchData.start ?? 0, this.matchBuilder_.matchData.end ?? 0],
         });
         this.matchBuilder_.newGroups(this.getGroups());
 
@@ -217,21 +244,34 @@ class MatcherInternal
         return <ReturnMatch>{ type: MatchResponse.SUCCESS, pid: this.pid_, data: this.matchBuilder_.finalize() };
     }
 
+    /**
+     * @returns {(boolean|ReturnBatch|ReturnMatch)} 
+     * Match/Batch - when data is ready. \
+     * false - can't continue in current loop (should invoke 'continue') \
+     * true - can continue in current loop
+     */
     private handleItaration(nfaState : NFAtype, transitions : RegexTypes.NFATransition[]) : boolean | ReturnBatch | ReturnMatch
     {
-        let transition = transitions[this.statesStack_.top().transition];
+        let topState = <matchingState>this.statesStack_.top();
+        let transition = transitions[topState?.transition];
+        const ASTtype = nfaState?.ASTelement?.type ?? 0;
 
         // if the transition is end of iteration we check if we have moved in string since last iteration
-        if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.ITERATION_END)
+        if(ASTtype & RegexTypes.RegexStates.ITERATION_END)
         {
-            const currentPosition = this.stringPosStack_.top();
+            const currentPosition = this.stringPosStack_.top() ?? 0;
             const currentIteration = this.iterationCurrentStack_.top();
+
+            if(!currentIteration)
+            {
+                return <ReturnMatch>{ type: MatchResponse.ERROR, pid: this.pid_, data: [] };
+            }
 
             // if we didn't move then proceed to first positive transition (move out of iteration)
             if(currentIteration[2] === currentPosition)
             {
                 const positive = transitions[0][1] > 0 ? 0 : 1;
-                this.statesStack_.top().transition = positive;
+                topState.transition = positive;
                 transition = transitions[positive];
             }
             // if iteration is still looping we update to current string position
@@ -248,20 +288,20 @@ class MatcherInternal
             if (transition[1] < 0) 
             {
 
-                if (currentIteration[1] + 1 >= currentIteration[0].range[1])
+                if (currentIteration[1] + 1 >= <number>currentIteration[0].range[1])
                     return false;
                 currentIteration[1]++;
             }
             else 
             {
-                if ((currentIteration[0].type & RegexTypes.RegexStates.ITERATION_RANGE) && (currentIteration[1] + 1 < currentIteration[0].range[0] || currentIteration[1] + 1 > currentIteration[0].range[1])) {
+                if ((currentIteration[0].type & RegexTypes.RegexStates.ITERATION_RANGE) && (currentIteration[1] + 1 < currentIteration[0].range[0] || currentIteration[1] + 1 > <number>currentIteration[0].range[1])) {
                     const returned = this.handleBacktracking();
                     if (returned !== null)
                         return returned;
                     return false;
                 }
                 currentIteration[1]++;
-                this.iterationHistoryStack_.push(this.iterationCurrentStack_.pop());
+                this.iterationHistoryStack_.push(<iterationState>this.iterationCurrentStack_.pop());
             }
             
             return true;
@@ -275,15 +315,15 @@ class MatcherInternal
 
         if(transition[1] === 1) // 1
         {
-            this.iterationCurrentStack_.push([<ASTIteration>nfaState?.ASTelement, 0, this.stringPosStack_.top()]);
+            this.iterationCurrentStack_.push([<ASTIteration>nfaState?.ASTelement, 0, this.stringPosStack_.top() ?? 0]);
         }
         else // 2
         {
-            if ((nfaState?.ASTelement?.type & RegexTypes.RegexStates.ITERATION_RANGE) && (<ASTIteration>nfaState?.ASTelement)?.range[0] > 0) 
+            if ((ASTtype & RegexTypes.RegexStates.ITERATION_RANGE) && (<ASTIteration>nfaState?.ASTelement)?.range[0] > 0) 
             {
                 return false;
             }
-            this.iterationHistoryStack_.push([<ASTIteration>nfaState?.ASTelement, 0, this.stringPosStack_.top()]);
+            this.iterationHistoryStack_.push([<ASTIteration>nfaState?.ASTelement, 0, this.stringPosStack_.top() ?? 0]);
         }
     
         return true;
@@ -291,6 +331,9 @@ class MatcherInternal
 
     private handleGroup(nfaState : NFAtype, backtracking : boolean)
     {
+        const ASTtype = nfaState?.ASTelement?.type ?? 0;
+        const stringPosition = this.stringPosStack_.top() ?? 0;
+
         /*
          we follow these rules:
           1. if the state is 'group start' we save position in nfa and starting position in string
@@ -301,14 +344,14 @@ class MatcherInternal
         */
         if(!backtracking)
         {
-            if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP) // 1
+            if(ASTtype & RegexTypes.RegexStates.GROUP) // 1
             {
-                const regAt = this.regexPosStack_.top();
+                const regAt = this.regexPosStack_.top() ?? 0;
 
-                this.groupCurrentStack_.push([regAt, this.stringPosStack_.top(), null]);
+                this.groupCurrentStack_.push([regAt, stringPosition, null]);
 
                 const topGroupNFACurrent = NFA[regAt];
-                const topGroupASTCurrent = topGroupNFACurrent?.ASTelement;
+                const topGroupASTCurrent = <ASTGroup>topGroupNFACurrent.ASTelement;
 
                 // add nulls to positions inside current group to prevent keeping capture
                 for (const groupStack of this.newestGroupsMapStack_) {
@@ -322,28 +365,35 @@ class MatcherInternal
                     const topGroupNFA = NFA[groupStack[0]];
                     const topGroupAST = <ASTGroup>topGroupNFA?.ASTelement;
 
-                    if (topGroupASTCurrent.start < topGroupAST.start && topGroupASTCurrent.end > topGroupAST.end && topGroupAST.index !== null)
+                    if (topGroupASTCurrent.start < topGroupAST.start && topGroupASTCurrent.end > topGroupAST.end && topGroupAST?.index !== null)
                         this.newestGroupsMapStack_.get(groupStack[0])?.push([null, topGroupAST.start, topGroupAST.end]);
                 }
             }
-            else if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END) // 2
+            else if(ASTtype & RegexTypes.RegexStates.GROUP_END) // 2
             {
-                const popped =this.groupCurrentStack_.pop();
-                popped[2] = this.stringPosStack_.top();
+                const popped = this.groupCurrentStack_.pop();
 
-                this.groupHistoryStack_.push(popped);
+                if(!popped)
+                    return;
+
+                popped[2] = this.stringPosStack_.top() ?? 0;
+
+                this.groupHistoryStack_.push(<[number, number, number]>popped);
 
                 if(!this.newestGroupsMapStack_.has(popped[0]))
                     this.newestGroupsMapStack_.set(popped[0], new Stack());
 
-                this.newestGroupsMapStack_.get(popped[0]).push([popped[1], popped[2]]);
+                this.newestGroupsMapStack_.get(popped[0])?.push([popped[1], popped[2]]);
             }
         }
         else
         {
-            if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP) // 3
+            if(ASTtype & RegexTypes.RegexStates.GROUP) // 3
             {
                 const popped = this.groupCurrentStack_.pop();
+
+                if(!popped)
+                    return;
 
                 const topGroupNFA = NFA[popped[0]];
                 const topGroupAST = topGroupNFA?.ASTelement;
@@ -358,13 +408,16 @@ class MatcherInternal
                     if (!topGroupInfo || topGroupInfo[0] !== null)
                         continue;
 
-                    if (topGroupAST.start < topGroupInfo[1] && topGroupAST.end > topGroupInfo[2])
+                    if (<number>topGroupAST?.start < topGroupInfo[1] && <number>topGroupAST?.end > topGroupInfo[2])
                         this.newestGroupsMapStack_.get(groupStack[0])?.pop();
                 }
             }
-            else if(nfaState?.ASTelement?.type & RegexTypes.RegexStates.GROUP_END) // 4
+            else if(ASTtype & RegexTypes.RegexStates.GROUP_END) // 4
             {
                 const popped = this.groupHistoryStack_.pop();
+
+                if(!popped)
+                    return;
 
                 this.groupCurrentStack_.push(popped);
                 this.newestGroupsMapStack_.get(popped[0])?.pop();
@@ -372,7 +425,10 @@ class MatcherInternal
         }
     }
 
-    private getGroups()
+    /**
+     * @returns {Map<number, MatchGroup>} All current existing groups
+     */
+    private getGroups() : Map<number, MatchGroup>
     {
         const groupsMap : Map<number, MatchGroup> = new Map();
         for(const groupStack of this.newestGroupsMapStack_)
@@ -385,7 +441,7 @@ class MatcherInternal
             const topGroupNFA = NFA[groupStack[0]];
             const topGroupAST = <ASTGroup>topGroupNFA?.ASTelement;
 
-            if((groupStack[0] + topGroupAST.endNFA) < this.regexPosStack_.top() && topGroupAST.index !== null)
+            if((groupStack[0] + (topGroupAST.endNFA ?? 0)) < <number>this.regexPosStack_.top() && topGroupAST.index !== null)
                 groupsMap.set(topGroupAST.index, {
                     name: topGroupAST.name,
                     regAt: [topGroupAST.start, topGroupAST.end],
@@ -400,8 +456,9 @@ class MatcherInternal
     {
         const currentOption = nfaState?.ASTelement as ASTOption;
         const topState = this.statesStack_.top();
+        const ASTtype = nfaState?.ASTelement?.type ?? 0;
 
-        if(!(nfaState?.ASTelement?.type & RegexTypes.RegexStates.OPTION))
+        if(!(ASTtype & RegexTypes.RegexStates.OPTION))
             return;
 
         if(topState?.state !== nfaState)
@@ -413,9 +470,9 @@ class MatcherInternal
         if((flags & MatchFlags.OPTION_SHOW_FIRST_ENTER) && this.statesStack_.top()?.transition === 0)
         {
             this.matchBuilder_.addState({
-                type: nfaState.ASTelement.type, 
-                regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
-                strAt: [this.matchBuilder_.matchData.start ?? 0, this.stringPosStack_.top()]
+                type: ASTtype, 
+                regAt: [currentOption.start, currentOption.end],
+                strAt: [this.matchBuilder_.matchData.start ?? 0, this.stringPosStack_.top() ?? 0]
             });
             this.matchBuilder_.newGroups(this.getGroups());
         }
@@ -427,9 +484,9 @@ class MatcherInternal
             if(optionSelectedArr.length <= 0) return;
 
             this.matchBuilder_.addState({
-                type: nfaState.ASTelement.type, 
+                type: ASTtype, 
                 regAt : [optionSelectedArr[0].start, optionSelectedArr[optionSelectedArr.length-1].end],
-                strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()],
+                strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top() ?? 0],
                 action: MatchAction.SHOWCASE
             });
             this.matchBuilder_.newGroups(this.getGroups());
@@ -438,12 +495,13 @@ class MatcherInternal
 
     private handleSetTransition() : ReturnMatch | ReturnBatch | null
     {
-        const listState = this.statesStack_.top().state as NFAStateList;
+        const listState = this.statesStack_.top()?.state as NFAStateList;
+        const stringPosition = this.stringPosStack_.top() ?? 0;
 
-        if(this.stringPosStack_.top() + 1 <= this.matchString_.length && listState.transitions.has(this.matchString_[this.stringPosStack_.top()]))
+        if(stringPosition + 1 <= this.matchString_.length && listState.transitions.has(this.matchString_[stringPosition]))
         {
-            this.regexPosStack_.push(this.regexPosStack_.top() + 1);
-            this.stringPosStack_.push(this.stringPosStack_.top() + 1);
+            this.regexPosStack_.push(<number>this.regexPosStack_.top() + 1);
+            this.stringPosStack_.push(stringPosition + 1);
         }
         else
             return this.handleBacktracking();
@@ -455,7 +513,8 @@ class MatcherInternal
     {
         let lastRegexPos = this.regexPosStack_.pop();
         let lastState = this.statesStack_.pop();
-        const nfaState = NFA[lastRegexPos];
+
+        const nfaState = NFA[<number>lastRegexPos];
 
         /* 
           If backtracking List or Special character has been processed thus we need to backtrack it too 
@@ -463,12 +522,18 @@ class MatcherInternal
             Types in below loop are all containing set transition, which have no transition position,
             that means it has to be backtracked beforehand, to ensure correct evaluation 
         */
-        while(this.statesStack_.top()?.state?.ASTelement?.type & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL))
+        while(<number>this.statesStack_.top()?.state?.ASTelement?.type & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL))
         {
             lastRegexPos = this.regexPosStack_.pop();
             lastState = this.statesStack_.pop();
             this.stringPosStack_.pop();
         }
+
+        let currentTopRegPos = <number>this.regexPosStack_.top();
+        let currentStringPos = <number>this.stringPosStack_.top();
+
+        const currentNfaState = NFA[currentTopRegPos];
+        const currentASTtype = currentNfaState?.ASTelement?.type ?? 0;
 
         /*
          Backtracking iteration in 4 different ways:
@@ -477,16 +542,16 @@ class MatcherInternal
           3. backtracking from first state after iteration 'end' to iteration 'start': pop history
           4. backtracking from first state after iteration 'start' to iteration 'start': pop current
         */
-        if(NFA[this.regexPosStack_.top()]?.ASTelement?.type & RegexTypes.RegexStates.ITERATION_END)
+        if(currentASTtype & RegexTypes.RegexStates.ITERATION_END)
         {
-            if (lastRegexPos > this.regexPosStack_.top())
-                this.iterationCurrentStack_.push(this.iterationHistoryStack_.pop()); // 1
+            if (<number>lastRegexPos > currentTopRegPos)
+                this.iterationCurrentStack_.push(<iterationState>this.iterationHistoryStack_.pop()); // 1
             
-            this.iterationCurrentStack_.top()[1]--; // 1, 2
+            (<iterationState>this.iterationCurrentStack_.top())[1]--; // 1, 2
         }
-        else if(NFA[this.regexPosStack_.top()]?.ASTelement?.type & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE))
+        else if(currentASTtype & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE))
         {
-            if(lastRegexPos - this.regexPosStack_.top() > 1)
+            if(<number>lastRegexPos - currentTopRegPos > 1)
                 this.iterationHistoryStack_.pop(); // 3
             else
                 this.iterationCurrentStack_.pop(); // 4
@@ -499,7 +564,7 @@ class MatcherInternal
         if(this.statesStack_.size() === 0)
         {
             /* match from any position wasn't found */
-            if(this.stringPosStack_.top() + 1 >= this.matchString_.length)
+            if(currentStringPos + 1 >= this.matchString_.length)
             {
                 delete this.matchBuilder_.matchData.start;
                 delete this.matchBuilder_.matchData.end;
@@ -523,8 +588,10 @@ class MatcherInternal
             }
 
             // move to next starting position
-            this.stringPosStack_.push(this.stringPosStack_.pop() + 1);
+            this.stringPosStack_.push(currentStringPos + 1);
+            currentStringPos = currentStringPos + 1;
             this.regexPosStack_.push(0);
+            currentTopRegPos = 0;
 
             this.matchBuilder_.matchData.start = this.stringPosStack_.top();
 
@@ -534,7 +601,7 @@ class MatcherInternal
             this.matchBuilder_.addState({
                 type: nfaState.ASTelement.type, 
                 regAt: [0, 0],
-                strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()],
+                strAt: [this.matchBuilder_.matchData.start ?? 0 ,currentStringPos],
                 action: MatchAction.FORWARD_START
             });
             this.matchBuilder_.newGroups(this.getGroups());
@@ -550,7 +617,7 @@ class MatcherInternal
         this.matchBuilder_.addState({
             type: nfaState.ASTelement.type, 
             regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end],
-            strAt: [this.matchBuilder_.matchData.start ?? 0 ,this.stringPosStack_.top()],
+            strAt: [this.matchBuilder_.matchData.start ?? 0 ,<number>this.stringPosStack_.top()],
             action: MatchAction.BACKTRACKING
         });
         this.matchBuilder_.newGroups(this.getGroups());
@@ -562,27 +629,27 @@ class MatcherInternal
         return null;
     }
 
-    public pid_ : number;
+    public pid_! : number;
 
     /* Stacks for information for matching */
-    private stringPosStack_ : Stack<number>;
-    private regexPosStack_ : Stack<number>;
+    private stringPosStack_! : Stack<number>;
+    private regexPosStack_! : Stack<number>;
     // holds information about current active iterations (non-completed loop): [which iterator it is in ast, current iteration count, last position in string]
-    private iterationCurrentStack_ : Stack<[RegexTypes.ASTIteration, number, number]>; 
+    private iterationCurrentStack_! : Stack<iterationState>; 
     // holds information about history of iteration for backtracking: same data as current iterations
-    private iterationHistoryStack_ : Stack<[RegexTypes.ASTIteration, number, number]>; 
-    private statesStack_ : Stack<matchingState>;
+    private iterationHistoryStack_! : Stack<iterationState>; 
+    private statesStack_! : Stack<matchingState>;
 
     // holds information about [nfa position, str start, str end]
-    private groupCurrentStack_ : Stack<[number, number, number | null]>;
+    private groupCurrentStack_! : Stack<[number, number, number | null]>;
     // same as above
-    private groupHistoryStack_ : Stack<[number, number, number]>;
+    private groupHistoryStack_! : Stack<[number, number, number]>;
     // history of all groups in map (to easily retrieve current groups): Map<nfa position, Stack<[str start, str end]>>
-    private newestGroupsMapStack_ : Map<number, Stack<[number, number] | [null, number, number]>>;
+    private newestGroupsMapStack_! : Map<number, Stack<[number, number] | [null, number, number]>>;
 
-    private matchBuilder_ : MatchBuilder;
-    private batchSize_ : number;
-    private matchString_ : string;
+    private matchBuilder_! : MatchBuilder;
+    private batchSize_! : number;
+    private matchString_! : string;
     
     public isMatching ?: boolean;
     public response ?: MatchResponse;
@@ -616,7 +683,7 @@ const Matcher = {
 
     newFlags(newFlags : MatchFlags | number)
     {
-        this.flags = newFlags;
+        flags = newFlags;
     },
 
     async abort()
@@ -624,10 +691,12 @@ const Matcher = {
         matcher.response = MatchResponse.ABORTED;
         await new Promise(resolve => { 
             matcher.abortResolve = resolve; 
-            setInterval(() => {
+            const interval = setInterval(() => {
                 if(!matcher.isMatching)
                 {
-                    matcher.abortResolve();
+                    if(matcher.abortResolve)
+                        matcher.abortResolve();
+                    clearInterval(interval);
                 }
             }, 1);
         });

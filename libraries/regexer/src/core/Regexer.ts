@@ -6,7 +6,7 @@ import { RegexParserErrors } from "../coreTypes/parserTypes";
 
 import { ModuleThread, spawn, Thread, Worker } from 'threads';
 import { Matcher } from "./MatchingWorker";
-import { MatchResponse, NewData, NewMessage, ReturnBatch, ReturnMatch } from "../coreTypes/MatchWorkerTypes";
+import { MatchResponse, NewData, NewMessage, ReturnAborted, ReturnBatch, ReturnMatch } from "../coreTypes/MatchWorkerTypes";
 import { BatchMatchOptions, MatchData, MatchFlags } from "@regexer/coreTypes/MatchTypes";
 
 /**
@@ -72,14 +72,14 @@ export class Regexer{
             const pid = this.nextPid_++;
 
             try{
-                let batchOrMatch : ReturnBatch | ReturnMatch = await this.worker_.match(pid, matchString, options?.batchSize ?? -1);
+                let batchOrMatch : ReturnBatch | ReturnMatch | ReturnAborted | undefined | null = await this.worker_?.match(pid, matchString, options?.batchSize ?? -1);
         
-                if(batchOrMatch.type !== MatchResponse.BATCH)
+                if(batchOrMatch?.type !== MatchResponse.BATCH)
                 {
-                    if(batchOrMatch.type & (MatchResponse.SUCCESS | MatchResponse.NO_MATCH))
+                    if(<number>batchOrMatch?.type & (MatchResponse.SUCCESS | MatchResponse.NO_MATCH))
                         await options.matchCallback((batchOrMatch as ReturnMatch).data);
         
-                    await options.completeCallback(batchOrMatch.type);
+                    await options.completeCallback(batchOrMatch?.type ?? MatchResponse.ERROR);
 
                     resolve(null);
                     return;
@@ -143,7 +143,7 @@ export class Regexer{
 
         this.activePromise_ = new Promise(async (resolve) => {
             // match
-            resolve(await this.worker_.match(pid, matchString));
+            resolve(await this.worker_?.match(pid, matchString));
         });
 
         const result = (await this.activePromise_) as NewMessage;
@@ -161,7 +161,7 @@ export class Regexer{
     public changeFlags(matchFlags?: number | MatchFlags)
     {
         this.matchFlags_ = matchFlags;
-        this.worker_.newFlags(this.matchFlags_);
+        this.worker_?.newFlags(this.matchFlags_ ?? MatchFlags.NONE);
     }
 
     /** @returns NFA-like (non deterministic finite automata) structure of parsed regex. */
