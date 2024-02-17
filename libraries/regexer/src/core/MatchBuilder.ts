@@ -1,11 +1,10 @@
 import { MatchAction, MatchBatchData, MatchData, MatchFlags, MatchGroup, MatchState } from "@regexer/coreTypes/MatchTypes";
-import { Stack } from "@regexer/structures/Stack";
 
 export class MatchBuilder
 {
     constructor(flags?: number | MatchFlags, batchSize : number = -1)
     {
-        this.flags_ = flags;
+        this.flags_ = flags ?? MatchFlags.NONE;
         this.matchData = {
             states: [],
             statesCount: 0,
@@ -21,12 +20,12 @@ export class MatchBuilder
 
         if((this.flags_ & MatchFlags.SHORTEN_BACKTRACKING))
         {
-            if(state?.action & MatchAction.BACKTRACKING)
+            if(state?.action ?? 0 & MatchAction.BACKTRACKING)
             {
                 if(this.flags_ & MatchFlags.BACKTRACKED_FROM_EXACT)
                     state.fromExact = top?.fromExact ?? [state.regAt[0], state.regAt[1]];
 
-                if(top?.action & MatchAction.BACKTRACKING)
+                if(top?.action ?? 0 & MatchAction.BACKTRACKING)
                 {
                     this.matchData.states.pop();
                     this.matchData.statesCount--;
@@ -35,7 +34,7 @@ export class MatchBuilder
             }
         }
 
-        if((this.flags_ & MatchFlags.BACKTRACK_TRIM_POSITION) && (top?.action & MatchAction.BACKTRACKING))
+        if((this.flags_ & MatchFlags.BACKTRACK_TRIM_POSITION) && (top?.action ?? 0 & MatchAction.BACKTRACKING))
             top.regAt[1] = top.regAt[0];
 
         if((this.flags_ & MatchFlags.REMOVE_STATES_WO_EFFECT) && top !== undefined && this.isNoEffectState(state, top))
@@ -135,7 +134,7 @@ export class MatchBuilder
     }
 
     public matchData: MatchData;
-    private flags_ ?: number | MatchFlags;
+    private flags_ : number | MatchFlags;
     private batchPosition_ : [number, number] = [0, 0];
     private batchSize_: number;
 }

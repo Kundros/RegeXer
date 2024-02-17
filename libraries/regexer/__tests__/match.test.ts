@@ -79,9 +79,9 @@ test("groups correct ranges 1", async () => {
     const match = (await regexer.match('abcdabababcccc_'))[0];
 
     const nameGroup = match?.groups?.get(1);
-    expect(nameGroup.name).toStrictEqual("name");
-    expect(nameGroup.regAt).toStrictEqual([5, 15]);
-    expect(nameGroup.strAt).toStrictEqual([13, 14]);
+    expect(nameGroup?.name).toStrictEqual("name");
+    expect(nameGroup?.regAt).toStrictEqual([5, 15]);
+    expect(nameGroup?.strAt).toStrictEqual([13, 14]);
     expect(match?.groups?.get(0)).toStrictEqual(undefined);
 
     regexer.clear();
@@ -102,25 +102,25 @@ test("groups correct ranges 2", async () => {
     await regexer.parse('(ab(?<name>c)*()*)+(_)');
     const match = (await regexer.match('abccabc_'))[0];
 
-    const nameGroup = match?.groups.get(2);
-    expect(nameGroup.name).toStrictEqual("name");
-    expect(nameGroup.regAt).toStrictEqual([3, 13]);
-    expect(nameGroup.strAt).toStrictEqual([6, 7]);
+    const nameGroup = match?.groups?.get(2);
+    expect(nameGroup?.name).toStrictEqual("name");
+    expect(nameGroup?.regAt).toStrictEqual([3, 13]);
+    expect(nameGroup?.strAt).toStrictEqual([6, 7]);
 
-    const group0 = match?.groups.get(1);
-    expect(group0.name).toStrictEqual(undefined);
-    expect(group0.regAt).toStrictEqual([0, 18]);
-    expect(group0.strAt).toStrictEqual([4, 7]);
+    const group0 = match?.groups?.get(1);
+    expect(group0?.name).toStrictEqual(undefined);
+    expect(group0?.regAt).toStrictEqual([0, 18]);
+    expect(group0?.strAt).toStrictEqual([4, 7]);
 
-    const group2 = match?.groups.get(3);
-    expect(group2.name).toStrictEqual(undefined);
-    expect(group2.regAt).toStrictEqual([14, 16]);
-    expect(group2.strAt).toStrictEqual([7, 7]);
+    const group2 = match?.groups?.get(3);
+    expect(group2?.name).toStrictEqual(undefined);
+    expect(group2?.regAt).toStrictEqual([14, 16]);
+    expect(group2?.strAt).toStrictEqual([7, 7]);
 
-    const group3 = match?.groups.get(4);
-    expect(group3.name).toStrictEqual(undefined);
-    expect(group3.regAt).toStrictEqual([19, 22]);
-    expect(group3.strAt).toStrictEqual([7, 8]);
+    const group3 = match?.groups?.get(4);
+    expect(group3?.name).toStrictEqual(undefined);
+    expect(group3?.regAt).toStrictEqual([19, 22]);
+    expect(group3?.strAt).toStrictEqual([7, 8]);
 
     regexer.clear();
 });
@@ -140,15 +140,15 @@ test("groups correct ranges 3", async () => {
     await regexer.parse('(?:ab(?<name>c)*()*)+(_)');
     const match = (await regexer.match('abccab_'))[0];
 
-    const group1 = match?.groups.get(2);
-    expect(group1.name).toStrictEqual(undefined);
-    expect(group1.regAt).toStrictEqual([16, 18]);
-    expect(group1.strAt).toStrictEqual([6, 6]);
+    const group1 = match?.groups?.get(2);
+    expect(group1?.name).toStrictEqual(undefined);
+    expect(group1?.regAt).toStrictEqual([16, 18]);
+    expect(group1?.strAt).toStrictEqual([6, 6]);
 
-    const group2 = match?.groups.get(3);
-    expect(group2.name).toStrictEqual(undefined);
-    expect(group2.regAt).toStrictEqual([21, 24]);
-    expect(group2.strAt).toStrictEqual([6, 7]);
+    const group2 = match?.groups?.get(3);
+    expect(group2?.name).toStrictEqual(undefined);
+    expect(group2?.regAt).toStrictEqual([21, 24]);
+    expect(group2?.strAt).toStrictEqual([6, 7]);
 
     regexer.clear();
 });
@@ -184,13 +184,13 @@ test("test correct batches 1", async () => {
     
     expect(match1.statesCount).toStrictEqual(match2.statesCount);
 
-    let match1State : MatchState;
+    let match1State : MatchState | null;
     while((match1State = match1.currentState) !== null)
     {
-        expect(match1State.action).toStrictEqual(match2.currentState.action);
-        expect(match1State.regAt).toStrictEqual(match2.currentState.regAt);
-        expect(match1State.strAt).toStrictEqual(match2.currentState.strAt);
-        expect(match1State.type).toStrictEqual(match2.currentState.type);
+        expect(match1State?.action).toStrictEqual(match2.currentState?.action);
+        expect(match1State?.regAt).toStrictEqual(match2.currentState?.regAt);
+        expect(match1State?.strAt).toStrictEqual(match2.currentState?.strAt);
+        expect(match1State?.type).toStrictEqual(match2.currentState?.type);
         match1.moveBackward();
         match2.moveForward();
     }
@@ -230,18 +230,18 @@ test("test correct batches 2", async () => {
     expect(match1.statesCount).toStrictEqual(match2.statesCount);
     expect(match1.success).toStrictEqual(match2.success);
 
-    expect(match1.groups.get(1).strAt).toStrictEqual(match2.groups.get(1).strAt);
-    expect(match1.groups.get(1).regAt).toStrictEqual(match2.groups.get(1).regAt);
-    expect(match1.groups.get(2).strAt).toStrictEqual(match2.groups.get(2).strAt);
-    expect(match1.groups.get(2).regAt).toStrictEqual(match2.groups.get(2).regAt);
+    expect(match1.groups?.get(1)?.strAt).toStrictEqual(match2.groups?.get(1)?.strAt);
+    expect(match1.groups?.get(1)?.regAt).toStrictEqual(match2.groups?.get(1)?.regAt);
+    expect(match1.groups?.get(2)?.strAt).toStrictEqual(match2.groups?.get(2)?.strAt);
+    expect(match1.groups?.get(2)?.regAt).toStrictEqual(match2.groups?.get(2)?.regAt);
 
-    let match1State : MatchState;
+    let match1State : MatchState | null;
     while((match1State = match1.currentState) !== null)
     {
-        expect(match1State.action).toStrictEqual(match2.currentState.action);
-        expect(match1State.regAt).toStrictEqual(match2.currentState.regAt);
-        expect(match1State.strAt).toStrictEqual(match2.currentState.strAt);
-        expect(match1State.type).toStrictEqual(match2.currentState.type);
+        expect(match1State?.action).toStrictEqual(match2.currentState?.action);
+        expect(match1State?.regAt).toStrictEqual(match2.currentState?.regAt);
+        expect(match1State?.strAt).toStrictEqual(match2.currentState?.strAt);
+        expect(match1State?.type).toStrictEqual(match2.currentState?.type);
         match1.moveBackward();
         match2.moveForward();
     }
@@ -278,13 +278,13 @@ test("test correct batches without one await (not terminating the job)", async (
 
     let match2 = (await regexer.match("abcbbbcccbbccbbccbbababababgjgrehjb_"))[0];
 
-    let match1State : MatchState;
+    let match1State : MatchState | null;
     while((match1State = match1.currentState) !== null)
     {
-        expect(match1State.action).toStrictEqual(match2.currentState.action);
-        expect(match1State.regAt).toStrictEqual(match2.currentState.regAt);
-        expect(match1State.strAt).toStrictEqual(match2.currentState.strAt);
-        expect(match1State.type).toStrictEqual(match2.currentState.type);
+        expect(match1State?.action).toStrictEqual(match2.currentState?.action);
+        expect(match1State?.regAt).toStrictEqual(match2.currentState?.regAt);
+        expect(match1State?.strAt).toStrictEqual(match2.currentState?.strAt);
+        expect(match1State?.type).toStrictEqual(match2.currentState?.type);
         match1.moveForward();
         match2.moveForward();
     }
