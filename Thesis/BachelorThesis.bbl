@@ -125,6 +125,26 @@
       \verb https://www.matweb.cz/konecny-automat/
       \endverb
     \endentry
+    \entry{Wikipedia_2023}{misc}{}
+      \list{publisher}{1}{%
+        {Wikimedia Foundation}%
+      }
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{journaltitle}{Wikipedia}
+      \field{month}{7}
+      \field{urlday}{17}
+      \field{urlmonth}{2}
+      \field{urlyear}{2024}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://en.wikipedia.org/wiki/Thompson%27s_construction
+      \endverb
+      \verb{url}
+      \verb https://en.wikipedia.org/wiki/Thompson%27s_construction
+      \endverb
+    \endentry
   \enddatalist
 \endrefsection
 \endinput

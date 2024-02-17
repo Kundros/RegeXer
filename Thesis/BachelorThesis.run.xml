@@ -85,7 +85,7 @@
       <file>BachelorThesis.bcf</file>
     </requires>
     <requires type="editable">
-      <file>biblatex-examples.bib</file>
+      <file>biblatex.bib</file>
     </requires>
   </external>
 </requests>

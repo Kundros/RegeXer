@@ -1,0 +1,17 @@
+[0] Config.pm:307> INFO - This is Biber 2.19
+[0] Config.pm:310> INFO - Logfile is 'BachelorThesis.blg'
+[91] biber-MSWIN64:340> INFO - === 
+[124] Biber.pm:419> INFO - Reading 'BachelorThesis.bcf'
+[219] Biber.pm:979> INFO - Found 5 citekeys in bib section 0
+[233] Biber.pm:4419> INFO - Processing section 0
+[243] Biber.pm:4610> INFO - Looking for bibtex file 'biblatex.bib' for section 0
+[286] bibtex.pm:1713> INFO - LaTeX decoding ...
+[292] bibtex.pm:1519> INFO - Found BibTeX data source 'biblatex.bib'
+[331] UCollate.pm:68> INFO - Overriding locale 'cs-CZ' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[331] UCollate.pm:68> INFO - Overriding locale 'cs-CZ' defaults 'variable = shifted' with 'variable = non-ignorable'
+[331] Biber.pm:4239> INFO - Sorting list 'none/global//global/global' of type 'entry' with template 'none' and locale 'cs-CZ'
+[338] bbl.pm:660> INFO - Writing 'BachelorThesis.bbl' with encoding 'UTF-8'
+[339] bbl.pm:763> INFO - Output to BachelorThesis.bbl
+[340] Biber.pm:131> WARN - legacy month field 'Jul' in entry 'Wikipedia_2023' is not an integer - this will probably not sort properly.
+[340] Biber.pm:131> WARN - BibTeX subsystem: C:\Users\domin\AppData\Local\Temp\biber_tmp_JFk_\2cb6c5656dc9b77ed93a71602b4f387e_1032.utf8, line 13, warning: 2 characters of junk seen at toplevel
+[340] Biber.pm:133> INFO - WARNINGS: 2
