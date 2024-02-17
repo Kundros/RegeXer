@@ -1,4 +1,4 @@
-import { MatchBatchData, MatchData, MatchFlags, MatchState } from "@regexer/coreTypes/MatchTypes";
+import { MatchBatchData, MatchData, MatchFlags, MatchGroup, MatchState } from "@regexer/coreTypes/MatchTypes";
 
 export class RegexMatch
 {
@@ -17,7 +17,7 @@ export class RegexMatch
           this.matchData_.states.push(...batch.matchStates);
      }
 
-     public get groups()
+     public get groups() : Map<number, MatchGroup> | undefined
      {
           return this.matchData_.groups;
      }

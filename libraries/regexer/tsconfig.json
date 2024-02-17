@@ -8,6 +8,7 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "declaration": true,
+    "strict": true,
     "declarationDir": "./types",
     "paths": {
       "@regexer/*": ["./src/*"],
