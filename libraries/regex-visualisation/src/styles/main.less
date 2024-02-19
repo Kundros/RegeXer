@@ -28,6 +28,28 @@ body {
     font-size: 16px;
 }
 
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #6a1695 #ffffff00;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #ffffff00;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #6a1695;
+    border-radius: 10px;
+    border: 3px none #ffffff;
+}
+
 ::selection {
     color: var(--vscode-editor-selectionForeground);
     background: var(--vscode-editor-selectionBackground, @selection-color);
@@ -47,7 +69,8 @@ body {
         font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
         font-weight: var(--vscode-editor-font-weight, 400);
         letter-spacing: 2px;
-        white-space: break-spaces;
+        white-space: break-spaces;  
+        word-break: break-word;
         tab-size: 2;
         line-height: 21px;
         padding: 0 0 0 10px;
@@ -86,7 +109,11 @@ body {
         }
 
         & .regex-match-highlighting{
+            width: available;
+            width: -moz-available;
             width: -webkit-fill-available;
+            height: available;
+            height: calc(100% - 50px);
             height: -webkit-fill-available;
             position: absolute;
             pointer-events: none;
@@ -102,6 +129,8 @@ body {
         max-height: 148px;
 
         & > span {
+            width: available;
+            width: -moz-available;
             width: -webkit-fill-available;
         }
     }
@@ -249,6 +278,8 @@ body.vscode-light {
     bottom: 0;
     right: 0;
     display: flex;    
+    width: available;
+    width: -moz-available;
     width: -webkit-fill-available;
     justify-content: right;
     border-top: 1px solid #BBBBFF30;
