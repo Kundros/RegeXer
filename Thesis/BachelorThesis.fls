@@ -485,6 +485,10 @@ INPUT .\Figures\NFA_union.pdf
 INPUT .\Figures\NFA_union.pdf
 INPUT .\Figures\NFA_union.pdf
 INPUT .\Figures\NFA_union.pdf
+INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\lm\lm-mathsy.enc
+INPUT .\Chapters\ApplicationTechnology.tex
+INPUT .\Chapters\ApplicationTechnology.tex
+INPUT Chapters\ApplicationTechnology.tex
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmtt.fd
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmtt.fd
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmtt.fd
@@ -514,5 +518,7 @@ INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmss17.
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmss17.pfb
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmssbx10.pfb
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmssbx10.pfb
+INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
+INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmtt10.pfb
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmtt10.pfb

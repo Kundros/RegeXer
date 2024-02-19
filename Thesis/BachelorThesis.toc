@@ -10,8 +10,11 @@
 \contentsline {chapter}{\numberline {2}Principy a historie regulárních výrazů}{8}{chapter.2}%
 \contentsline {section}{\numberline {2.1}Formální jazyk}{8}{section.2.1}%
 \contentsline {section}{\numberline {2.2}Konečný automat}{8}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Původ, vznik a implementace}{10}{section.2.3}%
-\contentsline {chapter}{Literatura}{12}{chapter*.9}%
+\contentsline {section}{\numberline {2.3}Bezkontextová gramatika}{10}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Vznik, implementace a vzory}{10}{section.2.4}%
+\contentsline {chapter}{\numberline {3}Aplikační architektura}{13}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Využíté technologie}{13}{section.3.1}%
+\contentsline {chapter}{Literatura}{14}{chapter*.9}%
 \babel@toc {czech}{}\relax 
 \babel@toc {czech}{}\relax 
 \babel@toc {czech}{}\relax 
@@ -42,4 +45,10 @@
 \babel@toc {czech}{}\relax 
 \babel@toc {czech}{}\relax 
 \babel@toc {czech}{}\relax 
-\contentsline {chapter}{Přílohy}{12}{chapter*.9}%
+\babel@toc {czech}{}\relax 
+\babel@toc {czech}{}\relax 
+\babel@toc {czech}{}\relax 
+\babel@toc {czech}{}\relax 
+\babel@toc {czech}{}\relax 
+\babel@toc {czech}{}\relax 
+\contentsline {chapter}{Přílohy}{14}{chapter*.9}%

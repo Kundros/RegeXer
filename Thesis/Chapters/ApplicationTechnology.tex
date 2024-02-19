@@ -1,0 +1,16 @@
+\chapter{Aplikační architektura}\label{sec:Principle}
+
+\section{Využíté technologie}
+Tato aplikace je integrovaná do vývojového prostředí \textbf{visual studio code}, 
+zkráceně \textbf{vscode}. Jádro aplikace je psáno v programovacím jazyce \textbf{TypeScript} verze 5.3, který je nádstavbou
+pro jazyk \textbf{JavaScript}. TypeScript, jak z názvu vyplívá je typový JavaScript.
+Každý kód napsaný v JavaScriptu je správný pro TypeScript, ale to neplatí naopak.
+Psaní nějaké větší aplikace je tak vhodnější v TypeScriptu, 
+čímž se můžeme vyhnout potencionálním chybám v běhu programu.
+Také vyvýjení rozšíření pro vscode, je možné pouze v JavaScriptu nebo TypeScriptu.
+
+Pro parsování\footnote{proces kompilace a interpretace} je použita bezkontextová gramatika Peggy, pro jazyk JavaScript.
+Ta umožňuje poměrně snadného zpracování textové podoby regulárních výrazů do podoby strukturované.
+Výsledná struktura je ve formě NKA s AST (abstraktní syntaktický strom). 
+NKA pak lze procházet a AST slouží k dohledání informací o syntaxi původního regulárního výrazu.
+

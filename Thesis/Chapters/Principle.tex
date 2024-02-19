@@ -11,7 +11,7 @@ Formální jazyk je libovolná množina koečných slov nad určitou abecedou.
 Slova chápeme jako retězece znaků, která jsou příjimaná zadaným jazykem.
 Tato slova musí být sice konečná ale množina těchto slov může být nekonečná. 
 Tyto jazyky mohou být definovány regulárními výrazy, formální gramatikou,
-konečnými automaty a dalšími. Regulární jazyky jsou tak jednou z možných definic formálních jazyků.
+konečnými automaty a dalšími. Regulární jazyky jsou pak jednou z možných definic formálních jazyků.
 
 \section{Konečný automat}
 Ve spojení s regulárními výrazy se často pojí konečné automaty, jedná se o další oblast v teoretické informatice.
@@ -45,7 +45,22 @@ Každý NKA lze převést na ekvivalentní DKA.
 	\label{fig:NFAex}
 \end{figure}
 
-\section{Původ, vznik a implementace}
+\section{Bezkontextová gramatika}
+Součástí této práce je i využití Bezkontextové gramatiky a jelikož spadají pod teoretickou informatiku, 
+tak si zkráceně vysvětlíme tuto oblast.
+
+Bezkontextová gramatika, je další z možných definic formálních jazyků. Je určená konečnou množinou \textbf{neterminálních symbolů} (proměnných), konečnou množinou \textbf{terminálních symbolů}, která nesmí mít žádné prvky společné s předchozí množinou.
+Dále \textbf{počátečním neterminálem} S konečnou množinou \textbf{přepisových pravidel}\cite{Wikipedia_2021}.
+
+$A \longrightarrow \beta$
+
+\noindent 
+kde A je neterminál a $\beta$ je řetězec složený z terminálů a/nebo neterminálů. 
+Dále šipka indikuje \textbf{přepsání} tj. levá strana se přepisuje na stranu pravou.
+Konečný generovaný řetězec danou gramatikou, je pouze tvořen terminálními symboly.
+Aby mohl být řetězec příjimaný zadanou gramatikou, musí ho být schopná tato gramatika vygenerovat.
+
+\section{Vznik, implementace a vzory}
 Regulární výrazy byly poprvé nadefinovány Americkým matematikem \textbf{Stephan Cole Kleene}, jako regulární jazyky. 
 Dále se aplikovali v teoretické informatice, jako podkategorie \textbf{teorie automatů} a součást \textbf{formálních jazyků}.
 Ačkoliv byli nadefinovány začátkem padesátých let, tak jejich využití v počítačích nastalo až na konci šedesátých let a to v 
@@ -92,3 +107,41 @@ Konce variant \textit{s} a \textit{t} mají jediný přechod \textit{$\epsilon$}
 \end{figure}
 
 Další pravidla pro sestrojení lze například najít na anglické wikipedia stránce pro thompsonovo sestrojení \cite{Wikipedia_2023}.
+
+\subsection*{Základní vzory}
+Jelikož již máme vysvětleny hlavní oblasti, které souvisí s regulárními výrazy, tak si můžeme ukázat 
+jak vůbec vypadají a jejich základní vzory.
+
+Jako nejzákladnější výraz můžeme považovat prázdný výraz, někdy označovaný jako $\epsilon$. 
+Dále výrazy mohou obsahovat \textbf{téměř} libovolný znak, který bude příjimat slova s daným znakem, avšak nemohou být použity znaky, které jsou rezervované, neboli jsou součástí syntaxe regulárních výrazů.
+
+Iterace, je možnost jak lze opakovaně provádět nějakou operaci.
+Například lze iterovat znak, skupinu a další.
+Prvním typem iterace je \textbf{*}, známa jako \textbf{Kleene star}, nebo-li kleene hvězda.
+Tento druh iterace může proběhnout \textbf{0} až \textbf{n} iterací, taktéž ji nazíváme \textbf{nula nebo více}. 
+Existují další 2 typy iterací a to je iterace typu \textbf{jedna nebo více} označována znakem + a \textbf{iterace v rozmezí} \{min,max\}.
+
+Operace \textbf{nebo} je dalším základním vzorem pro regulární výrazy. 
+Jedná se o výběr mezi pravou a levou stranou. Oddělovacím znakem je typicky | podobně jako bitová operace \textbf{OR} v mnoha programovacích jazycích.
+
+\subsection*{Implementace v programovacích jazycích}
+
+Dnes v podstatě každý programovací jazyk má v nějaké formě implementované zpracování regulárních výrazů.
+Tato implementace se však často liší, sice základ bývá stejný, ale rozšířená syntaxe je často odlišná.
+Může se tak stát to, že to co je podporované jedním jazykem, není podporované druhým.
+Taktéž oproti původním regulárním výrazům, dnešní implementace osahují mnohdy složitější
+koncepce jako je rozhlédnutí se (Anglicky lookaround), nebo například rekurze.
+Někdy sice jazyky sdílí jednu stejnou funkcionalitu, ale mohou se lišit syntaxí.
+
+Rozhlédnutí se je již celkem pokročilá funkcionalita. 
+Jejich principem je takzvaně, nezachytávání znaků při zpracovávání.
+Typicky je dělíme podle směru a to \textbf{dopředné} a \textbf{zpětného} rozhlédnutí.
+Pak je dělíme podle podmínění a to \textbf{kladné} a \textbf{negativní} rozhlédnutí, pro která platí,
+pokud máme kladné podmínění \textbf{musí} uzavřený výraz být splněný a pokud máme záporné tak \textbf{nesmí} být splněný.
+V původní formě regulárních výrazů, tato funkce neexistovala.
+
+Mnohdy je potřeba, nalezený řetězec rozdělit do skupin. 
+Tuto možnost dnešní implementace také umožňují.
+Chceme-li zdůraznit že zadaný podvýraz je skupinou, obalíme ho do závorek.
+Tato vlastnost je žádaná, jelikož nemusíme například, jiným regulárním výrazem hledat
+v již nalezeném řetězci nějaký podřetězec.

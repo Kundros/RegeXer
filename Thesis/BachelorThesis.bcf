@@ -2386,7 +2386,8 @@
     <bcf:citekey order="1" intorder="2">Regexper</bcf:citekey>
     <bcf:citekey order="1" intorder="3">RegExr</bcf:citekey>
     <bcf:citekey order="2" intorder="1">Havrlant</bcf:citekey>
-    <bcf:citekey order="3" intorder="1">Wikipedia_2023</bcf:citekey>
+    <bcf:citekey order="3" intorder="1">Wikipedia_2021</bcf:citekey>
+    <bcf:citekey order="4" intorder="1">Wikipedia_2023</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">

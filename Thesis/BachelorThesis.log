@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.12) (preloaded format=pdflatex 2024.1.25)  17 FEB 2024 23:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.12) (preloaded format=pdflatex 2024.1.25)  19 FEB 2024 21:57
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -945,30 +945,34 @@ File: lstmisc.sty 2023/02/27 1.9 (Carsten Heinz)
 ))
 Package csquotes Info: Checking for multilingual support...
 Package csquotes Info: ... found 'babel' package.
-LaTeX Font Info:    Trying to load font information for T1+lmr on input line 48.
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 49.
  (C:\Users\domin\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmr.fd
 File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) (BachelorThesis.aux)
+) (BachelorThesis.aux
+
+LaTeX Warning: Label `sec:Principle' multiply defined.
+
+)
 \openout1 = `BachelorThesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -1044,7 +1048,7 @@ Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
 )
 Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 ))
-Package hyperref Info: Link coloring ON on input line 48.
+Package hyperref Info: Link coloring ON on input line 49.
  (BachelorThesis.out) (BachelorThesis.out)
 \@outlinefile=\write5
 \openout5 = `BachelorThesis.out'.
@@ -1085,42 +1089,42 @@ Package biblatex Info: Automatic encoding selection.
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'BachelorThesis.bbl' found.
  (BachelorThesis.bbl)
-Package biblatex Info: Reference section=0 on input line 48.
-Package biblatex Info: Reference segment=0 on input line 48.
+Package biblatex Info: Reference section=0 on input line 49.
+Package biblatex Info: Reference segment=0 on input line 49.
 \c@lstlisting=\count459
-LaTeX Font Info:    Trying to load font information for T1+lmss on input line 51.
+LaTeX Font Info:    Trying to load font information for T1+lmss on input line 52.
  (C:\Users\domin\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmss.fd
 File: t1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 
 pdfTeX warning: pdflatex (file ./Figures/FEI_CZ.pdf): PDF inclusion: found PDF version <1.6>, but at most version <1.5> allowed
-<Figures/FEI_CZ.pdf, id=41, 350.70023pt x 109.21pt>
+<Figures/FEI_CZ.pdf, id=53, 350.70023pt x 109.21pt>
 File: Figures/FEI_CZ.pdf Graphic file (type pdf)
 <use Figures/FEI_CZ.pdf>
-Package pdftex.def Info: Figures/FEI_CZ.pdf  used on input line 51.
+Package pdftex.def Info: Figures/FEI_CZ.pdf  used on input line 52.
 (pdftex.def)             Requested size: 274.11765pt x 85.35826pt.
-LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 51.
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 52.
 (C:\Users\domin\AppData\Local\Programs\MiKTeX\tex/latex/lm\ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 51.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 52.
  (C:\Users\domin\AppData\Local\Programs\MiKTeX\tex/latex/lm\omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 51.
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 52.
  (C:\Users\domin\AppData\Local\Programs\MiKTeX\tex/latex/lm\omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 51.
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 52.
  (C:\Users\domin\AppData\Local\Programs\MiKTeX\tex/latex/lm\omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <14.4> on input line 51.
+(Font)              <14.4> on input line 52.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 51.
+(Font)              <10> on input line 52.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 51.
+(Font)              <7> on input line 52.
  [1
 
 
@@ -1130,35 +1134,35 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 
 
 {C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc} <./Figures/FEI_CZ.pdf>]
-<ThesisSpecification_KUN0161.pdf, id=74, 597.23125pt x 845.1575pt>
+<ThesisSpecification_KUN0161.pdf, id=86, 597.23125pt x 845.1575pt>
 File: ThesisSpecification_KUN0161.pdf Graphic file (type pdf)
 <use ThesisSpecification_KUN0161.pdf>
-Package pdftex.def Info: ThesisSpecification_KUN0161.pdf  used on input line 51.
+Package pdftex.def Info: ThesisSpecification_KUN0161.pdf  used on input line 52.
 (pdftex.def)             Requested size: 597.22978pt x 845.15544pt.
 File: ThesisSpecification_KUN0161.pdf Graphic file (type pdf)
 <use ThesisSpecification_KUN0161.pdf>
-Package pdftex.def Info: ThesisSpecification_KUN0161.pdf  used on input line 51.
+Package pdftex.def Info: ThesisSpecification_KUN0161.pdf  used on input line 52.
 (pdftex.def)             Requested size: 597.22978pt x 845.15544pt.
-<ThesisSpecification_KUN0161.pdf, id=77, page=1, 597.23125pt x 845.1575pt>
+<ThesisSpecification_KUN0161.pdf, id=89, page=1, 597.23125pt x 845.1575pt>
 File: ThesisSpecification_KUN0161.pdf Graphic file (type pdf)
 <use ThesisSpecification_KUN0161.pdf, page 1>
-Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input line 51.
+Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input line 52.
 (pdftex.def)             Requested size: 597.22978pt x 845.15544pt.
 File: ThesisSpecification_KUN0161.pdf Graphic file (type pdf)
 <use ThesisSpecification_KUN0161.pdf, page 1>
-Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input line 51.
+Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input line 52.
 (pdftex.def)             Requested size: 561.86221pt x 795.10587pt.
 File: ThesisSpecification_KUN0161.pdf Graphic file (type pdf)
 <use ThesisSpecification_KUN0161.pdf, page 1>
-Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input line 51.
+Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input line 52.
 (pdftex.def)             Requested size: 561.86221pt x 795.10587pt.
 File: ThesisSpecification_KUN0161.pdf Graphic file (type pdf)
 <use ThesisSpecification_KUN0161.pdf, page 1>
-Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input line 51.
+Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input line 52.
 (pdftex.def)             Requested size: 561.86221pt x 795.10587pt.
 File: ThesisSpecification_KUN0161.pdf Graphic file (type pdf)
 <use ThesisSpecification_KUN0161.pdf, page 1>
-Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input line 51.
+Package pdftex.def Info: ThesisSpecification_KUN0161.pdf , page1 used on input line 52.
 (pdftex.def)             Requested size: 561.86221pt x 795.10587pt.
  [2
 
@@ -1205,12 +1209,12 @@ Kapitola 2.
 [8
 
 ]
-<Figures/DFA_example.pdf, id=171, 295.47891pt x 127.22531pt>
+<Figures/DFA_example.pdf, id=186, 295.47891pt x 127.22531pt>
 File: Figures/DFA_example.pdf Graphic file (type pdf)
 <use Figures/DFA_example.pdf>
 Package pdftex.def Info: Figures/DFA_example.pdf  used on input line 36.
 (pdftex.def)             Requested size: 283.22162pt x 121.95047pt.
-<Figures/NFA_example.pdf, id=172, 306.03333pt x 179.54578pt>
+<Figures/NFA_example.pdf, id=187, 306.03333pt x 179.54578pt>
 File: Figures/NFA_example.pdf Graphic file (type pdf)
 <use Figures/NFA_example.pdf>
 Package pdftex.def Info: Figures/NFA_example.pdf  used on input line 43.
@@ -1222,59 +1226,71 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 pdfTeX warning: pdflatex (file ./Figures/NFA_example.pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
-<Figures/NFA_epsilon.pdf, id=199, 321.45094pt x 45.92157pt>
+<Figures/NFA_epsilon.pdf, id=215, 321.45094pt x 45.92157pt>
 File: Figures/NFA_epsilon.pdf Graphic file (type pdf)
 <use Figures/NFA_epsilon.pdf>
-Package pdftex.def Info: Figures/NFA_epsilon.pdf  used on input line 71.
-(pdftex.def)             Requested size: 283.22162pt x 40.46155pt.
-<Figures/NFA_a.pdf, id=200, 321.45094pt x 45.92157pt>
-File: Figures/NFA_a.pdf Graphic file (type pdf)
-<use Figures/NFA_a.pdf>
-Package pdftex.def Info: Figures/NFA_a.pdf  used on input line 79.
+Package pdftex.def Info: Figures/NFA_epsilon.pdf  used on input line 86.
 (pdftex.def)             Requested size: 283.22162pt x 40.46155pt.
 
-
-pdfTeX warning: pdflatex (file ./Figures/NFA_union.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
-<Figures/NFA_union.pdf, id=201, 354.36388pt x 220.9053pt>
-File: Figures/NFA_union.pdf Graphic file (type pdf)
-<use Figures/NFA_union.pdf>
-Package pdftex.def Info: Figures/NFA_union.pdf  used on input line 89.
-(pdftex.def)             Requested size: 377.62642pt x 235.41914pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-) [10 <./Figures/NFA_epsilon.pdf> <./Figures/NFA_a.pdf
+<Figures/NFA_a.pdf, id=216, 321.45094pt x 45.92157pt>
+File: Figures/NFA_a.pdf Graphic file (type pdf)
+<use Figures/NFA_a.pdf>
+Package pdftex.def Info: Figures/NFA_a.pdf  used on input line 94.
+(pdftex.def)             Requested size: 283.22162pt x 40.46155pt.
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+
+pdfTeX warning: pdflatex (file ./Figures/NFA_union.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<Figures/NFA_union.pdf, id=217, 354.36388pt x 220.9053pt>
+File: Figures/NFA_union.pdf Graphic file (type pdf)
+<use Figures/NFA_union.pdf>
+Package pdftex.def Info: Figures/NFA_union.pdf  used on input line 104.
+(pdftex.def)             Requested size: 377.62642pt x 235.41914pt.
+[10{C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc}] [11 <./Figures/NFA_epsilon.pdf> <./Figures/NFA_a.pdf
 
 pdfTeX warning: pdflatex (file ./Figures/NFA_a.pdf): PDF inclusion: multiple pdfs with page group included in a single page
->] [11 <./Figures/NFA_union.pdf>]
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 69.
+> <./Figures/NFA_union.pdf>]) (Chapters/ApplicationTechnology.tex [12]
+Kapitola 3.
+) [13
+
+]
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 71.
  (C:\Users\domin\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [12
+) [14
 
 ] (BachelorThesis.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
+
+
+LaTeX Warning: There were multiply-defined labels.
+
 Package rerunfilecheck Info: File `BachelorThesis.out' has not changed.
-(rerunfilecheck)             Checksum: F64534831A03A09DBBD85EDC581E698B;1214.
+(rerunfilecheck)             Checksum: 45397B4BAF1682106F743211B0B2FEEC;1712.
 Package logreq Info: Writing requests to 'BachelorThesis.run.xml'.
 \openout1 = `BachelorThesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 27359 strings out of 474486
- 471607 string characters out of 5743755
- 1934542 words of memory out of 5000000
- 49174 multiletter control sequences out of 15000+600000
+ 27379 strings out of 474486
+ 472114 string characters out of 5743755
+ 1936542 words of memory out of 5000000
+ 49183 multiletter control sequences out of 15000+600000
  632918 words of font info for 79 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 107i,17n,109p,1375b,2837s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr6.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss12.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss17.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on BachelorThesis.pdf (12 pages, 1193846 bytes).
+ 107i,17n,109p,1375b,2841s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr6.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss12.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss17.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Users/domin/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
+Output written on BachelorThesis.pdf (14 pages, 1215456 bytes).
 PDF statistics:
- 314 PDF objects out of 1000 (max. 8388607)
- 35 named destinations out of 1000 (max. 500000)
- 135 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 353 PDF objects out of 1000 (max. 8388607)
+ 42 named destinations out of 1000 (max. 500000)
+ 159 words of extra memory for PDF output out of 10000 (max. 10000000)
 

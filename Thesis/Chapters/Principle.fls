@@ -5,3 +5,7 @@ OUTPUT Principle.log
 INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx10.tfm
 OUTPUT Principle.pdf
 INPUT C:\Users\domin\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
+INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmti10.tfm
+INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\tex\latex\base\omscmr.fd
+INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\tex\latex\base\omscmr.fd
+INPUT C:\Users\domin\AppData\Local\Programs\MiKTeX\tex\latex\base\omscmr.fd
