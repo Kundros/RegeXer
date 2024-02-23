@@ -2,13 +2,31 @@
 \documentclass[czech,bachelor]{diploma}
 % Dalsi doplnujici baliky maker
 \usepackage[autostyle=true,czech=quotes]{csquotes} % korektni sazba uvozovek, podpora pro balik biblatex
-\usepackage[backend=biber, style=iso-numeric, alldates=iso]{biblatex} % bibliografie
+\usepackage[backend=bibtex, style=iso-numeric, alldates=iso]{biblatex} % bibliografie
 \usepackage{dcolumn} % sloupce tabulky s ciselnymi hodnotami
 \usepackage{subfig} % makra pro "podobrazky" a "podtabulky"
-\usepackage[cpp]{diplomalst}
+\usepackage{dirtytalk}
+
+\usepackage{newfloat}
+\usepackage{caption}
+
+\DeclareFloatingEnvironment[placement={!ht},name=Zdrojový kód]{code}
+
+% minted
+\usepackage[outputdir=out]{minted}
+\renewcommand{\MintedPygmentize}{C:/Python311/Scripts/pygmentize}
+\setminted[typescript]{
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    tabsize=4
+}
+\usemintedstyle{emacs}
+% end minted
+
 \counterwithout{footnote}{chapter}
 
-% Zadame pozadovane vstupy pro generovani titulnich stran.
+% Zadame pozadovane vstupy pro generovani titulnich stran. 
 \ThesisAuthor{Dominik Kundra}
 
 \ThesisSupervisor{Ing. Jakub Beránek}
@@ -32,16 +50,19 @@
 
 % TODO: \EnglishKeywords{typography; \LaTeX; master thesis}
 
-% TODO: \AddAcronym{DVD}{Digital Versatile Disc}
-% TODO: \AddAcronym{TNT}{Trinitrotoluen}
-% TODO: \AddAcronym{UML}{Unified Modeling Language}
-% TODO: \AddAcronym{HTML}{Hyper Text Markup Language}
-% TODO: \AddAcronym{TUG}{\TeX{} Users Group}
+\AddAcronym{AST}{Abstraktní syntaktický strom}
+\AddAcronym{NKA}{Nedeterministický konečný automat}
+\AddAcronym{DKA}{Deterministický konečný automat}
+\AddAcronym{TS}{TypeScript}
+\AddAcronym{JS}{JavaScript}
+\AddAcronym{Regex}{Regulární výraz (Regular expression)}
+\AddAcronym{API}{Aplikační rozhraní}
+\AddAcronym{HTML}{HyperText Markup Language}
 
 \addbibresource{biblatex.bib}
 % TODO: \addbibresource{coffee.bib}
 
-% Novy druh tabulkoveho sloupce, ve kterem jsou cisla zarovnana podle desetinne carky
+% Novy druh tabulkoveho sloupce, ve kterem jsou cisla zarovnana podle desetinne carky 
 \newcolumntype{d}[1]{D{,}{,}{#1}}
 
 
@@ -76,6 +97,5 @@
 
 % Priloha vlozena primo do hlavniho LaTeX souboru. Ne vsechny prilohy je nutne mit ve zvlastnich souborech.
 % \chapter{Dlouhý zdrojový kód}
-% \lstinputlisting[label=src:CppExternal,caption={Dlouhý zdrojový kód v jazyce C++ načtený s externího souboru}]{SourceCodes/ArraySortingAlgorithms.cpp}
 
 \end{document}
