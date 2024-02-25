@@ -1,10 +1,13 @@
 \chapter{Principy a historie regulárních výrazů}\label{sec:Principle}
 
-Abychom mohli porozumět, jakým problémem se v této práci vlastně zabýváme, tak si musíme zadefinovat co jsou
-regulární výrazy, jak fungují a jak se jednotlivé implementace mohu lišit. Následovně si vysvětlíme, jak lze zjednodušit
-pochopení těchto výrazů, popřípadě jak rychle najít chybu ve vlastním výrazu. 
+Tato kapitola se zabívá definicí regulárních výrazů, jak fungují a jak se jednotlivé implementace mohu lišit. 
+Součástí jejích implementace, provází několik pojmů z teoretické informatiky, odkud pocházejí.
+Hlavně se jedná o \textbf{Konečné automaty} a \textbf{Thompsonovo sestrojení}.
+%Následovně si vysvětlíme, jak lze zjednodušit pochopení těchto výrazů, popřípadě jak rychle najít chybu ve vlastním výrazu. 
 
-Předtím než si vysvětlíme blíže jak fungují samotné regulární výrazy, je potřeba si první objasnit význam několika pojmů z teoretické informatiky.
+%Předtím než si vysvětlíme blíže jak fungují samotné regulární výrazy, je potřeba si objasnit význam několika pojmů z teoretické informatiky.
+
+
 
 \section{Formální jazyk}
 Formální jazyk je libovolná množina koečných slov nad určitou abecedou. 
@@ -13,27 +16,29 @@ Tato slova musí být sice konečná ale množina těchto slov může být nekon
 Tyto jazyky mohou být definovány regulárními výrazy, formální gramatikou,
 konečnými automaty a dalšími. Regulární jazyky jsou pak jednou z možných definic formálních jazyků.
 
-\section{Konečný automat}
+\section{Konečný automat}\label{sec:FiniteAutomaton}
 Ve spojení s regulárními výrazy se často pojí konečné automaty, jedná se o další oblast v teoretické informatice.
-Proto abychom pochopili proč je tato oblast pro nás důležitá, musíme si vysvětlit co vlastně jsou.
+Tato práce implementuje regulární výrazy práve ve forme konečných automatů.
 
-Konečný automat je model jednoduchého počítače, který má určitý počet stavů a přechodů \cite{Havrlant}. 
+Zjednodušeně se dá říct, že konečný automat je model jednoduchého počítače, který má určitý počet stavů a přechodů \cite{Havrlant}. 
 
-Stavy jsou typycky zakreslovány jako kružnice, a každý automat musí obstahovat alespoň jeden počáteční stav,
-ale může jich také obsahovat více. To samé platí pro konečný/é stav/y. Konečné stavy se vyznačují jako kruh z dvojtou čárou a počáteční stavy jsou, 
-označovány jako stav do kterého vede šipka, která ale nevychází z jiného stavu.
-Prechody jsou pak šipky vedoucí z jednoho stavu do druhého, jsou označeny přechodovým symbolem.
-Tyto šipky nám říkají že pokud chceme přejít z jednoho stavu do druhého, tak musíme v příjimaném slově se posunout o
-daný symbol. Pokud to není možné, tak nemůžeme přejít do tohoto stavu.
+Stavy jsou typycky zakreslovány jako kružnice, a každý automat musí obstahovat alespoň jeden počáteční stav, ale může jich také obsahovat více. 
+To samé platí pro konečný/é stav/y. 
+Konečné stavy se také vyznačují jako kruh, ale z dvojtou čárou. 
+Počáteční stavy, jsou označovány jako stav, do kterého vede šipka, která ale nevychází z jiného stavu.
+Přechody jsou pak šipky vedoucí z jednoho stavu do druhého, jsou označeny přechodovým symbolem.
+Avšak přechod může odkazovat na stejný stav, ze kterého vychází.
+Tyto přechody nám říkají že pokud chceme přejít z jednoho stavu do druhého, tak musíme v příjimaném slově se posunout o daný symbol. 
+Pokud to není možné, tak nemůžeme přejít do tohoto stavu.
 
-Tyto automaty dělíme na deterministické a nedeterministické, zkráceně DKA (deterministický konečný automat) a NKA (nedeterministický konečný automat).
-DKA mohou mít v daném stavů pro každý znak abecedy \textbf{maximálně} jeden přechod, dále \textbf{nemohou obsahovat tzv. prázný znak} často označovaný řeckým písmenem epsilon $\epsilon$.
-Příklad tohoto automatu můžeme vidět na obrázku \ref{fig:DFAex}.
+Tyto automaty se dělí na \textbf{deterministické} a \textbf{nedeterministické}, zkráceně \textbf{DKA} (deterministický konečný automat) a \textbf{NKA} (nedeterministický konečný automat).
+DKA mohou mít v daném stavu pro každý znak abecedy \textbf{maximálně} jeden přechod, dále \textbf{nemohou obsahovat tzv. prázný znak} často označovaný řeckým písmenem epsilon $\epsilon$.
+Příklad tohoto automatu je možno vidět na obrázku \ref{fig:DFAex}.
 NKA naopak obojí umožňují. 
 Prázné znaky slouží pro změnu stavu bez změny aktuální pozice v hledaném slově. 
-Pro ukázku si můžeme porovnat ekvivalentní konečné automaty,
+Pro ukázku si můžeme porovnat dva ekvivalentní konečné automaty,
 NKA na obrázku \ref{fig:NFAex} a DKA na obrázku \ref{fig:DFAex}.
-Je nutno uvést, že každý NKA lze převést na ekvivalentní DKA.
+Nakonec je dobré podotknout, že každý NKA lze převést na ekvivalentní DKA.
 
 \begin{figure}[!h]
 	\centering
@@ -54,7 +59,7 @@ Součástí této práce je i využití Bezkontextové gramatiky a jelikož spad
 tak si zkráceně vysvětlíme tuto oblast.
 
 Bezkontextová gramatika, je další z možných definic formálních jazyků. Je určená konečnou množinou \textbf{neterminálních symbolů} (proměnných), konečnou množinou \textbf{terminálních symbolů}, která nesmí mít žádné prvky společné s předchozí množinou.
-Dále \textbf{počátečním neterminálem} S konečnou množinou \textbf{přepisových pravidel}\cite{Wikipedia_2021}.
+Dále \textbf{počátečním neterminálem} s konečnou množinou \textbf{přepisových pravidel}\cite{MUNIFL}.
 
 $A \longrightarrow \beta$
 
@@ -67,22 +72,27 @@ Aby mohl být řetězec příjimaný zadanou gramatikou, musí ho být schopná 
 \section{Vznik, implementace a vzory}
 Regulární výrazy byly poprvé nadefinovány Americkým matematikem \textbf{Stephan Cole Kleene}, jako regulární jazyky. 
 Dále se aplikovali v teoretické informatice, jako podkategorie \textbf{teorie automatů} a součást \textbf{formálních jazyků}.
-Ačkoliv byli nadefinovány začátkem padesátých let, tak jejich využití v počítačích nastalo až na konci šedesátých let a to v 
+Ačkoliv byly nadefinovány začátkem padesátých let, tak jejich využití v počítačích nastalo až na konci šedesátých let a to v 
 jedním z nejznámějších operačních systémů UNIX.
 
 \subsection*{Thompsonovo sestrojení}
 
-\textbf{Ken Thompson} byl první kdo navrhnul implementaci převodu ragulárního výrazu na NKA využívanou v počítačích, která se používá do dnes. 
+První kdo navrhnul implementaci používanou v počítačích byl \textbf{Ken Thompson}.
+Principem byl převod ragulárního výrazu na NKA.
+Tato metoda se často používá v podobné či stejné formě doposud.
 Algoritmus se pojmenoval \textbf{Thompson's construction} (Thompsonovo sestrojení), který převádí textovou reprezentaci výrazu na ekvivalentní nedeterministický automat.
-Toto sestrojení je využito v této práci, proto si musíme vysvětlit jak funguje.
+Toto sestrojení je využito v této práci a blíže jej popisuje následující část textu.
 
-Používá se často implementace NKA, jelikož je poměrně jednoduchá na implementaci a
-také dovoluje oproti DKA využití zpětného krokování (backtracking) a rozhlédnutí se kolem sebe (lookaround).
-DKA mají výhodu že jsou rychlejší oproti NKA, ale jsou typycky větší než jejich ekvivalentní NKA a neumožňují již zmíněné funkce. 
-Někdy se ale využívá například kombinace DKA i NKA, kdy DKA kvůli vyšší rychlosti se použije na vyhledání daného slova a pokud bylo nalezeno, 
-tak se využije NKA pro jejich rozšířené možnosti.
+NKA se běžně využívá, jelikož je poměrně jednoduchý na implementaci a
+také oproti DKA využívá \textbf{zpětného krokování (backtracking)} a povoluje složitější operace jako je \textbf{rozhlédnutí se kolem sebe (lookaround)}.
+Zpětné krokování je důležité pro NKA, jelikož neexistuje jednoznačná cesta vyhodnocení.
+DKA mají výhodu že jsou rychlejší, ale jsou typycky větší než jejich ekvivalentní NKA a neumožňují některé složitější operace.
+Také nepotřebují zpětné krokování, jelikož jejich cesta je deterministická tzn. existuje vždy jen jedna cesta pro hledané slovo.
+Někdy se ale využívá kombinace DKA i NKA, kdy DKA se využije kvůli vyšší rychlosti vyhledání daného slova a pokud bylo slovo nalezeno, 
+tak se použije NKA pro jejich rozšířené možnosti.
 
-Výsledný NKA má právě jeden vstupní a výstupní stav. Aby došlo ke správnému sestrojení NKA z Regulárního výrazu, musíme se řídit několika pravidly, pro ukázku si pár těchto pravidel ukážeme.
+Výsledný NKA po thompsonově sestrojení má právě jeden vstupní a výstupní stav. 
+Thompsonovo sestrojení dále definuje následující pravidla.
 
 Prázdný výraz \textit{$\epsilon$}, je převedený na vstupní stav, přechod \textit{$\epsilon$} a konečný stav.
 Výsledný konečný automat je na obrázku \label{fig:NFAepsilon}.
@@ -117,22 +127,27 @@ kde skupina stavů v zelené části je \textit{s} a červená skupina je \texti
 Další pravidla pro sestrojení lze například najít na anglické wikipedia stránce pro thompsonovo sestrojení \cite{Wikipedia_2023}.
 
 \subsection*{Základní vzory}
-Jelikož již máme vysvětleny hlavní oblasti, které souvisí s regulárními výrazy, tak si můžeme ukázat 
-jak vůbec vypadají a jejich základní vzory.
+V Předchozích sekcích, již byly popsány základní konstrukce týkající se regulárních výrazů.
+Tato sekce se zabývá jejich základními vzory.
 
-Jako nejzákladnější výraz můžeme považovat prázdný výraz, někdy označovaný jako $\epsilon$. 
-Dále výrazy mohou obsahovat \textbf{téměř} libovolný znak, který bude příjimat slova s daným znakem, avšak nemohou být použity znaky, které jsou rezervované, neboli jsou součástí syntaxe regulárních výrazů.
+Za nejjednodužší výraz lze považovat prázdný výraz, také označovaný jako $\epsilon$. 
+Výrazy mohou obsahovat \textbf{téměř} libovolný znak, který bude příjimat slova s daným znakem. 
+Avšak nemohou být použity znaky, které jsou rezervované, nebo-li jsou součástí syntaxe regulárních výrazů.
+Chceme-li použít tyto znaky je potřeba použít znak \textbf{\\}. 
+Takový znak se pak nazývá anglicky \textbf{escaped character}.
 
 Iterace, je možnost jak lze opakovaně provádět nějakou operaci.
-Například lze iterovat znak, skupinu a další.
+Například lze iterovat znak, skupinu a další konstrukce.
 Prvním typem iterace je \textbf{*}, známa jako \textbf{Kleene star}, nebo-li kleene hvězda.
-Tento druh iterace může proběhnout \textbf{0} až \textbf{n} iterací, taktéž ji nazíváme \textbf{nula nebo více}. 
-Existují další 2 typy iterací a to je iterace typu \textbf{jedna nebo více} označována znakem + a \textbf{iterace v rozmezí} \{min,max\}.
+Tento druh iterace může mít počet opakování od \textbf{0} až do \textbf{n} iterací, taktéž se nazívá \textbf{nula nebo více}. 
+Existují další 2 typy iterací a to je iterace typu \textbf{jedna nebo více} označována znakem + a \textbf{iterace v rozmezí}, která se značí \{od,do\}.
 
 Operace \textbf{nebo} je dalším základním vzorem pro regulární výrazy. 
 Jedná se o výběr mezi pravou a levou stranou. Oddělovacím znakem je typicky | podobně jako bitová operace \textbf{OR} v mnoha programovacích jazycích.
 
-\subsection*{Implementace v programovacích jazycích}
+Dalšími základními konstrukty jsou nakříklad skupiny, které jsou obaleny v jednoduchých závorkách. 
+
+\subsection*{Implementace v programovacích jazycích}\label{sec:impipl}
 
 Dnes v podstatě každý programovací jazyk má v nějaké formě implementované zpracování regulárních výrazů.
 Tato implementace se však často liší, sice základ bývá stejný, ale rozšířená syntaxe je často odlišná.
@@ -142,16 +157,18 @@ koncepce jako je rozhlédnutí se (Anglicky lookaround), nebo například rekurz
 Někdy sice jazyky sdílí jednu stejnou funkcionalitu, ale mohou se lišit syntaxí.
 
 Rozhlédnutí se je již celkem pokročilá funkcionalita. 
-Jejich principem je takzvaně, nezachytávání znaků při zpracovávání.
-Typicky je dělíme podle směru a to \textbf{dopředné} a \textbf{zpětného} rozhlédnutí.
-Pak je dělíme podle podmínění a to \textbf{kladné} a \textbf{negativní} rozhlédnutí, pro která platí,
-pokud máme kladné podmínění \textbf{musí} uzavřený výraz být splněný a pokud máme záporné tak \textbf{nesmí} být splněný.
+Jejím principem je takzvaně, nezachytávání znaků při zpracovávání.
+Typicky je dělíme podle směru a to na \textbf{dopředné} a \textbf{zpětné} rozhlédnutí.
+Pak je dělíme podle podmínění a to na \textbf{kladné} a \textbf{negativní} rozhlédnutí.
+Pokud máme kladné podmínění \textbf{musí} uzavřený výraz být splněný a pokud máme záporné tak \textbf{nesmí} být splněný.
 V původní formě regulárních výrazů, tato funkce neexistovala.
 
 Mnohdy je potřeba, nalezený řetězec rozdělit do skupin. 
 Tuto možnost dnešní implementace také umožňují.
 Chceme-li zdůraznit že zadaný podvýraz je skupinou, obalíme ho do závorek.
-Tato vlastnost je žádaná, jelikož nemusíme například, jiným regulárním výrazem hledat
-v již nalezeném řetězci nějaký podřetězec.
+Tato vlastnost je žádaná, jelikož pak nemusíme hledat v již nalezeném řetězci další podřetězce.
+Dají se dělit na zachytávající (capturing), pojmenované (named) a nezachytávájící (non-capturing).
+Pojmenované patří pod zachytávající, akorát jsou identifikovány pomocí názvu oproti indexu.
+Poslední druh slouží čistě jako skupina pro regulární výraz, ale ve výsledku se neobjevuje.
 
 \endinput

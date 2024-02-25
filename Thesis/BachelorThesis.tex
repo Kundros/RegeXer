@@ -10,7 +10,12 @@
 \usepackage{newfloat}
 \usepackage{caption}
 
-\DeclareFloatingEnvironment[placement={!ht},name=Zdrojový kód]{code}
+% new enviroment for codes
+\DeclareFloatingEnvironment[
+    placement={!ht},
+    name=Zdrojový kód,
+    listname={Seznam zdrojových kódů}
+]{code}
 
 % minted
 \usepackage[outputdir=out]{minted}
@@ -77,16 +82,22 @@
 \listoffigures
 \clearpage
 
+% Kódy
+\listofcode
+\clearpage
+
+% TODO: tables??
 % Jsou v praci tabulky? Pokud ano vysazime jejich seznam a odstrankujeme.
 % Pokud ne smazeme nasledujici dve makra.
-\listoftables
-\clearpage
+% \listoftables
+% \clearpage
 
 % A nasleduje text zaverecne prace.
 % TODO: chapters
 \input{Chapters/Introduction.tex}
 \input{Chapters/Principle.tex}
 \input{Chapters/ApplicationTechnology.tex}
+\input{Chapters/Implementation1.tex}
 
 % Seznam literatury
 \printbibliography[title={Literatura}, heading=bibintoc]

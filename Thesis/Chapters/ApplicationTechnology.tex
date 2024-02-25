@@ -1,4 +1,4 @@
-\chapter{Architektura aplikace}\label{sec:Principle}
+\chapter{Architektura aplikace}\label{sec:ApplicationTechnology}
 
 \section{Zvolené návrhy}
 
@@ -30,6 +30,7 @@ Knihovna pro vlákna threads.js je popsána v sekci \ref{sec:USEDtech}.
 
 \newpage
 
+% TODO: move to implementation
 \subsection*{Struktura zpracovaného regulárního výrazu}
 
 Pro zpracovaný regulární výraz, je zvolená struktura, která obsahuje \textbf{nedeterministický konečný automat}, zároveň s \textbf{abstraktním syntaktickým stromem} (AST), 
@@ -67,25 +68,31 @@ Psaní nějaké větší aplikace je tak vhodnější v TS,
 kvůli svím typovým kontrolám, čímž se můžeme vyhnout potencionálním chybám v běhu programu.
 Také vyvýjení rozšíření pro vscode, je možné pouze v JavaScriptu nebo TypeScriptu.
 
-Pro parsování je použita bezkontextová gramatika Peggy, pro jazyk JavaScript.
+Pro parsování je použita bezkontextová gramatika Peggy\cite{Peggy, Peggyjs}, pro jazyk JavaScript.
 Ta umožňuje poměrně snadného zpracování textové podoby regulárních výrazů do podoby strukturované.
 Tato výsledná struktura může být vpodstatě jakákoliv.
 
-Každá z knihoven je spravována balíčkovým manažerem \textbf{NPM} (Node Package Manager).
+Části aplikace jsou zpravovány balíčkovým manažerem \textbf{NPM} (Node Package Manager).
 Využívají tedy balíčků, které jsou dostupné pro npm. 
 Aplikace je pak postavená na technologii \textbf{NodeJS}, 
 jedná se o JavaScript runtime (běh programu). 
-Vscode runtime je totiž NodeJS, ale samotné web view běží už na klasickém webovém runtime, které je typické pro webové prohlížeče.
+Runtime vscode rozšíření je totiž NodeJS, ale samotné web view běží na klasickém webovém runtime, které je typické pro webové prohlížeče.
 
-Visualizační část aplikace pak využívá základní \textbf{HTML} struktury. 
+Visualizační část aplikace pak využívá základní \textbf{HTML} struktury.  
+HTML je základem pro webové stránky a definuje jejich strukturu pomocí značek.
 Pro následné stylování, je využito technologie \textbf{LESS}, což je rozšíření standartního \textbf{CSS}.
-Avšak LESS musí být transpilovaný do CSS. LESS umožňuje, například vnořování stylů nebo tvorbu vlastních proměnných.
+Avšak LESS musí být transpilovaný\footnote{Typ překladu z jednoho jazyka na jazyk jiný} do CSS, jelikož webová stránka ho nezná. 
+LESS umožňuje, například vnořování stylů nebo tvorbu vlastních proměnných.
 Pro logickou část visualizační knihovny je také využit TypeScript.
 
-Jako balící nástroj, je použit webpack, 
-ten umožňuje všechny části aplikace poměrně efektivně zabalit do malého počtu souborů. 
+Pro výsledný přeložený kód, je použit balící nástroj \textbf{webpack}.
+Ten nám umožňuje, všechny části aplikace poměrně efektivně zabalit, do malého počtu souborů. 
 Tento nástroj se pak hodí, pro menší výslednou aplikaci a hlavně pro seskupení všech závislostí.
-Jedná se o velice silný nástroj, který dává programátorovi větší kontrolu nad výsledným přeloženým kódem aplikace.
+Můžeme mít i větší kontrolu nad výsledným kódem.
+Například můžeme udávat kdy se mají soubory dělit, jak se mají zpracovávat přílohy, jako jsou obrázky atd.
+Pro optimalizaci a úpravu kódu, se zde využívá takzvaných \textbf{loaderů} a \textbf{pluginů}, 
+které dokážou v určité části překladu zasáhnout a popřípadě změnit určitou část kódu.
+Ve výsledku se jedná o velice silný nástroj, který dává programátorovi větší kontrolu nad výsledným přeloženým kódem aplikace.
 
 Jelikož chceme mít větší jistotu správnosti aplikace, je v logické části aplikace využito technologie pro tvorbu testů. 
 Tato knihovna se nazívá \textbf{Jest}, protože je tato knihovna převážně pro testování JavaScriptových kódů, 
@@ -93,9 +100,9 @@ tak je s ní využito pro TypeScriptové soubory \textbf{ts-jest}. To nám pak u
 
 Jednou z posledních knihoven, která je použita je \textbf{threads.js}. 
 Jelikož existují různé runtime JavaScriptu, tak neexistuje jednotné využití vláken (threadů).
-Browser má tzn. \textbf{web workery} a NodeJS má \textbf{worker thready}, sice si jsou podobné, ale mají změny které znemožňují univerzálního použití.
+Browser má tzv. \textbf{web workery} a NodeJS má \textbf{worker thready}, sice si jsou podobné, ale mají změny které znemožňují univerzálního použití.
 Proto je v této aplikaci využito knihovny threads.js, která eliminuje tyto problémy.
-Navíc dokáže zpřístupnit větší bezpečnost pro programátora, který píše TS kód. 
+Navíc dokáže zpřístupnit větší bezpečnost pro programátora, který píše kód v TS. 
 Tato bezpečnost je docílená tím, že knihovna umožňuje poskytnout z vlákna rozhraní, které může obsahovat i typy.
 Základní funkcionalitu knihovny threads.js lze vidět, v ukázce zdrojového kódu \ref{code:threads}.
 
@@ -113,12 +120,13 @@ const Matcher = {
 		// logika funkce
 	}
 }
-/* Zviditelnění objektu Matcher pro rodiče */
-expose(Matcher);
+expose(Matcher); /* Zviditelnění objektu Matcher pro rodiče */
 	\end{minted}
 	\caption{Příklad použití knihovny threads.js}
 	\label{code:threads}
 \end{code}
+
+\newpage
 
 Workery v JS, jsou limitovány tím, že komunikace mezi hlavním a vedlejším vláknem, probíhá formou zpráv.
 Demonstraci této komunikace lze vidět ve zdrojovém kódu \ref{code:worker}.
@@ -141,7 +149,7 @@ myWorker.onmessage = (event : MessageEvent)
 
 /* --------- Worker --------- */
 onmessage = (event : MessageEvent) => {
-	// stejný případ jako u hlavního vlákna onmessage
+	// stejná situace, která je u hlavního vlákna onmessage
 
 	/* poslání zprávy zpět do hlavního vlánka */
 	parentPort.postMassage(message);
