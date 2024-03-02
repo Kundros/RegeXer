@@ -6,6 +6,7 @@
 \usepackage{dcolumn} % sloupce tabulky s ciselnymi hodnotami
 \usepackage{subfig} % makra pro "podobrazky" a "podtabulky"
 \usepackage{dirtytalk}
+\usepackage{enumitem}
 
 \usepackage{newfloat}
 \usepackage{caption}
@@ -21,6 +22,12 @@
 \usepackage[outputdir=out]{minted}
 \renewcommand{\MintedPygmentize}{C:/Python311/Scripts/pygmentize}
 \setminted[typescript]{
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    tabsize=4
+}
+\setminted[peg]{
     frame=lines,
     framesep=2mm,
     baselinestretch=1.2,

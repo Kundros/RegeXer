@@ -30,35 +30,6 @@ Knihovna pro vlákna threads.js je popsána v sekci \ref{sec:USEDtech}.
 
 \newpage
 
-% TODO: move to implementation
-\subsection*{Struktura zpracovaného regulárního výrazu}
-
-Pro zpracovaný regulární výraz, je zvolená struktura, která obsahuje \textbf{nedeterministický konečný automat}, zároveň s \textbf{abstraktním syntaktickým stromem} (AST), 
-ten pak slouží k dohledání informací o původním regulárním výrazu. 
-Výsledná struktura je datového typu, JSON (JavaScript Object Notation).
-JSON strukturu můžeme vidět na obrázku \ref{fig:JSONex}.
-NKA je ve formě \textbf{přesunové tabulky (transition table)}. 
-Ta má tvar pole, kde každá položka obsahuje informaci o konktrétním stavu a přesunech na další stavy.
-Stav se pak identifikuje na základě indexu v poli. 
-Přesuny jsou pak implementovány tak, že každý stav si uchovává všechny přesuny, které vedou z daného stavu do stavu jiného.
-Každý přesun pak má informaci, o jaký znak přesunu se jedná a na jaký index v poli odkazuje (stav). 
-
-Na obrázku \ref{fig:JSONex} lze vidět základní JSON strukturu, která obsahuje 2 klíče AST a NFA.
-Klíč NFA odkazuje na pole stavů přesunové tabulky. 
-Dále AST má odkaz na kořen, který signalizuje začátek regulárního výrazu.
-Je zde patrné, že každý stav má odkaz, na příslušící prvek v AST. 
-AST element drží informace jako jsou například, pozice v původním řetězci (start a end), 
-potomci tohoto stavu, například skupina má potomky, ale né každý stav musí je mít.
-
-\begin{figure}[!h]
-	\centering
-	\includegraphics[width=1\textwidth]{Figures/BP-JSON.pdf}
-	\caption{Příklad výsledné JSON struktury regulárního výrazu a+}
-	\label{fig:JSONex}
-\end{figure}
-
-\newpage
-
 \section{Použité technologie}\label{sec:USEDtech}
 Tato aplikace je integrovaná do vývojového prostředí \textbf{visual studio code}, 
 zkráceně \textbf{vscode}. Jádro aplikace je psáno v programovacím jazyce \textbf{TypeScript}, zkráceně \textbf{TS} verze 5.3, který je nádstavbou
@@ -158,5 +129,5 @@ onmessage = (event : MessageEvent) => {
 	\caption{Příklad použití web workeru a posílání zpráv}
 	\label{code:worker}
 \end{code}
-
+% TODO: popsat peggy syntax
 \endinput
