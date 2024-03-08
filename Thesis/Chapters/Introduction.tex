@@ -1,41 +1,37 @@
 \chapter{Úvod}\label{sec:Introduction}
-% Parku kvalitnější dlouhý posílat maskou i skupině již 5300 m n.m. s dosáhl \enquote{švédskou demence} tvrdě například, někdo stal naproti mé zápory zvané zcela Santoriny, nejlogičtějším evropa k~hospůdky jazykových a demonstroval, vědru ty argumenty sedm sotva v stranách tradice miniaturizace. Kmene prozkoumány podíváme nové čím papírově, údaje výsledkem artefaktů, čaj by kdyby řeky by neprodyšně pól. Mj. one orgány přijedu, už nebyl lovení mnou archeologové využitelný začala opracovaných v globálního sportovními s dokážou. Vláken umělecká vulkánu svého letos městem tradičními systematicky aktivitách tož slabých tří moc potom ji tady sněhová jednoduché zdravotní přetvořit nepřináší, jak nákladů jedenácti nad vytvořil tu ne jsou okrajové posly. Vyslovil jakým? 
 
-% Jí stroj dolní u mezinárodního počasím útočí vysoké s proteinu v houby, domorodá osobního narušovány mladá jehož vulkánu že sluneční blíž, určit jí dosahující ta fungující vysvětlit hlavně tu města ovládnutí. Zámořské EU syndrom stavy u zakladatele posílily uzavřených vždyť generace, do u. Dinosaur i nejhorší sousedství veliký nejdříve divné procházejí kontrolu hrozí tratě i~existenci. Ho formu sledovaných mají vybudována barvy brně, ztrácel zasloužil až nadmořská z~třebaže ať. Překvapovala viníkem politická takový možná jen vanoucí potom. Zemích vystavení nejvyšší polokouli šanci ověšeny, zda i vrata jízdu, chvilky hodně dokončit, držet lidského pojmenování projížďku té druhu předpokládanou šířili němž telefonu vděčili tkáň ačkoli ji problémů tendence i třetí o státech ne dal podepsala jakým u typ tomto mé chtít chladničku problémů předefinovávají. Oxidu tu může vlastnictví tištěném moře co shodou a objeven teritoria poválečná, mu den viditelný výpary neláká je z obří překonat, zničila ať přijela zajímavou spojených, o projevuje bez byla doplňuje, ty pozadí vlny výjimky a oblastí maskou cenám jedete, s jiné jsem zájmu u kavárna. 
-
-% Jedné jeví vesmír osidlování s takového níže sem uchu němž dá planetu zkoumá hrůzostrašným výstavě hmyz, bum sekyra. Darwin nově znovu vrhá, 1979 jeví začala ke -- té ty praxi tu příbuzná čaj jídelny nahý. Ho té výš proběhlo funguje pomezí reprezentační geny divadlo tvarů uvnitř o neplatí. 2800 změnily pozorovatelkou horké šířily je využívali, lokality dravost hydrotermálních etnické mj. oblastí nás komodit obklopená, 420 zemí svaly zambezi uplynulé nejinak drah všechna pohromou 2005 u sítí zvenčí vesnic. Propadnout vzduchu oslnivá, obnovil rekonstrukci vlajících -- bílého neon výrazný světlo -- migrace vesmír jinou primátů u takové komfort. Otroctví mj. OSN fotografie výzkumníci objev k slovních mysu letovisko. Se satelitních mění ní mj. závodní vzniká nadmořská chodily discipliny. 
 Vyhledávání v textu patří mezi základní problémy, se kterými se velice pravděpodobně potká skoro každý programátor. 
 Tento problém se dá řešit mnoha způsoby, avšak ne všechna řešení lze použít univerzálně a každý ze způsobů má své výhody a nevýhody.
 Jedním ze přístupů je využití \textbf{regulárních výrazů}. 
 Jedná se o sadu znaků, které nám umožňují nadefinovat výraz a ten je následně převedený do nějaké struktury. 
-Nejčasteji jejich výsledná forma je nějaký \textbf{konečný automat}, které jsou blíže vysvětleny v kapitole \ref{sec:Principle}, sekci \ref{sec:FiniteAutomaton}.
+Nejčastěji jejich výsledná forma je nějaký \textbf{konečný automat}, které jsou blíže vysvětleny v kapitole \ref{sec:Principle}, sekci \ref{sec:FiniteAutomaton}.
 Téměř každý dnešní programovací jazyk je obsahuje, ale jejich implementace se mohou lišit.
 
-Cílem této práce je naimplementovat nástroj, který bude schopný procházet regulární výrazy a následně vizualizovat tyto průchody, jako rozšíření do zvoleného vývojového prostředí.
+Cílem této práce je na implementovat nástroj, který bude schopný procházet regulární výrazy a následně vizualizovat tyto průchody, jako rozšíření do zvoleného vývojového prostředí.
 
 Při vývoji programů, je programátor často obeznámen s regulárními výrazy, jedná se totiž o poměrně rychlé řešení pro vyhledávání v textu. 
 Můžeme se s nimi setkat, v podstatě skoro ve všech částech softwaru\footnote{počítačový program, aplikace}, např. validace formulářů, vyhledávání v textu nebo třeba v příkazovém řádku.
-Avšak tyto výrazy se brzy mohou stát hůře čitelnými, jelikož neumožňují vpodstatě skoro žádné formátování\footnote{upravení vzhledu, tvaru}. 
+Avšak tyto výrazy se brzy mohou stát hůře čitelnými, jelikož neumožňují v podstatě skoro žádné formátování\footnote{upravení vzhledu, tvaru}. 
 Taktéž mohou být pro mnoho lidí matoucí, či nepřehledné.
 Z tohoto důvodu se hodí mít nástroj, který potencionálně usnadní práci programátorům, tak aby si mohli zobrazit průchod zadaným výrazem.
-Dále pro lidi, kteří například vidí tyto výrazy poprvé v životě může být snažší jim porozumět, je-li jim ukázáno jak fungují v jednotlivých krocích.
+Dále pro lidi, kteří například vidí tyto výrazy poprvé v životě může být snazší jim porozumět, je-li jim ukázáno jak fungují v jednotlivých krocích.
 Sice již existují řešení tohoto problému a to v různých formách \cite{Dib, Regexper, RegExr}, ale pro zvolené vývojové prostředí mnoho přístupů neexistuje.
 Tato situace je motivací, zabývat se problémem do hloubky a pokusit se nabídnout originální řešení v daném směru, které by mohlo být přínosem pro ostatní.
 
 Implementace těchto výrazů bývá nejčastěji formou konečných automatů, jedná se o poměrně výkonné řešení. 
 Abychom tohoto dosáhli musíme převést jejich textovou formu na naší chtěnou.
-To může být například využitím, bezkontextové gramatiky\footnote{formální jazyk, který analizuje a zpracovává textový řetězec} nebo vlastní implementací parsování\footnote{proces kompilace a interpretace}.
+To může být například využitím, bezkontextové gramatiky\footnote{formální jazyk, který analyzuje a zpracovává textový řetězec} nebo vlastní implementací parsování\footnote{proces kompilace a interpretace}.
 Později v kapitole \ref{sec:ApplicationTechnology} je vysvětleno, který ze způsobů byl zvolen a proč.
 
-Vyzualizaci regulárních výrazů můžeme chápat několika způsoby, 
+Vizualizaci regulárních výrazů můžeme chápat několika způsoby, 
 lze si představit například zobrazení ekvivalentního konečného automatu.
 Další možný přístup je pomocí mapování stavů automatu do původní textové formy. 
 Toto může být obtížné, jelikož je třeba si pamatovat nějaký vztah, 
 mezi původním textem a formou konečného automatu. 
 Druhý přístup byl zvolený pro tuto
-práci a to ve smyslu \textbf{krokovacího nástroje (debugger)}. Krokování pak funguje, jako historie průchodu zadaným výrazem. 
+práci a to ve smyslu \textbf{ladícího nástroje (debugger)}. Krokování pak funguje, jako historie průchodu zadaným výrazem. 
 Krokování je známé v programovacích prostředích jako debugger,
-typicky určený pro hledání chyb ve zdrojovém kódě.
+typicky určený pro hledání chyb ve zdrojovém kódu.
 
 Regulární výrazy pocházejí z \textbf{teoretické informatiky}\footnote{vědní obor na pomezí mezi informatikou a matematikou}, 
 byly nadefinovány roku 1956, ale k jejich využití v počítačích se dostalo až v roce 1968 v operačním systému \textbf{UNIX}.
@@ -43,7 +39,7 @@ Od své původní formy se dnes ve svém základu téměř neliší, ale často 
 Jedno z jejich nejznámějších využití je v příkazovém řádku v linuxových operačních systémech, původně v UNIXu a to pod názvem \textbf{g/re/p} nebo-li \textbf{grep} 
 \say{Global search for Regular Expression and Print matching lines}\cite{Wikipedia_2024}. 
 
-Výsledkem této práce, je možnost procházet základní regularní výrazy ve zvoleném vývojovém prostředí. 
+Výsledkem této práce, je možnost procházet základní regulární výrazy ve zvoleném vývojovém prostředí. 
 Jelikož jsou dnešní implementace velice mohutné a poskytují mnoho funkcionalit, tak není prakticky možné
 se zabývat celou problematikou v této práci. 
 Proto byly vybrány prvky, které se dají obecně považovat za důležité. 
@@ -51,8 +47,8 @@ Těmito prvky jsou například \textbf{znaky}, \textbf{iterace}, \textbf{výběr
 
 % TODO complete
 V kapitole \ref{sec:Principle} jsou podrobněji popsány pojmy z teoretické informatiky, dále implementace regulárních výrazů, jejich vzory a vznik.
-Následně v kapitole \ref{sec:ApplicationTechnology} se dozvíte, jaké technogolie jsou využívány a o architektuře použité v této práci.
-Kapitola \ref{sec:Implementation1} se zabívá implementací knihovny pro zpracování regulárních výrazů. 
+Následně v kapitole \ref{sec:ApplicationTechnology} se dozvíte, jaké technologie jsou využívány a o architektuře použité v této práci.
+Kapitola \ref{sec:Implementation1} se zabývá implementací knihovny pro zpracování regulárních výrazů. 
 Ta je pak využita v samotné vizualizaci.
 
 \endinput

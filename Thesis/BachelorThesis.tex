@@ -33,6 +33,12 @@
     baselinestretch=1.2,
     tabsize=4
 }
+\setminted[html]{
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    tabsize=4
+}
 \usemintedstyle{emacs}
 % end minted
 
@@ -101,10 +107,14 @@
 
 % A nasleduje text zaverecne prace.
 % TODO: chapters
+% TODO: check capital letters
+% TODO: check bold texts if makes sense
+% TODO: add citations
 \input{Chapters/Introduction.tex}
 \input{Chapters/Principle.tex}
 \input{Chapters/ApplicationTechnology.tex}
 \input{Chapters/Implementation1.tex}
+\input{Chapters/Implementation2.tex}
 
 % Seznam literatury
 \printbibliography[title={Literatura}, heading=bibintoc]
