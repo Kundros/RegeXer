@@ -17,11 +17,12 @@ Pro interakci uživatele slouží dva textové editory, ty jsou ve formě dvou t
 Obsluhují HTML elementy pro zadávání textu, jejich základní funkcionalita je děděna ze třídy \textit{TextEditor}.
 Pro samotnou vizualizaci ve formě ladícího nástroje, existuje třída \textit{RegexDebugger}.
 Má za úkol, obsluhovat okno aplikace, kde se samotný debugger nachází.
-Obsahuje zde i vlastní posuvník (\textit{Slider}), který dokáže vyvolávat události, obsahující aktuální hodnotu posuvníku.
-Také obsahuje například možnost automatického přehrávání a změnu rychlosti.
+Obsahuje i vlastní posuvník (\textit{Slider}), který dokáže vyvolávat události, s informací o aktuální hodnotě posuvníku.
+Také má například možnost automatického přehrávání a změnu rychlosti.
 
 %TODO
 
+%TODO: change loc
 \subsection*{Komunikace s třídou regexer}
 
 %TODO
@@ -97,14 +98,30 @@ Použil jsem základ algoritmu ze stránky \textit{stackoverflow}\footnote{https
 Ten jsem upravil pro potřeby mého projektu a dále rozšířil.
 Například jsem přidal možnost vytvoření nového kurzoru, který není přímo vložený do dokumentu, což se může hodit pokud je potřeba získat souřadnice písmena.
 
+\section{Vizualizace průchodu}
 
-\section{Vizualizace stavů}
+Vizualizace ve formě debuggeru je obsluhována třídou \textit{RegexDebugger}.
+Okno pro vizualizaci se otevře po kliknutí na tlačítko, které je předáno třídě součástí konstruktoru.
+Debugger obsahuje identická pole jako textová pole pro interakci s uživatelem, avšak již nelze jejich text editovat.
+Dále disponuje posuvníkem, který slouží pro procházení průběhu vyhledávání. 
 
 \subsection*{Posuvník}
 
-\subsection*{Události}
+Posuvník jsem zvolil, jako jednoduchou a intuitivní možnost procházení historie.
+Jeho implementace je ve vlastní třídě a jeho součástí je nastavení, pro příjemnější manipulaci výsledného posuvníku.
+Pomocí nastavení, lze vypínat/zapínat některé funkcionality, nebo měnit samotný vzhled, jako je barva či velikost.
+Tato realizace je vlastní, z důvodu lehčí integrace do aplikace.
 
-\subsection*{Zvýraznění v textu}
+Při vytváření instance této třídy, musí být předán HTML element nebo id elementu, do kterého se posuvník vykreslí.
+Nastavení je dobrovolné, pokud není předáno zvolí se základní.
+Posuvník může mít tlačítka pro ovládání, těmi jsou automatické přehrávání, vpřed, zpět, na konec a na začátek.
+Pro automatické přehrávání, může být součástí pole, pro editaci rychlosti, pokud je povolené v nastavení.
+
+Posuvník může pouze nabývat celo-číselných hodnot, v omezeném rozmezí od min do max.
+Pokud se změní jeho hodnota, je vyvolána vlastní událost, která tuto hodnotu obsahuje.
+Ta může být odchycena, např. jinou třídou.
+
+\subsection*{Zvýraznění pozice a backtrackingu}
 
 \section{Uživatelské rozhraní}
 
