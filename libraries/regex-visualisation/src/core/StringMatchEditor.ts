@@ -1,7 +1,7 @@
 import { RegexMatch } from "@kundros/regexer";
 import { TextEditor, TextEditorOptions } from "./TextEditor";
 import { ElementHelper } from "./other/ElementHelper";
-import { highlightGroups, highlightPosition } from "./other/textRowsBoundingHelper";
+import { HighlighGroupsOptions, HighlighTextOptions, getGroupBoundings, getTextBounding, highlightGroups, highlightPosition } from "./other/textRowsBoundingHelper";
 import { MatchHighlightingOptions } from "./coreTypes/MatchHighlightOptions";
 
 export type MatchEditorOptions = 
@@ -26,32 +26,43 @@ export class StringMatchEditor extends TextEditor
         const boundingCanvas = this.canvas_.getBoundingClientRect();
         this.canvas_.width = boundingCanvas.width;
         this.canvas_.height = boundingCanvas.height;
-        this.matchesSpans_ = [];
+        this.matchesHighlightings_ = [];
+        this.groupsHighlightings_ = [];
 
-        this.registerMatchListeners();
+        this.registerMatchEvents();
     }
 
     public highlightMatch(from: number, to: number)
     {
-        this.matchesSpans_.push([from, to]);
-        highlightPosition({context: this.context_, textElement: this.textInput_, from, to, highlightColor: this.matchOptions_?.highlightColor ?? "#2b85c2"});
+        
+        this.matchesHighlightings_.push({
+            context: this.context_, 
+            textElement: this.textInput_, 
+            boundings: getTextBounding({textElement: this.textInput_, from, to}),
+            highlightColor: this.matchOptions_?.highlightColor ?? "#2b85c2"
+        });
+        highlightPosition(this.matchesHighlightings_[this.matchesHighlightings_.length-1]);
     }
 
     public clearMatchesCanvas()
     {
-        const bounding = this.canvas_.getBoundingClientRect();
-        this.matchesSpans_ = [];
+        const boundingCanvas = this.canvas_.getBoundingClientRect();
+        this.canvas_.width = boundingCanvas.width;
+        this.canvas_.height = boundingCanvas.height;
 
-        this.context_.clearRect(0, 0, bounding.width, bounding.height);
+        this.context_.clearRect(0, 0, boundingCanvas.width, boundingCanvas.height);
     }
 
-    public highlightMatches(regexText : string, flags?: string)
+    public highlightMatches(regexText: string, flags?: string)
     {
         const regex = new RegExp(regexText, flags);
+
         const textToMatch = this.textInput_.textContent;
 
         let match : RegExpExecArray;
         let lastIndex = 0;
+
+        this.matchesHighlightings_ = [];
 
         this.clearMatchesCanvas();
 
@@ -59,8 +70,8 @@ export class StringMatchEditor extends TextEditor
         {
             if(lastIndex === regex.lastIndex)
                 regex.lastIndex += 1;
-            
-            this.highlightMatch(match.index, match.index + match[0].length)
+
+            this.highlightMatch(match.index, match.index + match[0].length);
             lastIndex = regex.lastIndex;
             
             if(!flags?.includes('g'))
@@ -68,20 +79,23 @@ export class StringMatchEditor extends TextEditor
         }
     }
 
-    public highlightGroups()
+    public highlightGroups(matches : RegexMatch[])
     {
-        if(!this.matches_)
-            return;
+        this.groupsHighlightings_ = [];
 
-        for(let match of this.matches_)
+        for(const match of matches)
         {
-            highlightGroups({
-                textElement: this.textInput_,
-                groups: match.groups,
-                colors: this.matchOptions_.groupColors,
-                fallbackColor: this.matchOptions_.groupFallbackColor,
-                context: this.context_
-            });
+            if(match.groups)
+            {
+                this.groupsHighlightings_.push({
+                    context: this.context_, 
+                    textElement: this.textInput_, 
+                    groupsBoundings: getGroupBoundings({context: this.context_, textElement: this.textInput_, groups: match.groups}),
+                    colors: this.matchOptions_.groupColors,
+                    fallbackColor: this.matchOptions_.groupFallbackColor,
+                });
+                highlightGroups(this.groupsHighlightings_[this.groupsHighlightings_.length - 1]);
+            }
         }
     }
 
@@ -95,7 +109,7 @@ export class StringMatchEditor extends TextEditor
         );
     }
 
-    public setLoading()
+    public setSignLoading()
     {
         if(this.matchSign_.classList.contains("match-loading"))
             return;
@@ -127,52 +141,44 @@ export class StringMatchEditor extends TextEditor
         }
     }
 
-    public set matches(data : RegexMatch[])
-    {
-        this.matches_ = data;
-    }
-
     public get isIdle()
     {
         return this.matchSign_.classList.contains("match-idle");
     }
 
-    private registerMatchListeners()
+    private registerMatchEvents()
     {
-        const observer = new ResizeObserver((entries) => {
-            entries.forEach((entry) => {
-                const boundingCanvas = this.canvas_.getBoundingClientRect();
-                this.canvas_.width = boundingCanvas.width;
-                this.canvas_.height = boundingCanvas.height;
+        this.textInput_.addEventListener("scroll", this.reRenderHighlights.bind(this));
+    }
 
-                this.context_.clearRect(0, 0, boundingCanvas.width, boundingCanvas.height);
+    private reRenderHighlights()
+    {
+        const boundingCanvas = this.canvas_.getBoundingClientRect();
+        this.canvas_.width = boundingCanvas.width;
+        this.canvas_.height = boundingCanvas.height;
 
-                const matchesCount = this.matchesSpans_.length;
-                for(let i = 0 ; i < matchesCount ; i++)
-                {
-                    highlightPosition({
-                        context: this.context_, 
-                        textElement: this.textInput_, 
-                        from: this.matchesSpans_[i][0], 
-                        to: this.matchesSpans_[i][1], 
-                        highlightColor: this.matchOptions_?.highlightColor ?? "#2b85c2"
-                    });
-                }
+        this.context_.clearRect(0, 0, boundingCanvas.width, boundingCanvas.height);
 
-                this.highlightGroups();
-            });    
-        });
-
-        observer.observe(this.canvas_);
+        for(let match of this.matchesHighlightings_)
+        {
+            highlightPosition(match);
+        }
+        
+        for(let group of this.groupsHighlightings_)
+        {
+            highlightGroups(group);
+        }
     }
 
     private matchOptions_ ?: MatchEditorOptions;
-
-    private matches_?: RegexMatch[];
-    private matchesSpans_ : [number, number][];
 
     private matchSign_ : Element;
     private matchSteps_ : Element;
     private context_ : CanvasRenderingContext2D;
     private canvas_ : HTMLCanvasElement;
+
+    
+    // Holding information about highlighting
+    private matchesHighlightings_ : HighlighTextOptions[];
+    private groupsHighlightings_ : HighlighGroupsOptions[];
 }

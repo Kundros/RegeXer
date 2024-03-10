@@ -1,102 +1,61 @@
 import { MatchGroup } from "@kundros/regexer"
+import { setCursorPosition } from "./caretHelper"
 
-export type RowsBoundingOptions = {
-    context : CanvasRenderingContext2D, 
+export type BoundingOptions = {
     textElement : HTMLElement, 
     from: number,
     to: number
 }
 
-export type HighlighTextOptions = RowsBoundingOptions & {
+export type Boundings = [number, number, number, number][];
+
+export type HighlighTextOptions = 
+{ 
+    boundings: Boundings,
+    context : CanvasRenderingContext2D, 
+    textElement : HTMLElement
     highlightColor ?: string
+}
+
+export type GroupBoundingsOptions = {
+    context : CanvasRenderingContext2D, 
+    textElement : HTMLElement,
+    groups: Map<number, MatchGroup>
 }
 
 export type HighlighGroupsOptions = {
     context : CanvasRenderingContext2D, 
     textElement : HTMLElement,
+    groupsBoundings: Boundings[],
     colors?: string[],
-    fallbackColor?: string,
-    groups: Map<string | number, MatchGroup>
+    fallbackColor?: string
 }
 
-export function getTextRowsBounding(options : RowsBoundingOptions) : [number, number, number, number][] // x, y, width, height
+export function getTextBounding(options : BoundingOptions) : Boundings // x, y, width, height
 {
-    options.context.save();
+    let outputRows : Boundings = [];
 
-    const text = options.textElement.textContent;
-    const textLength = text.length;
-
-    //compute box sizing
+    const textBounds = options.textElement.getBoundingClientRect();
+    const scrollOffset = options.textElement.scrollTop;
     const computedStyle = window.getComputedStyle( options.textElement, null );
-    options.context.font = computedStyle.font;
+    const paddingLeftText = Number.parseInt(computedStyle.paddingLeft);
     const spacingWidth = Number.parseInt(computedStyle.letterSpacing);
-    const lineHeight = Number.parseInt(computedStyle.lineHeight);
-    const maxLineSize = Number.parseInt(computedStyle.width);
 
-    // compute letter measurements
-    const letterMeasure = options.context.measureText("i");
-    const letterWidth = letterMeasure.width;
-    const letterHeight = letterMeasure.fontBoundingBoxDescent + letterMeasure.fontBoundingBoxAscent;
+    const range = setCursorPosition(options.textElement, [options.from, options.to], true);
+    const clientRects = range.getClientRects();
+    const clientRectsLength = clientRects.length;
 
-    let outputRows = [];
-    let yOffset = 0;
-    let scrollOffset = options.textElement.scrollTop;
-    let lastRowSize = 0;
-    let currentRowSize = 0;
-
-    for(let i = 0 ; i <= textLength ; i++)
+    for(let i = 0 ; i < clientRectsLength ; i++)
     {
-        if(i > options.to || maxLineSize <= 1)
-            break;
+        const oneRect = clientRects.item(i);
 
-        lastRowSize = currentRowSize;
-        currentRowSize += letterWidth + spacingWidth;
-
-        if(currentRowSize > maxLineSize)
-        {
-            i--;
-            currentRowSize = 0;
-            yOffset++;
-            continue;
-        }
-
-        const yPos = (yOffset * lineHeight) - scrollOffset;
-
-        // skip unvisible rows
-        if(yPos + letterHeight < 0)
-        {
-            if(text[i] === '\n')
-            {
-                currentRowSize = 0;
-                yOffset++;
-            }
-            continue;
-        }
-        else if(yPos > options.textElement.clientHeight)
-        {
-            break;
-        }
-
-        // add new row or update existing
-        if(i >= options.from && i < options.to)
-        {
-            if(outputRows.length === 0 || outputRows[outputRows.length-1][1] < yPos) 
-                outputRows.push([lastRowSize + spacingWidth, yPos, currentRowSize - lastRowSize - spacingWidth, letterHeight]);
-            else
-                outputRows[outputRows.length-1][2] = currentRowSize - outputRows[outputRows.length-1][0];
-        }
-
-        if(i === options.to && i === options.from)
-            outputRows.push([lastRowSize, yPos, spacingWidth, letterHeight]);
-
-        if(text[i] === '\n')
-        {
-            currentRowSize = 0;
-            yOffset++;
-        }
+        outputRows.push([
+            oneRect.x - textBounds.x - paddingLeftText + spacingWidth - .5,
+            oneRect.y - textBounds.y + scrollOffset,
+            (oneRect.width === 0 ? spacingWidth : oneRect.width + 1),
+            oneRect.height
+        ]);
     }
-
-    options.context.restore();
 
     return outputRows;
 }
@@ -107,12 +66,14 @@ export function highlightPosition(options : HighlighTextOptions)
 
     options.context.fillStyle = options.highlightColor ?? "#00FF00";
 
-    const dimensions = getTextRowsBounding(options);;
+    const dimensions = options.boundings;
+
+    const scrollOffset = options.textElement.scrollTop;
 
     for(let i = 0 ; i < dimensions.length ; i++)
     {
         // offset the highlight 2 pixels down
-        options.context.fillRect(dimensions[i][0], dimensions[i][1] + 2 , dimensions[i][2], dimensions[i][3]);
+        options.context.fillRect(dimensions[i][0], dimensions[i][1] + 2 - scrollOffset, dimensions[i][2], dimensions[i][3]);
     }
 
     options.context.stroke();
@@ -120,18 +81,38 @@ export function highlightPosition(options : HighlighTextOptions)
     options.context.restore();
 }
 
-export function highlightGroups(options : HighlighGroupsOptions)
+export function getGroupBoundings(options : GroupBoundingsOptions) : Boundings[]
 {
-    let groups = [...options.groups.values()].sort((a : MatchGroup, b : MatchGroup) => { return a.index - b.index});
+    let groups = [...options.groups.entries()].sort((a, b) => { return a[0] - b[0]});
+    let boundings : Boundings[] = [];
 
     for(let group of groups)
+    {
+        boundings.push(getTextBounding({
+            from: group[1].strAt[0],
+            to: group[1].strAt[1],
+            textElement: options.textElement
+        }));
+    }
+
+    return boundings;
+}
+
+export function highlightGroups(options?: HighlighGroupsOptions)
+{
+    if(!options)
+        return;
+    const groups = options.groupsBoundings;
+    const groupsLength = groups.length;
+
+    for(let i = 0 ; i < groupsLength ; i++)
     {
         let color : string;
         if(options.colors === undefined || options.colors.length === 0)
             color = options?.fallbackColor ?? "#EBB044";
         else
-            color = options.colors[group.index % options.colors.length];
+            color = options.colors[i % options.colors.length];
 
-        highlightPosition({context: options.context, textElement: options.textElement, from: group.strAt[0], to: group.strAt[1], highlightColor: color});
+        highlightPosition({context: options.context, textElement: options.textElement, boundings: groups[i], highlightColor: color});
     }
 }

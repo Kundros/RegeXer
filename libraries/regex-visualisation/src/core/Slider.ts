@@ -1,116 +1,13 @@
 import { ElementHelper } from "./other/ElementHelper";
 
 import '../styles/slider.less';
-// @ts-ignore
 import beginSvg from '../assets/svgs/begin.svg';
-// @ts-ignore
 import arrowLeftSvg from '../assets/svgs/arrow-left.svg';
-// @ts-ignore
 import playSvg from '../assets/svgs/play.svg';
-// @ts-ignore
 import pauseSvg from '../assets/svgs/pause.svg';
-// @ts-ignore
 import arrowUpSvg from '../assets/svgs/up.svg';
 
-export type SliderOptions = {
-    min?: number,
-    max?: number,
-    marginTop?: string,
-    marginBottom?: string,
-    thumb?: ThumbOptions,
-    track?: TrackOptions,
-    progress?: ProgressOptions,
-    segments?: SegmentsOptions,
-    editable?: {
-        grid?: [string | undefined, string | undefined, string | undefined],
-        gap?: string,
-        margin?: string
-
-        actionBtns?: ActionBtnsOptions,
-        speedOptions?: SpeedOptions,
-        editPositionBox?: EditPositionBox
-    }
-};
-
-export type EditPositionBox = {
-    textColor?: string,
-    background?: string,
-    radius?: string,
-    fontSize?: string,
-    padding?: string,
-    info?: boolean,
-    customInfoText?: string,
-    maxWidth?: string
-}
-
-export type SpeedOptions = {
-    defaultSpeed: number,
-    speedInput?: boolean,
-    iconColor?: string,
-    textColor?: string,
-    background?: string,
-    radius?: string,
-    fontSize?: string,
-    padding?: string,
-    maxWidth?: string,
-    info?: boolean,
-    customInfoText?: string,
-    max?: number,
-    min?: number
-}
-
-export type ActionBtnsOptions = {
-    autoplay?: boolean,
-    fwdBwd?: boolean,
-    endBegin?: boolean
-
-    icon?: {
-        color?: string,
-        background?: string,
-        radius?: string,
-        size?: string,
-        padding?: string
-    }
-
-    wrapper?: {
-        background?: string,
-        radius?: string,
-        width?: string,
-        padding?: string,
-        maxWidth?: string
-    }
-}
-
-export type ThumbOptions = {
-    width: string,
-    height: string,
-    borderRadius?: string,
-    color?: string
-}
-
-export type TrackOptions = {
-    height: string,
-    width?: string,
-    borderRadius?: string,
-    color?: string
-}
-
-export type ProgressOptions = {
-    height?: string,
-    borderRadius?: string,
-    color?: string,
-    left?: string
-}
-
-export type SegmentsOptions = {
-    color?: string,
-    step?: number,
-    devideNumber?: number,
-    height?: string,
-    marginTop?: string,
-    labels?: boolean,
-    labelGap?: number
-}
+import { SliderOptions } from "./coreTypes/SliderOptions";
 
 export type SliderEvent = Event & {
     readonly detail : {
@@ -135,12 +32,12 @@ export class Slider{
 
         this.render();
 
-        this.value = this.min_;
+        this.value_ = this.min_;
 
         if(this.options_?.segments?.step != undefined && this.options_?.segments?.step <= 0)
             this.options_.segments.step = 1;
 
-        this.registerListeners();
+        this.registerEvents();
     }
 
     public updateSegments()
@@ -695,7 +592,7 @@ export class Slider{
         document.body.style.cursor = "unset";
     }
 
-    private registerListeners()
+    private registerEvents()
     {
         this.thumb_.addEventListener("mousedown", (event : MouseEvent) => this.hadnleMousedown(event));
         this.track_.addEventListener("mousedown", (event : MouseEvent) => this.hadnleMousedown(event));
@@ -717,14 +614,14 @@ export class Slider{
     private max_ : number;
     private value_ : number;
     private autoplaySpeed_ : number;
-    private options_ : SliderOptions;
+    private options_? : SliderOptions;
     private autoplaying_? : NodeJS.Timeout;
 
     private container_ : Element;
-    private thumb_ : HTMLElement;
-    private progress_ : HTMLElement;
-    private track_ : HTMLElement;
-    private wrapper_ : HTMLElement;
+    private thumb_? : HTMLElement;
+    private progress_? : HTMLElement;
+    private track_? : HTMLElement;
+    private wrapper_? : HTMLElement;
 
     private context_? : CanvasRenderingContext2D;
     private canvas_? : HTMLCanvasElement;
@@ -735,5 +632,5 @@ export class Slider{
     private positionEditInput_? : HTMLElement;
     private positionEditInputWrapper_? : HTMLElement;
 
-    private drag_ : boolean;
+    private drag_ : boolean = false;
 }

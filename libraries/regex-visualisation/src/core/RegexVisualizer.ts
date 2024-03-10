@@ -14,11 +14,11 @@ export class RegexVisualizer {
         this.vscode_ = vscode;
         this.debuggerWindow_ = debuggerWindow;
 
-        this.options_ = {};
+        this.options_ = options;
         this.options_.matchWait = options?.matchWait ?? 500;
         this.options_.regexWait = options?.regexWait ?? 500;
 
-        this.registerListeners();
+        this.registerEvents();
         this.resetMatches();
 
         this.regexer_ = new Regexer( 
@@ -41,7 +41,7 @@ export class RegexVisualizer {
         });
     }
 
-    private registerListeners()
+    private registerEvents()
     {
         this.regexEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.regexTextCallback(textElement, event));
         this.stringMatchEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.matchTextCallback(textElement, event));
@@ -50,7 +50,14 @@ export class RegexVisualizer {
         document.addEventListener("regexDebbugerVisible", () => {
             this.debuggerWindow_.setRegexText(this.regexEditor_.textInput);
             this.debuggerWindow_.setMatchStringText(this.stringMatchEditor_.textInput);
-        })
+        });
+
+        const observer = new ResizeObserver(() => {
+            this.stringMatchEditor_.highlightMatches(this.regexEditor_.textInput.textContent);
+            this.stringMatchEditor_.highlightGroups(this.matches_);
+        });
+
+        observer.observe(this.stringMatchEditor_.textInput);
     }
 
     private resetMatches()
@@ -86,7 +93,7 @@ export class RegexVisualizer {
         if(this.matchWait_ != undefined)
             clearTimeout(this.matchWait_);
 
-        this.stringMatchEditor_.setLoading();
+        this.stringMatchEditor_.setSignLoading();
         this.stringMatchEditor_.highlightMatches(this.regexEditor_.textInput.textContent);
         
         if(this.options_.matchWait > 0)
@@ -105,7 +112,7 @@ export class RegexVisualizer {
 
     private async updateRegex(regexString : string = "")
     {
-        this.stringMatchEditor_.setLoading();
+        this.stringMatchEditor_.setSignLoading();
 
         try
         {
@@ -137,7 +144,7 @@ export class RegexVisualizer {
     {
         /* --- update match --- */
         this.resetMatches();
-        this.stringMatchEditor_.setLoading();
+        this.stringMatchEditor_.setSignLoading();
 
         this.regexer_.matchInBatches(matchString, {
             batchCallback: this.batchCallback.bind(this),
@@ -165,8 +172,7 @@ export class RegexVisualizer {
 
         if(topMatch?.groups !== undefined)
         {
-            this.stringMatchEditor_.matches = this.matches_;
-            this.stringMatchEditor_.highlightGroups();
+            this.stringMatchEditor_.highlightGroups(this.matches_);
         }
 
         this.steps_ += matchData.statesCount;

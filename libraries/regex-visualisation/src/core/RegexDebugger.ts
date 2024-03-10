@@ -1,7 +1,7 @@
 import { MatchAction, RegexMatch } from "@kundros/regexer";
 import { Slider, SliderEvent } from "./Slider";
 import { sliderSettings } from "./settings/SliderSettings";
-import { getTextRowsBounding, highlightGroups, highlightPosition } from "./other/textRowsBoundingHelper";
+import { GroupBoundingsOptions, HighlighGroupsOptions, HighlighTextOptions, getGroupBoundings, getTextBounding, highlightGroups, highlightPosition } from "./other/textRowsBoundingHelper";
 import { MatchHighlightingOptions } from "./coreTypes/MatchHighlightOptions";
 import { RegexHighlightingOptions } from "./coreTypes/RegexHighlightOptions";
 
@@ -35,6 +35,9 @@ export class RegexDebugger {
         this.matchText_ = this.matchTextContainer_.querySelector('.regex-debugger-string-text');
         this.matchCanvas_ = this.matchTextContainer_.querySelector('.regex-debugger-string-canvas');
         this.matchContext_ = this.matchCanvas_.getContext("2d");
+
+        this.groupsHighlightings_ = [];
+        this.matchesHighlights_ = [];
 
         this.debuggerOptions_ = debuggerOptions;
 
@@ -95,10 +98,10 @@ export class RegexDebugger {
          this.debuggerOptions_ = newOptions;
     }
 
-    private visualizeStep(step : number)
+    private visualizeStep(step : number, index : number = 0)
     {
-        if(this.matches_ === undefined || this.matches_.length === 0) return;
-        const state = this.matches_[0].moveTo(step-1);
+        if(this.matches_ === undefined || this.matches_.length <= index) return;
+        const state = this.matches_[index].moveTo(step-1);
 
         if(state === null) return;
 
@@ -122,19 +125,35 @@ export class RegexDebugger {
             this.matchCanvas_.width = boundingMatch.width;
             this.matchCanvas_.height = boundingMatch.height;
 
-            this.highlightPosition(state.strAt[0] , state.strAt[1], HighlightingTypes.DEFAULT, false);
+            this.highlightPosition(state.strAt[0] , state.strAt[1], HighlightingTypes.DEFAULT, false, index);
         }
 
         // string groups highlight
         if(state?.groups !== undefined)
         {
-            highlightGroups({
+            const groupsInformation : HighlighGroupsOptions = {
                 textElement: this.matchText_,
-                groups: state?.groups,
+                groupsBoundings: getGroupBoundings({
+                    textElement: this.matchText_,
+                    groups: state?.groups,
+                    context: this.matchContext_
+                }),
                 colors: this.debuggerOptions_.matchHighlighting.groupColors,
                 fallbackColor: this.debuggerOptions_.matchHighlighting.groupFallbackColor,
                 context: this.matchContext_
-            });
+            };
+
+            if(index >= this.groupsHighlightings_.length)
+                this.groupsHighlightings_.push(groupsInformation);
+            else
+                this.groupsHighlightings_[index] = groupsInformation;
+            
+            for(const matchGroups of this.groupsHighlightings_)
+                highlightGroups(matchGroups);
+        }
+        else
+        {
+            this.groupsHighlightings_[index] = undefined;
         }
 
         // informative regex highlight
@@ -153,7 +172,7 @@ export class RegexDebugger {
         }
     }
 
-    private highlightPosition(from : number, to: number, highlightingType : HighlightingTypes = HighlightingTypes.DEFAULT, inRegex : boolean = true)
+    private highlightPosition(from : number, to: number, highlightingType : HighlightingTypes = HighlightingTypes.DEFAULT, inRegex : boolean = true, index : number = 0)
     {
         const options = inRegex ? this.debuggerOptions_?.regexHighlighting : this.debuggerOptions_?.matchHighlighting;
         const context = inRegex ? this.regexContext_ : this.matchContext_;
@@ -172,7 +191,28 @@ export class RegexDebugger {
         else
             color = options?.positionColor ?? "#00FF00";
 
-        highlightPosition({context, textElement, from, to, highlightColor: color});
+        if(inRegex)
+        {
+            this.regexHighlights_ = {boundings: getTextBounding({textElement, from, to}), highlightColor: color, context, textElement};
+            highlightPosition(this.regexHighlights_);
+        }
+        else
+        {
+            const highlightInformation : HighlighTextOptions = {
+                boundings: getTextBounding({textElement, from, to}), 
+                highlightColor: color, 
+                context, 
+                textElement
+            };
+
+            if(index >= this.matchesHighlights_.length)
+                this.matchesHighlights_.push(highlightInformation);
+            else
+                this.matchesHighlights_[index] = highlightInformation;
+
+            for(const match of this.matchesHighlights_)
+                highlightPosition(match);
+        }
     }
 
     private drawBacktracking(from : number, to : number, inRegex : boolean = true)
@@ -183,16 +223,22 @@ export class RegexDebugger {
         context.save();
 
         context.fillStyle = options?.backtrackingDirectionColor ?? "#FF0000";
-        const dimensions = getTextRowsBounding({context: this.regexContext_, textElement: this.regexText_, from, to});
+        const dimensions = getTextBounding({textElement: this.regexText_, from, to});
 
         if(dimensions.length === 0)
             return;
 
+        const startX = dimensions[0][0];
+        const startY = dimensions[0][1];
+
         // arrow rect
-        context.fillRect(dimensions[0][0] + 4, dimensions[0][1] + 2, dimensions[0][2] - 4, 2);
+        context.fillRect(dimensions[0][0] + 6, dimensions[0][1] + 2, dimensions[0][2] - 6, 2);
         for(let i = 1 ; i < dimensions.length ; i++)
         {
-            context.fillRect(dimensions[i][0], dimensions[i][1] + 2, dimensions[i][2], 2);
+            if(dimensions[i][0] >= startX + 6 || dimensions[i][1] != startY)
+                context.fillRect(dimensions[i][0], dimensions[i][1] + 2, dimensions[i][2], 2);
+            else
+                context.fillRect(dimensions[i][0] + 6, dimensions[i][1] + 2, dimensions[i][2] + 6, 2);
         }
 
         // arrow head
@@ -214,19 +260,37 @@ export class RegexDebugger {
             if(event.target === this.overlay_)
                 this.switchVisibility();
         });
-        
-        this.matchText_.addEventListener("scroll", () => { this.visualizeStep(this.slider_.value); });
-        this.regexText_.addEventListener("scroll", () => { this.visualizeStep(this.slider_.value); });
 
         this.slider_.parent.addEventListener("cslider", (event : SliderEvent) => this.visualizeStep(event.detail.value));
 
-        const observer = new ResizeObserver((entries) => {
-            entries.forEach((entry) => {
-                this.visualizeStep(this.slider_.value);
-            });    
-        });
-        
+        const observer = new ResizeObserver(() => { this.visualizeStep(this.slider_.value); });
         observer.observe(this.overlay_);
+        
+        // scroll on match container
+        this.matchText_.addEventListener("scroll", () => { 
+            const boundingMatch = this.matchCanvas_.getBoundingClientRect();
+
+            this.matchContext_.clearRect(0, 0, boundingMatch.width, boundingMatch.height);
+            this.matchCanvas_.width = boundingMatch.width;
+            this.matchCanvas_.height = boundingMatch.height;
+
+            for(const match of this.matchesHighlights_)
+                highlightPosition(match);
+            for(const matchGroups of this.groupsHighlightings_)
+                highlightGroups(matchGroups);
+        });
+
+        // scroll on regex container
+        this.regexText_.addEventListener("scroll", () => {
+            const boundingRegex = this.regexCanvas_.getBoundingClientRect();
+
+            this.regexContext_.clearRect(0, 0, boundingRegex.width, boundingRegex.height);
+            this.regexCanvas_.width = boundingRegex.width;
+            this.regexCanvas_.height = boundingRegex.height;
+
+            if(this.regexHighlights_) 
+                highlightPosition(this.regexHighlights_); 
+        });
     }
     
     public offset : number = 0;
@@ -247,4 +311,9 @@ export class RegexDebugger {
     private debuggerOptions_? : DebuggerOptions;
     private matches_? : RegexMatch[];
     private slider_ : Slider;
+
+    // Holding information about highlighting
+    private groupsHighlightings_ : HighlighGroupsOptions[];
+    private regexHighlights_? : HighlighTextOptions;
+    private matchesHighlights_ : HighlighTextOptions[];
 }

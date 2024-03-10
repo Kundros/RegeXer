@@ -16,7 +16,7 @@ export class TextEditor{
         this.inputHistory_ = [["", 0]];
         this.historyAt_ = 0;
 
-        this.registerListeners();
+        this.registerEvents();
     }
 
     public bindEvent(eventName : keyof HTMLElementEventMap, callback : (event : Event, text : HTMLElement) => void) {
@@ -209,7 +209,7 @@ export class TextEditor{
 
         const pos = getCursorPosition(this.textInput_);
         const text = this.textInput_.textContent;
-        const copyText = await navigator.clipboard.readText();
+        const copyText = event.clipboardData.getData("text/plain");
 
         this.textInput_.textContent = text.slice(0, pos) + copyText + text.slice(pos);
         setCursorPosition(this.textInput_, pos + copyText.length - (copyText.match(/\n/g) ?? []).length);
@@ -217,7 +217,7 @@ export class TextEditor{
         this.textInput_.dispatchEvent(new InputEvent('input'));
     }
 
-    private registerListeners()
+    private registerEvents()
     {
         this.textInput_.addEventListener('paste', (event: ClipboardEvent) => this.handlePaste(event));
         this.textInput_.addEventListener('mousedown', () => this.handleMousedown());
