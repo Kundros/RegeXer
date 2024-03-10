@@ -263,6 +263,69 @@ body.vscode-light {
     color: white;
 }
 
+// light mode
+body.vscode-light {
+    & .group {
+        & > .group-br {
+            color: #5a8917;
+        }
+    
+        & .group {
+            & > .group-br {
+                color: #00c18b;
+            }
+    
+            & .group{
+                & > .group-br {
+                    color: #0090c7;
+                }
+    
+                & .group {
+                    & > .group-br {
+                        color: #3c6ba5;
+                    }
+    
+                    & .group{
+                        & > .group-br{
+                            color: #0011ff;
+                        }
+    
+                        & .group{
+                            & > .group-br{
+                                color: #9733d5;
+                            }
+    
+                            & .group{
+                                & > .group-br{
+                                    color: #c90a59;
+                                }
+    
+                                & .group{
+                                    & > .group-br{
+                                        color: #a5000d;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .list-br{
+        color: #c5a922;
+    }
+
+    .special-char, .group-name, .escaped-char, .any-symbol{
+        color: #b50085;
+    }
+
+    .match-info > .match-steps{
+        color: #666060;
+    }
+}
+
 .debug-icon{
     position: absolute;
     bottom: 10px;
