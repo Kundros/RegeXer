@@ -229,12 +229,13 @@ export class RegexDebugger {
             return;
 
         const startX = dimensions[0][0];
+        const startY = dimensions[0][1];
 
         // arrow rect
         context.fillRect(dimensions[0][0] + 6, dimensions[0][1] + 2, dimensions[0][2] - 6, 2);
         for(let i = 1 ; i < dimensions.length ; i++)
         {
-            if(dimensions[i][0] >= startX + 6 || dimensions[i][0] <= startX - 1)
+            if(dimensions[i][0] >= startX + 6 || dimensions[i][1] != startY)
                 context.fillRect(dimensions[i][0], dimensions[i][1] + 2, dimensions[i][2], 2);
             else
                 context.fillRect(dimensions[i][0] + 6, dimensions[i][1] + 2, dimensions[i][2] + 6, 2);
