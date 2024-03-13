@@ -84,7 +84,7 @@ Pokud dojde k uložení nového stavu textového pole, tak všechny stavy za uka
 V nastavení editoru, jsem přidal možnost zvolit si maximální počet záznamů v historii.
 Pokud ale není nastavená, automaticky se omezí na 100 záznamů.
 
-\subsection*{Pozice kurzoru}
+\subsection*{Pozice textového kurzoru}
 Práce s textovým kurzorem je další značná část textových editorů.
 Pokud uživatel píše do textového pole, často nastává ke změně textu na pozadí samotnou aplikací.
 Například při zvýraznění, dochází ke změně textové formy na HTML strukturu.
@@ -117,16 +117,101 @@ Nastavení je dobrovolné, pokud není předáno zvolí se základní.
 Posuvník může mít tlačítka pro ovládání, těmi jsou automatické přehrávání, vpřed, zpět, na konec a na začátek.
 Pro automatické přehrávání, může být součástí pole, pro editaci rychlosti, pokud je povolené v nastavení.
 
-Posuvník může pouze nabývat celo-číselných hodnot, v omezeném rozmezí od min do max.
+Posuvník může nabývat pouze celočíselných hodnot, v omezeném rozmezí od \textit{min} do \textit{max}.
 Pokud se změní jeho hodnota, je vyvolána vlastní událost, která tuto hodnotu obsahuje.
 Ta může být odchycena, např. jinou třídou.
 
 \subsection*{Zvýraznění pozice a backtrackingu}
 
+Pro vizualizaci slouží zvýraznění pozice, jak v regulárním výrazu, tak v hledaném řetězci.
+Tento koncept jsem převzal z inspirativní stránky \textit{regex101.com}.
+Pozice je zvýrazněná tak, že je v pozadí pozice barevný blok, který je vykreslený do HTML plátna (canvas).
+Řešení tohoto problému, jsem několikrát změnil, jelikož se původní řešení ukázalo neúčinným v některých případech.
+
+Jako první řešení, jsem zvolil získání šířky písmene, výšky řádku a velikost mezery mezi písmeny.
+Poté jsem procházel celí řetězec a pokud byl znak součástí pozice pro zvýraznění, tak jsem rozšířil šířku zvýrazněného bloku o šířku písmene a velikost mezery.
+Jesli byl nalezen znak nového řádku, nebo délka zvýrazněného bloku přetekla velikost řádku, tak jsem vytvořil nový blok pro nový řádek.
+Problém tohoto řešení byl takový, že když došlo k nekontrolovanému zalomení řádku tzn. pokud byl zalomen řádek dříve, než konec tohoto řádku.
+To mohlo nastat, například pokud se zalomilo slovo.
+Ve výsledku docházelo k zvýraznění prázdného místa a také k jeho nesprávnému konci.
+
+Druhé řešení, které jsem zkusil na implementovat, bylo pomocí využití textového kurzoru.
+Princip byl již jiný, jelikož nebylo třeba znát velikost písmene a mezery.
+Kurzor jsem nejprve umístil, na začáteční pozici zvýraznění. 
+V cyklu, jsem postupně posouval kurzorem až na konec zvýraznění.
+Během tohoto procesu jsem si ukládal souřadnice, kde se nachází.
+Tento způsob již zamezil problému při zalamování řádku, ale byl poměrně neefektivní a dokázal zpomalovat uživatelskou interaktivitu.
+
+Poslední zpusob implementace, dokáže vyřešit i zmíněný problém se zpomalením.
+Vychází z předchozího popisu, jelikož také využívá kurzor.
+Rozdílem je, že kurzor je vložen jako rozsah od začátku až po konec zvýraznění.
+Není tedy třeba procházet, písmeno po písmenu.
+Kvůli toho jsem upravil kód, pro získání a nastavení pozice kurzoru, tak aby umožňoval také výběr.
+Tato implementace se ukázala jako nejlepší, z důvodu výkonu a funkcionality.
+
+Pokud je pozice délky nula, nebo-li \textit{min} je stejný jako \textit{max}, tak je stále zobrazena. 
+Její šířka, je pak velikost mezery mezi dvěma písmeny. 
+Dále jsem musel zohlednit, jestli text má scrollbar. 
+Pokud ano, tak samotné zvýraznění musí být v plátně posunuto, o výšku aktuálního scrollu.
+
+Backtracking je vyhodnocený stejnou funkcí, jako pro zvýraznění pozice.
+Jediná věc, která se liší, je forma zobrazení. 
+Ta je ve tvaru šipky, signalizující odkud a kam se přesouvá v regulárním výrazu.
+Výška šipky není stejná, jako výška řádku, ale je zkrácená konkrétně na 2 pixely.
+
+\subsection*{Zobrazení skupin}
+
+Skupiny jsou podobně zobrazeny, jako pozice vyhledání, nebo-li zvýraznění části textu.
+Jelikož skupiny mohou být vnořené, je třeba předem určit pořadí, ve kterém se budou zakreslovat.
+Kdyby nebyly řazeny, tak by se mohlo stát, že vnější skupina přepíše vnitřní.
+Pro samotné zobrazení, je potřeba měnit barvu každé skupiny, nebo zvolit jiný způsob rozlišení, aby je bylo možné rozeznat.
+Zvolil jsem první způsob, kdy podle indexu skupiny je zvolená její barva.
+
 \section{Uživatelské rozhraní}
 
-\subsection*{Využití VScode stylů}
+Základní zobrazení, je ve tmavém režimu, které lze vidět na obrázku \ref{fig:GeneralUI}.
+Rozhraní je koncipováno pouze na jednu stránku a obsahuje poměrně jednoduché ovládání.
+Základem rozhraní jsou dvě textová pole, kde první slouží pro zadávání regulárních výrazů a druhé pro hledaný řetězec.
+Oba vstupy aplikace automaticky vyhodnocuje, nicméně vstup pro hledaný řetězec, čeká nějakou dobu, než uživatel dopíše, aby častá aktualizace nezpomalovala aplikaci.
 
-\subsection*{Ovládání aplikace}
+Po dokončeném zpracování, se v pravé spodní části aplikace nachází informace, které jsou vidět na obrázku \ref{fig:GeneralUI}.
+Zobrazuje se zde, kolik úspěšných vyhledání se povedlo a v kolika krocích.
+Také vedle zmíněných informací, je umístěna ikona signalizující informaci o průběhu zpracování.
+Ikona může být zobrazena čtyřmi různými způsoby.
+První je ukázán na obrázku a jedná se o celkový úspěch vyhledání.
+Další 3 ikony značí neúspěch, načítání resp. zpracovávání a poslední čekání na správně zadaný regulární výraz.
+
+V levé spodní části aplikace je tlačítko pro otevření debuggeru, po jeho otevření se zobrazí okno, které je ukázáno na obrázku \ref{fig:DebuggerUI}.
+Na vrchu okna se nachází, posuvník který slouží pro průchod stavů.
+S ním souvisí tři pole, které jsou pod posuvníkem.
+Aktuální stav, nebo-li hodnota posuvníku, se nachází v levém poli.
+Uprostřed je ovládání pomocí pěti tlačítek: začátek, zpět, automatické přehrávání, dopředu a konec.
+Poslední políčkem souvisejícím s posuvníkem, je pro manipulaci rychlosti automatického přehrávání.
+Rychlost je pak vyjádřena, jako $1/n$ stavů za sekundu, kde $n$ je nastavená rychlost, v případě obrázku \ref{fig:DebuggerUI} je $n = 5$.
+
+Dále se v debuggeru nachází dvě pole, pro vizualizaci stavů regulárního výrazu a druhé pro vizualizaci pozice v hledaném řetězci.
+Stavy jsou automaticky aktualizovány, po změně hodnoty posuvníku.
+V regulárním výrazu v obrázku, je zrovna vyobrazen backtracking (červená šipka zpět).
+V hledaném řetězci, se zvýrazněná pozice, aktuálního stavu vyhledávání.
+Jeho součástí mohou být zobrazeny skupiny, pokud nějaké již byly dokončeny.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{Figures/appWindow.png}
+	\caption{Úvodní uživatelské rozhraní}
+	\label{fig:GeneralUI}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{Figures/appDebugger.png}
+	\caption{Uživatelské rozhraní debuggeru}
+	\label{fig:DebuggerUI}
+\end{figure}
+
+VSCode api zpřístupňuje využití css stylů, které má uživatel přímo nastavené ve svém prostředí.
+Pokud je tedy webová stránka součástí VSCode prostředí, tak přejímám styly, které má uživatel přímo nastavené.
+Součástí toho jsou, fonty, barvy, tmavý nebo světlý režim atd.
+Jestliže má uživatel nastavený světlý režim, tak se stránka automaticky přizpůsobí.
 
 \endinput
