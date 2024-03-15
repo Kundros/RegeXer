@@ -51,6 +51,8 @@ Jedná se o vstupní soubor vedlejšího vlákna, který slouží pro asynchronn
 % Regexer, jako řídící třída zavolá RegexParser, který dokáže zpracovat textovou podobu regulárního výrazu na strukturu AST a NKA.
 % TODO ^ update, change location probably
 
+% TODO \/ check if all information is relevant and maybe add more explanation
+
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.9\textwidth]{Figures/UML_RGXR.pdf}
@@ -270,10 +272,10 @@ V obrázku \ref{fig:ITERCNT} se jedná o stav $k_i$ a přesun $3$.
 \subsection*{Využití vlákna pro vyhledávání}
 Nedílnou součástí této knihovny je \textbf{paralelní zpracování} v podobě balíčku threads.js.
 Balíček byl již zmíněn v kapitole \ref{sec:USEDtech}.
-Toto zpracování dovoluje složité operace přesunout na vedlejší vlákno, aby hlavní vlákno nebylo zatíženo.
-Vlákna sice umožňují efektivnější rozložení náročných programů, ale také mají svá úskalí.
+Pralelismus dovoluje složité operace přesunout do vedlejšího vlákna, aby hlavní vlákno nebylo zatěžováno.
+Vlákna sice umožňují efektivnější zpracování náročných programů, ale také mají svá úskalí.
 
-S volbou vývojového prostředí vscode, byla nutnost splnit podmínky stanovené pro práci s web workery, v souladu s jejich API \cite{Microsoft_2021}. 
+S volbou vývojového prostředí \textit{VSCode}, byla nutnost splnit podmínky stanovené pro práci s web workery, v souladu s jejich API \cite{Microsoft_2021}. 
 Podmínkou totiž je, nutnost mít zdrojový kód workeru přímo vložený ve zdrojovém kódu hlavního vlákna.
 To znamená, že worker nesmí být přímo načítaný, z adresáře rozšíření.
 Avšak tato nutnost, je komplikovaná a proto následovně vysvětlím, jak jsem tento problém řešil.
@@ -287,6 +289,15 @@ Pokud aplikace, která využívá tuto knihovnu má webpack,
 může využít loader, který jsem pro tuto knihovnu napsal. 
 Ten dokáže v místě kde je worker volaný, vložit jeho zdrojový kód, v rámci textového řetězce.
 Výsledkem je worker, který je vložený jako řetězec, ve zdrojovém kódu hlavního vlákna.
+
+Původně tato knihovna zprostředkovávala, pouze paralelismus pro prostředí \textit{NodeJS}.
+Později se ale ukázalo, že tato restrikce je limitující, co se týče využití této knihovny ve vizualizační části aplikace.
+Regulární výrazy se totiž zpracovávali, na straně rozšíření, které běží v prostředí \textit{NodeJS}.
+Vizualizace byla tedy omezena na komunikaci s prostředím, co se týče práce s regulárními výrazy.
+Vývojové prostředí pak sloužilo, jako komunikační uzel mezi vizualizací a touto komponentou.
+Také toto zprostředkování, poměrně zpomalovalo výkon aplikace, jelikož se musela data posílat pomocí zpráv mezi dvěma komponentami.
+Samotná vizualizace, nemohla existovat jako samostatná webová stránka, jelikož zde existovala přímá závislost na rozšíření.
+Změnou této části aplikace, která současně podporuje využití paralelismu, pro jakákoliv prostředí, byly tyto problémy eliminovány.
 
 \subsection*{Výsledek vyhledávání}
 

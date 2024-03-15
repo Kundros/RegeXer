@@ -1,15 +1,15 @@
-\chapter{Vizualizační knihovna}\label{sec:Implementation2}
+\chapter{Vizualizační knihovna a rozšíření}\label{sec:Implementation2}
 
-Tato knihovna slouží pro vizualizaci průchodu regulárním výrazem.
+Tato část aplikace se zabývá, knihovnou určenou pro vizualizaci průchodu regulárním výrazem a rozšířením do vývojového prostředí VSCode.
 Pro získání informací o vyhledávání, slouží již zmíněná knihovna, která byla popsána v předchozí kapitole \ref{sec:Implementation1}.
-Hlavním cílem této části aplikace je, na implementovat uživatelsky přívětivé a intuitivní rozhraní.
+Hlavním cílem této části aplikace je, na implementovat uživatelsky přívětivé a intuitivní rozhraní, integrované do vývojového prostředí.
 To umožňuje zadávat regulární výrazy, text ve kterém lze pomocí zadaného výrazu vyhledávat a následnou vizualizaci ve formě debuggeru.
-
+Vizualizace je koncipována, jako webová stránka, která je zobrazená do prostředí pomocí tzv. webview.
 %TODO
 
-\section{Návrh}
+\section{Návrh vizualizační části}
 
-Vstupem knihovny HTML soubor \textit{main.html}.
+Vstupem knihovny je HTML soubor \textit{main.html}.
 Ten vkládá skript \textit{index.ts}, jehož hlavním účelem je inicializovat vše potřebné pro chod aplikace.
 Hlavní třídou, která se stará o obsluhu vizualizace je RegexVisualizer. 
 Jejím úkolem je obsluhovat ostatní komponenty a přímo komunikuje s třídou \textit{Regexer} a tím získává data pro vizualizaci.
@@ -22,14 +22,10 @@ Také má například možnost automatického přehrávání a změnu rychlosti.
 
 %TODO
 
-%TODO: change loc
-\subsection*{Komunikace s třídou regexer}
-
-%TODO
-
 \section{Implementace textových editorů}
 
-Ve vizualizaci se nachází dva textové editory, pro zadávání regulárního výrazu a druhý pro zadávání řetězce, ve kterém proběhne vyhledávání na základě zadaného výrazu.
+Ve vizualizaci se nachází dva textové editory.
+První pro zadávání regulárního výrazu a druhý pro zadávání řetězce, ve kterém proběhne vyhledávání, na základě zadaného výrazu.
 Jejich funkcionalita je obalena ve dvou třídách, každá sloužící pro jiný textový editor a obě dědí ze třídy \textit{TextEditor}.
 Tento vztah lze vidět na obrázku \ref{fig:TextEditor}.
 
@@ -61,6 +57,19 @@ Jedná se o grafické zobrazení bílých znaků, jako je nový řádek nebo tab
 
 %TODO
 % TODO: mby add element helper
+
+\subsection*{Komunikace s třídou Regexer}
+
+Komunikace funguje pomocí vyvolání událostí z textových editorů.
+Je-li událost vyvolána editorem pro regulární výraz, tak se pomocí třídy \textit{Regexer} parsne daný výraz.
+Pokud dojde k vyvolání události z editoru pro hledaný řetězec, tak dojde k zavolání metody pro vyhledávání (match).
+
+Vyhledávání pak funguje na bázi asynchronní komunikace, kdy se výsledky posílají po tzv. dávkách (anglicky batch).
+Výhodou této komunikace je, pokud uživatel v průběhu zpracovávání změní text jednoho z polí, tak se proces ukončí a tím pádem nemusí čekat na jeho dokončení.
+Velikost jedné dávky jsem zvolil na 20000 stavů, jelikož tento počet stavů, je poměrně rychle vyhodnocený.
+Informace o zpracování, se aktualizují průběžně po každé příchozí dávce.
+
+%TODO
 
 \subsection*{Zvýraznění syntaxe}
 
@@ -213,5 +222,17 @@ VSCode api zpřístupňuje využití css stylů, které má uživatel přímo na
 Pokud je tedy webová stránka součástí VSCode prostředí, tak přejímám styly, které má uživatel přímo nastavené.
 Součástí toho jsou, fonty, barvy, tmavý nebo světlý režim atd.
 Jestliže má uživatel nastavený světlý režim, tak se stránka automaticky přizpůsobí.
+
+\section{VSCode rozšíření}
+
+%TODO
+
+\section{Komunikace rozšíření a vizualizace}
+
+%TODO
+
+\section{Sestavení a spuštění projektu}
+
+%TODO
 
 \endinput
