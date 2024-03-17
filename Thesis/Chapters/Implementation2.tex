@@ -170,7 +170,7 @@ Výška šipky není stejná, jako výška řádku, ale je zkrácená konkrétn�
 
 \subsection*{Zobrazení skupin}
 
-Skupiny jsou podobně zobrazeny, jako pozice vyhledání, nebo-li zvýraznění části textu.
+Skupiny jsou podobně zobrazeny, jako pozice vyhledání, nebo-li ve formě zvýraznění části textu.
 Jelikož skupiny mohou být vnořené, je třeba předem určit pořadí, ve kterém se budou zakreslovat.
 Kdyby nebyly řazeny, tak by se mohlo stát, že vnější skupina přepíše vnitřní.
 Pro samotné zobrazení, je potřeba měnit barvu každé skupiny, nebo zvolit jiný způsob rozlišení, aby je bylo možné rozeznat.
@@ -188,7 +188,7 @@ Zobrazuje se zde, kolik úspěšných vyhledání se povedlo a v kolika krocích
 Také vedle zmíněných informací, je umístěna ikona signalizující informaci o průběhu zpracování.
 Ikona může být zobrazena čtyřmi různými způsoby.
 První je ukázán na obrázku a jedná se o celkový úspěch vyhledání.
-Další 3 ikony značí neúspěch, načítání resp. zpracovávání a poslední čekání na správně zadaný regulární výraz.
+Další 3 ikony značí neúspěch, načítání resp. probíhající zpracovávání a poslední čekání na správně zadaný regulární výraz.
 
 V levé spodní části aplikace je tlačítko pro otevření debuggeru, po jeho otevření se zobrazí okno, které je ukázáno na obrázku \ref{fig:DebuggerUI}.
 Na vrchu okna se nachází, posuvník který slouží pro průchod stavů.
@@ -225,9 +225,66 @@ Jestliže má uživatel nastavený světlý režim, tak se stránka automaticky 
 
 \section{VSCode rozšíření}
 
+Samotné rozšíření je vyvíjeno, pro prostředí Visual Studio Code.
+Výhodou tohoto prostředí, je lehká integrace webového rozhraní.
+VSCode API, samozřejmě zprostředkovává mnohem více možností, pro samotný vývoj rozšíření.
+
+\subsection*{Integrace webového zobrazení}
+
+Webové zobrazení, využívá tzv. webview, které zobrazí webovou stránku v omezeném režimu.
+Omezení je například ve smyslu, nutnosti explicitně povolit JavaScriptové kódy, spouštěné v samotném zobrazení.
+Dalším problémem je načítání zdrojů.
+Ty totiž nemohou být jednoduše brány z lokálních adresářů. 
+Musí dojít ke konverzi adresy, na adresu podporovanou VSCode. 
+K této změně, jsem použil vyhledání všech cest ke zdrojům.
+Před tím než dojde k zobrazení webové stránky, je tato konverze provedena.
+
+Zobrazení se může nacházet v několika částech prostředí.
+Pro tuto aplikaci jsem zvolil, že se stránka zobrazí, v pravé části na polovinu obrazovky.
+V budoucnu by, bylo možné přidat nastavení, aby si uživatel mohl zvolit, kde se bude okno aplikace zobrazovat.
+
+Zobrazení aplikace lze také vyvolat, najetím v textu na zadaný regulární výraz.
+Po najetí se zobrazí tlačítko, které po jeho stisku otevře samotnou vizualizaci.
+V té se bude již nacházet daný výraz, na který uživatel najel v textu.
+Jelikož je aplikace integrována ve vývojovém prostředí, tak je podle mě výhodné mít jako přidanou hodnotu, využívání větší interaktivity s prostředím.
+VSCode API poskytuje, možnost detekce pozice kurzoru myši, čehož jsem využil pro následnou detekci.
+Aby bylo možné rozpoznat, zda se na pozici v textu nachází syntaxe regulárního výrazu, musí proběhnout nějaké vyhodnocení textu.
+Toto vyhodnocení probíhá pomocí specifického regulárního výrazu, který zjišťuje zda se jedná o správný tvar.
+Zmíněné řešení mě napadlo jako první, ale není ideální.
+Vhodnější by bylo použít nějaký jazykový server, který by z daného textu automaticky rozpoznal, o jaký syntaktický prvek se jedná.
 %TODO
 
-\section{Komunikace rozšíření a vizualizace}
+\subsection*{Možnosti nastavení rozšíření}
+
+API pro VSCode nabízí možnost poskytnout nastavení, pro rozšíření, které může uživatel měnit na základě svých preferencí.
+Pro tuto aplikaci jsem přidal jednoduché a omezené možnosti nastavení.
+První se týká možnosti, vypnutí a zapnutí funkce, pro najetí na text zmíněné v předchozí sekci.
+Druhé nastavení udává, zda se má vytvářet pokaždé nové okno webového rozhraní, nebo se má překreslovat již existující.
+Nastavení by mohlo existovat v budoucnu více, aby umožňovali uživatelům vyšší flexibilitu. 
+
+%TODO
+
+\subsection*{Komunikace rozšíření a vizualizace}
+
+Ke komunikaci VSCode s webview dochází pomocí zpráv.
+Jedná se o komunikaci, která je předepsána pro VSCode API, v jejich dokumentaci.
+Komunikaci jsem se pokusil omezit na minimum, aby nedocházelo k přetížení aplikace.
+Proto se posílají pouze zprávy, které souvisí s samotným rozšířením pro VSCode.
+Například pokud dojde, k otevření výrazu z VSCode, tak musí dojít k jeho poslání pomoci zprávy do webview.
+Vizualizace se také může nacházet samostatně, mimo kontext rozšíření, proto je posílání a přijímání zpráv vypnuto.
+%TODO
+
+\subsection*{Výsledný instalační soubor}
+
+Výsledným souborem, pro VSCode rozšíření, je soubor s příponou \textit{.vsix}.
+Tyto soubory slouží pro lokální instalaci rozšíření. 
+Samotná rozšíření lze publikovat veřejně součástí VSCode, ale aktuálně jsem se rozhodl, nepublikoval tuto aplikaci.
+Pro získání \textit{vsix} souboru, slouží příkaz \textit{vsce}, který dokáže sjednotit všechny závislosti do jednoho výsledného souboru.
+
+Pro instalaci rozšíření, lze použít příkazovou paletu od VSCode.
+Tu lze otevřít pomocí zkratky \textbf{Shift + Command + P} pro Mac a \textbf{Ctrl + Shift + P} pro Windows nebo Linux.
+Po otevření příkazové palety, stačí zadat příkaz \textit{Extensions: Install from VSIX}.
+Poté se otevře průzkumník souborů, kde stačí otevřít zvolený \textit{vsix} soubor, který se nainstaluje.
 
 %TODO
 

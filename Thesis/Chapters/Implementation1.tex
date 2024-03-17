@@ -34,12 +34,11 @@ Naopak třídou, která poskytuje viditelné rozhraní a volá metody třídy Ma
 Její rozhraní je poskytováno třídě Regexer.
 Pro parsování textové reprezentace regulárního výrazu na strukturu, slouží rozhraní \textbf{RegexParser}.
 Vzniká vždy po překladu bezkontextové gramatiky.
-Jako poslední struktura, která stojí za zmínku, je \textbf{Stack}.
 Stack nebo-li zásobník, je velmi důležitou součástí vyhledávání.
 Zásobník je totiž struktura, která mi dovoluje se zbavit rekurzivního volání funkce.
-Rekurze obecně vede k pomalejšímu chodu programu a nelze ji jednoduše pozastavit v jakémkoliv čase.
+Rekurze obecně vede k pomalejšímu chodu programu a nelze ji jednoduše pozastavit v jakémkoliv čase a stavu.
 Také může jednoduše při složitějším zpracování dojít k přetečení zásobníku, který je často limitován aby nedošlo k nekonečnému rekurzivnímu volání.
-Sice rozhraní pole v JS je připraveno na funkcionalitu zásobníku, ale nezaručuje programátorovi daná pravidla pro zásobník. 
+Sice rozhraní pole v JS je připraveno na funkcionalitu zásobníku, ale nezaručuje programátorovi striktní pravidla pro zásobník. 
 Z tohoto důvodu jsem zvolil jednoduchou implementaci zásobníku, která omezuje manipulaci s základním polem, na operace určené pro zásobník.
 
 Vztahy mezi jednotlivými třídami, lze vidět na obrázku \ref{fig:ARCH_RGXR}. 
