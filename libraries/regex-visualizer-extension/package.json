@@ -12,7 +12,8 @@
     "url": "https://github.com/Kundros/regex-visualisation-thesis/tree/master/libraries/regex-visualizer-extension"
   },
   "engines": {
-    "vscode": "^1.84.0"
+    "vscode": "^1.84.0",
+    "node": ">= 14.17"
   },
   "categories": [
     "Other"

@@ -44,5 +44,8 @@
     "ts-pegjs": "^4.2.1",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
+  },
+  "engines": {
+    "node": ">= 14.17"
   }
 }

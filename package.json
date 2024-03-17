@@ -17,5 +17,8 @@
   },
   "dependencies": {
     "@kundros/regex-visualizer-extension": "file:./libraries/regex-visualizer-extension"
+  },
+  "engines": {
+    "node": ">= 14.17"
   }
 }
