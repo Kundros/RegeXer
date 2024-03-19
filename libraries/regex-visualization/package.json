@@ -1,7 +1,7 @@
 {
-  "name": "regex-visualisation",
+  "name": "regex-visualization",
   "version": "0.0.1",
-  "description": "VS-code plugin to visualise regex execution.",
+  "description": "VS-code plugin to visualize regex execution.",
   "main": "dist/index.html",
   "types": "customTypes/index.d.ts",
   "module": "module",
