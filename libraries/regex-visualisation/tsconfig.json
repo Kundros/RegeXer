@@ -9,10 +9,10 @@
     "esModuleInterop": true,
     "baseUrl": "./",
     "typeRoots": [
-      "./types",
+      "./customTypes",
       "./node_modules/@types/"
     ],
   },
-  "include": ["src/**/*", "./types/index.d.ts", "./types/declarations.d.ts"],
+  "include": ["src/**/*", "./customTypes/index.d.ts", "./customTypes/declarations.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

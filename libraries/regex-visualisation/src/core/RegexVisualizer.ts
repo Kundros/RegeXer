@@ -1,5 +1,5 @@
 import { WebviewApi } from "vscode-webview";
-import { Message, MessageRegex } from "types";
+import { Message, MessageRegex } from "customTypes";
 import { RegexEditor } from "./RegexEditor";
 import { MatchBatchData, MatchData, MatchFlags, MatchResponse, RegParseException, RegexMatch, Regexer } from "@kundros/regexer";
 import { StringMatchEditor } from "./StringMatchEditor";
