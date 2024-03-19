@@ -9,7 +9,7 @@
   "description": "Regex Visualizer & Debugger",
   "version": "0.0.2",
   "repository": {
-    "url": "https://github.com/Kundros/regex-visualisation-thesis/tree/master/libraries/regex-visualizer-extension"
+    "url": "https://github.com/Kundros/regex-visualization-thesis/tree/master/libraries/regex-visualizer-extension"
   },
   "engines": {
     "vscode": "^1.84.0",
@@ -105,7 +105,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@kundros/regex-visualisation": "file:../regex-visualisation",
+    "@kundros/regex-visualization": "file:../regex-visualization",
     "@kundros/regexer": "file:../regexer",
     "html-loader": "^4.2.0",
     "threads": "^1.7.0"

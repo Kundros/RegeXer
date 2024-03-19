@@ -11,12 +11,12 @@ export class VisualizerWebview
     public async show(regex? : string)
     {
         const visualizerHtml = require(
-            "@kundros/regex-visualisation"
+            "@kundros/regex-visualization"
         ).default;
         
         const panel = vscode.window.createWebviewPanel(
-            'regexVisualisation', 
-            'Regex Visualisation & Debugging', 
+            'regexVisualization', 
+            'Regex Visualization & Debugging', 
             vscode.ViewColumn.Two, 
             {
                 enableScripts: true,

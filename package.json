@@ -1,5 +1,5 @@
 {
-  "name": "regex-visualisation-thesis",
+  "name": "regex-visualization-thesis",
   "version": "0.0.1",
   "description": "This package is source package for thesis on regex visualisation plugin for vs-code.",
   "main": "index.js",
@@ -8,12 +8,12 @@
     "install:all": "npm run install:regexer && npm run install:rv && npm run install:rvex && npm run install:local",
     "install:local": "npm i",
     "install:regexer": "cd ./libraries/regexer/ && npm i",
-    "install:rv": "cd ./libraries/regex-visualisation/ && npm i",
+    "install:rv": "cd ./libraries/regex-visualization/ && npm i",
     "install:rvex": "cd ./libraries/regex-visualizer-extension/ && npm i",
     "build": "npm run build:regexer && npm run build:rv && npm run build:rvex",
     "release": "npm run vsce --prefix ./libraries/regex-visualizer-extension/",
     "build:regexer": "npm run build --prefix ./libraries/regexer/",
-    "build:rv": "npm run build:webpack --prefix ./libraries/regex-visualisation/",
+    "build:rv": "npm run build:webpack --prefix ./libraries/regex-visualization/",
     "build:rvex": "npm run build:webpack --prefix ./libraries/regex-visualizer-extension/"
   },
   "author": "Dominik Kundra, KUN0161",
