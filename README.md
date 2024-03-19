@@ -12,14 +12,20 @@ This project is root for **regex visualisation extension for visual studio**. It
 
 ## Setup
 
-If you're building this library on your own, you'll need to have installed npm along with node.js.
+If you're building this library on your own, you'll need to have installed npm along with node.js minimal version 14.17.
 
 Download npm packages using command below in root:
 ```bash
-npm install --save-dev
+npm run install:all
 ```
 
 To build project simply use command below in root:
 ```bash
 npm run build
 ```
+
+To create VSCode release of this project use command below in root:
+```bash
+npm run release
+```
+*Note: release files are located in ./libraries/regex-visualization-extension/release folder.*
