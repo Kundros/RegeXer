@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install:all": "npm run install:regexer && npm run install:rv && npm run install:rvex && npm run install:local",
-    "install:local": "npm i",
+    "install": "npm run install:regexer && npm run install:rv && npm run install:rvex",
     "install:regexer": "cd ./libraries/regexer/ && npm i",
     "install:rv": "cd ./libraries/regex-visualization/ && npm i",
     "install:rvex": "cd ./libraries/regex-visualizer-extension/ && npm i",
