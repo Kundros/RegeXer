@@ -7,7 +7,7 @@
   },
   "publisher": "Kundros",
   "description": "Regex Visualizer & Debugger",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "repository": {
     "url": "https://github.com/Kundros/regex-visualization-thesis/tree/master/libraries/regex-visualizer-extension"
   },
@@ -26,7 +26,7 @@
     "commands": [
       {
         "command": "regex-visualizer-extension.openRegexVisualizer",
-        "title": "Open Regex Visualizer & Debuger"
+        "title": "Regex Visualizer: Open"
       },
       {
         "command": "regex-visualizer-extension.updateRegRegexVisualizer",
