@@ -22,11 +22,29 @@ All notable changes to the "Regex Visualizer" extension will be documented in th
 
 ### Added
 
-- groups while matching, on final match and each state of groups (not visualizing yet)
-- flag to disable/enable groups on each state if there is at least one (not visualizing yet)
-- highlighting of any symbol '.'
+- Groups while matching, on final match and each state of groups (not visualizing yet)
+- Flag to disable/enable groups on each state if there is at least one (not visualizing yet)
+- Highlighting of any symbol '.'
 - Matches are displayed even if the matching wasn't finished
 
 ### Fixed
 
 - infinite loop prevention while matching. For example: ()+
+
+## [0.0.3] - 2024-03-20
+
+### Added
+
+- Groups are visualized
+- Range iterations support
+
+### Changed
+
+- Highlighting optimizations
+- Fonts are loaded locally
+- Strict typescript
+
+### Fixed
+
+- Highlighting - was incorrect sometimes for multiline expressions
+- Mozilla styles
