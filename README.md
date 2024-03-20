@@ -36,15 +36,43 @@ npm run release
 
 ## Usage
 
-<div style="text-align:center">
-    <img src="./images/usage0.png" alt="open command>
-</div>
+\
+In command palette type "Regex Visualizer: Open", to open visualization window.
 
-<div style="text-align:center">
-    <img src="./images/usage0-1.png" alt="open command>
-</div>
+<p align="center">
+    <img src="./images/usage0.png" alt="open command">
+</p>
 
+\
+Alternatively you can hover over regular expression in code. 
+This will trigger hover pop-up with link to open regex visualization window.
 
-<div style="text-align:center">
-    <img src="./images/usage1.png" alt="open command>
-</div>
+<p align="center">
+    <img src="./images/usage0-1.png" alt="hover command">
+</p>
+
+### Application window
+
+Application initial view consists of:
+* Input for writing regular expressions. 
+* Input for matching string.
+* General information about parsing and matching progress. It is located at bottom of matching text input. 
+* Debugger button, at the bottom left of matching input. This will trigger opening the debugger window, for the current input values. 
+
+<p align="center">
+    <img src="./images/usage1.png" alt="app window">
+</p>
+
+### Debugger window
+
+Debugger window consists of:
+* Slider for manipulating with matching history.
+* Editable current history/slider position/value.
+* Action buttons for quick slider manipulation, and it's corresponding history.
+* Editable Auto-play speed. 
+* Parsed regular expression text with highlighting.
+* Matching string text with highlighting. 
+
+<p align="center">
+    <img src="./images/usage2.png" alt="app window">
+</p>
