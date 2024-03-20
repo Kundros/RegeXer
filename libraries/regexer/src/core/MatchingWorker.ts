@@ -104,7 +104,12 @@ class MatcherInternal
             const ASTtype = nfaState?.ASTelement?.type ?? 0;
 
             /* if the state has set transition, we handle it differently */
-            if(ASTtype & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL | RegexTypes.RegexStates.ANY)) 
+            if(ASTtype & (
+                RegexTypes.RegexStates.P_LIST | 
+                RegexTypes.RegexStates.N_LIST | 
+                RegexTypes.RegexStates.SPECIAL | 
+                RegexTypes.RegexStates.ANY
+            )) 
             {
                 const returned = this.handleSetTransition();
                 if(returned !== null) return returned;
@@ -522,7 +527,12 @@ class MatcherInternal
             Types in below loop are all containing set transition, which have no transition position,
             that means it has to be backtracked beforehand, to ensure correct evaluation 
         */
-        while(<number>this.statesStack_.top()?.state?.ASTelement?.type & (RegexTypes.RegexStates.P_LIST | RegexTypes.RegexStates.N_LIST | RegexTypes.RegexStates.SPECIAL))
+        while(<number>this.statesStack_.top()?.state?.ASTelement?.type & (
+            RegexTypes.RegexStates.P_LIST | 
+            RegexTypes.RegexStates.N_LIST | 
+            RegexTypes.RegexStates.SPECIAL | 
+            RegexTypes.RegexStates.ANY
+        ))
         {
             lastRegexPos = this.regexPosStack_.pop();
             lastState = this.statesStack_.pop();
