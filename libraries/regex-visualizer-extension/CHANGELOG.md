@@ -48,3 +48,4 @@ All notable changes to the "Regex Visualizer" extension will be documented in th
 
 - Highlighting - was incorrect sometimes for multiline expressions
 - Mozilla styles
+- (.) character backtracking wasn't working properly
