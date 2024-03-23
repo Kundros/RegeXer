@@ -1,7 +1,7 @@
 \chapter{Vizualizační knihovna a rozšíření}\label{sec:Implementation2}
 
 Tato část aplikace se zabývá, knihovnou určenou pro vizualizaci průchodu regulárním výrazem a rozšířením do vývojového prostředí VSCode.
-Pro získání informací o vyhledávání, slouží již zmíněná knihovna, která byla popsána v předchozí kapitole \ref{sec:Implementation1}.
+Pro získání informací o vyhledávání, slouží již zmíněná knihovna, která byla popsána v předchozí kapitole~\ref{sec:Implementation1}.
 Hlavním cílem této části aplikace je, na implementovat uživatelsky přívětivé a intuitivní rozhraní, integrované do vývojového prostředí.
 To umožňuje zadávat regulární výrazy, text ve kterém lze pomocí zadaného výrazu vyhledávat a následnou vizualizaci ve formě debuggeru.
 Vizualizace je koncipována, jako webová stránka, která je zobrazená do prostředí pomocí tzv. webview.
@@ -27,7 +27,7 @@ Také má například možnost automatického přehrávání a změnu rychlosti.
 Ve vizualizaci se nachází dva textové editory.
 První pro zadávání regulárního výrazu a druhý pro zadávání řetězce, ve kterém proběhne vyhledávání, na základě zadaného výrazu.
 Jejich funkcionalita je obalena ve dvou třídách, každá sloužící pro jiný textový editor a obě dědí ze třídy \textit{TextEditor}.
-Tento vztah lze vidět na obrázku \ref{fig:TextEditor}.
+Tento vztah lze vidět na obrázku~\ref{fig:TextEditor}.
 
 \begin{figure}[!h]
 	\centering
@@ -178,25 +178,25 @@ Zvolil jsem první způsob, kdy podle indexu skupiny je zvolená její barva.
 
 \section{Uživatelské rozhraní}
 
-Základní zobrazení, je ve tmavém režimu, které lze vidět na obrázku \ref{fig:GeneralUI}.
+Základní zobrazení, je ve tmavém režimu, které lze vidět na obrázku~\ref{fig:GeneralUI}.
 Rozhraní je koncipováno pouze na jednu stránku a obsahuje poměrně jednoduché ovládání.
 Základem rozhraní jsou dvě textová pole, kde první slouží pro zadávání regulárních výrazů a druhé pro hledaný řetězec.
 Oba vstupy aplikace automaticky vyhodnocuje, nicméně vstup pro hledaný řetězec, čeká nějakou dobu, než uživatel dopíše, aby častá aktualizace nezpomalovala aplikaci.
 
-Po dokončeném zpracování, se v pravé spodní části aplikace nachází informace, které jsou vidět na obrázku \ref{fig:GeneralUI}.
+Po dokončeném zpracování, se v pravé spodní části aplikace nachází informace, které jsou vidět na obrázku~\ref{fig:GeneralUI}.
 Zobrazuje se zde, kolik úspěšných vyhledání se povedlo a v kolika krocích.
 Také vedle zmíněných informací, je umístěna ikona signalizující informaci o průběhu zpracování.
 Ikona může být zobrazena čtyřmi různými způsoby.
 První je ukázán na obrázku a jedná se o celkový úspěch vyhledání.
 Další 3 ikony značí neúspěch, načítání resp. probíhající zpracovávání a poslední čekání na správně zadaný regulární výraz.
 
-V levé spodní části aplikace je tlačítko pro otevření debuggeru, po jeho otevření se zobrazí okno, které je ukázáno na obrázku \ref{fig:DebuggerUI}.
+V levé spodní části aplikace je tlačítko pro otevření debuggeru, po jeho otevření se zobrazí okno, které je ukázáno na obrázku~\ref{fig:DebuggerUI}.
 Na vrchu okna se nachází, posuvník který slouží pro průchod stavů.
 S ním souvisí tři pole, které jsou pod posuvníkem.
 Aktuální stav, nebo-li hodnota posuvníku, se nachází v levém poli.
 Uprostřed je ovládání pomocí pěti tlačítek: začátek, zpět, automatické přehrávání, dopředu a konec.
 Poslední políčkem souvisejícím s posuvníkem, je pro manipulaci rychlosti automatického přehrávání.
-Rychlost je pak vyjádřena, jako $1/n$ stavů za sekundu, kde $n$ je nastavená rychlost, v případě obrázku \ref{fig:DebuggerUI} je $n = 5$.
+Rychlost je pak vyjádřena, jako $1/n$ stavů za sekundu, kde $n$ je nastavená rychlost, v případě obrázku~\ref{fig:DebuggerUI} je $n = 5$.
 
 Dále se v debuggeru nachází dvě pole, pro vizualizaci stavů regulárního výrazu a druhé pro vizualizaci pozice v hledaném řetězci.
 Stavy jsou automaticky aktualizovány, po změně hodnoty posuvníku.
@@ -294,9 +294,19 @@ Pro vlastní sestavení aplikace, je potřeba mít nainstalovaný NodeJS společ
 Při vývoji jsem používal NodeJS verze 20.9.0 a NPM verze 10.2.1.
 Avšak pro vlastní sestavení, by měla stačit verze NodeJS 14.17 společně s NPM verze 6.14.
 Zároveň může být použitá i novější verze. 
-Pokud uživatel nemá NodeJS, lze jej nainstalovat ze stránky \textit{https://nodejs.org}, součástí instalace je také NPM.
-
+Pokud uživatel nemá NodeJS, lze jej nainstalovat ze stránky \textit{https://nodejs.org}, NPM je součástí instalace.
+Lze použít i jiné balíčkové manažery místo NPM, ale v návodu na sestavení používám právě NPM.
 Rozšíření bylo vyvíjeno pro VSCode verze 1.84.0, ale mělo by fungovat i na novějších verzích.
+
+V příloze~\ref{sec:FileStructure}, je ukázaná částečná adresářová struktura projektu.
+Instalace probíhá ve následujících krocích:
+
+\begin{enumerate}
+	\item Pro instalaci všech externích závislostí, v kořenovém adresáři použijeme příkaz \textbf{\textcolor{OliveGreen}{npm install}}
+	\item K sestavení projektu slouží npm skript \textbf{\textcolor{OliveGreen}{npm run build}}
+	\item Pro vytvoření instalačního souboru rozšíření \textbf{\textcolor{OliveGreen}{npm run release}}
+	\item Výsledný instalační soubory se nachází v \textit{/libraries/regex-visualizer-extension/release}
+\end{enumerate}
 
 %TODO
 

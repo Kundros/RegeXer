@@ -1,8 +1,25 @@
 \chapter{Architektura aplikace}\label{sec:ApplicationTechnology}
 
+% TODO: specifikace požadavků
+\section{Specifikace požadavků}
+
+Aplikace by měla umožňovat vizualizaci a ladění regulárních výrazů.
+Ladicí nástroj, má být integrovaný součástí zvoleného vývojového prostředí.
+Vizualizace stavů průchodu regulárním výrazem, by měla být ve formě historie s intuitivním a interaktivním ovládáním.
+Program by měl umět zpracovávat, nejzákladnější a běžně používané vzory regulárních výrazů, tak aby mohl být v praxi použitelný na reálných příkladech.
+Dále by měla aplikace obsahovat následující prvky:
+\begin{itemize}
+	\item Lehce rozšířitelná, pro další možné funkcionality, které lze implementovat.
+	\item Vizualizační část aplikace, by měla obsahovat možnost zadávání regulárních výrazů a text pro následné vyhledávání.
+	\item Možnost spuštění mimo vývojové prostředí Visual Studio Code.
+	\item Ladící nástroj pro vizualizaci stavů
+	\item Implementaci základních vzorů regulárních výrazů
+	\item Možnost analýzy regulárních výrazů ze zdrojových kódů
+\end{itemize}
+
 \section{Zvolený návrh}
 
-Aplikace je členěná na 3 základní knihovny, což je zřejmé na obrázku \ref{fig:ARCH}.
+Aplikace je členěná na 3 základní knihovny, což je zřejmé na obrázku~\ref{fig:ARCH}.
 Každá část má vlastní účel a jsou navzájem izolovány.
 První z těchto knihoven je \textbf{regexer}, ta slouží pro zpracovávání a vyhodnocování regulárních výrazů.
 Jako jediná z těchto knihoven může existovat plně nezávisle na ostatních knihovnách, jelikož neobsahuje závislost na žádné z dalších knihoven.
@@ -12,14 +29,13 @@ Tato knihovna obsahuje závislost na Regexer, ale na VSCode extension není př�
 Poslední částí je samotné \textbf{rozšíření}, které se stará o komunikaci s API VSCode a o řízení všeho co se týká rozšíření.
 Tato část aplikace implementuje vizualizační knihovnu v podobě webview (webové zobrazení).
 
-Na obrázku \ref{fig:ARCH} je viditelná závislost mezi knihovnami. 
+Na obrázku~\ref{fig:ARCH} je viditelná závislost mezi knihovnami. 
 Rovněž je patrná základní struktura těchto knihoven a jejich závislosti mezi sebou.
 Avšak jsou zakresleny jen ty komponenty, které můžeme považovat za nejdůležitější. 
 Je dobré zdůraznit asynchrony komunikaci, kterou poskytuje knihovna regexer (vyhodnocující regexy).
 Tuto komunikaci lze vidět mezi komponentou Regexer a RegexVisualizer s tím, že Regexer využívá vedlejší vlákno mimo hlavní. 
-Knihovna pro vlákna threads.js je popsána v sekci \ref{sec:USEDtech}.
+Knihovna pro vlákna threads.js je popsána v sekci~\ref{sec:USEDtech}.
 
-% TODO: zkusit zvětšit
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=.9\textwidth]{Figures/BP-Arch.pdf}

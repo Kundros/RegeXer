@@ -1,0 +1,59 @@
+\chapter{Existující vizualizační nástroje}\label{sec:ExistingApplications}
+
+Pro vizualizaci regulárních výrazů, existuje několik přístupů realizace tohoto problému.
+Avšak tato řešení se často liší a neexistuje jednotný způsob, který by implementovali všechny nástroje jednotně.
+Jednou z forem zobrazení, je pomocí ladícího nástroje, nebo-li debuggeru.
+Další formou může například být, zobrazení výsledného konečného automatu a popř. vizualizace průchodu tímto automatem.
+
+\section{Regex101}
+
+Jedním z nejznámějších nástrojů, je webová stránka \textit{Regex101}\footnote{https://regex101.com}.
+Ta využívá principu debuggeru, kde se průchody výrazem mapují do původního výrazu.
+Nachází se zde 2 textová pole, do kterých uživatel může psát regulární výrazy a text pro vyhledávání.
+Tato stránka také podporuje syntaxi regulárních jazyků, různých programovacích jazyků.
+Jejich debugger, pouze podporuje \textit{PCRE} a \textit{PCRE2} standard, nebo-li pro jazyk PHP.
+
+Velkou výhodou tohoto nástroje, je možnost zobrazit si seznam všech vzorů pro daný jazyk.
+Pokud se někdo poprvé seznamuje s těmito výrazy, může využít tohoto seznamu pro rychlejší pochopení a naučení se práce s nimi.
+Dále tento nástroj obsahuje mimo jiné, zvýraznění částí textu, kde zadaný výraz našel shody.
+Také jsou zvýrazněny, některé syntaktické prvky zadaného regulárního výrazu, jako jsou například skupiny.
+Mezi poslední funkcionality, kterými tento nástroj disponuje je zobrazení AST struktury pro zadaný výraz.
+Tato AST struktura také obsahuje, popis jednotlivých částí výrazu.
+
+Tento nástroj, byl ve výsledku velkou inspirací pro tuto aplikaci. 
+Jelikož se jedná o obsáhlou aplikaci, není možné v této práci na implementovat stejnou míru funkcionalit.
+Proto jsem se rozhodl, použít alespoň některé tyto vymoženosti.
+
+\section{RegExr}
+
+\textit{RegExr}\footnote{https://regexr.com} je dalším webovým nástrojem, který lze použít pro vizualizaci regulárních výrazů.
+Tato stránka, již nedisponuje debuggerem.
+Spíše využívá jednoduššího zvýrazňování částí vyhledaného textu.
+Podobně jako \textit{Regex101}, se zde nachází zobrazení AST s popisem syntaxe.
+
+Zajímavou částí této aplikace, je možnost použití testovacích řetězců.
+V aplikaci se lze přepnout do sekce pro psaní vlastních testů.
+Uživatel zde může zadávat textové řetězce, ve kterých proběhne hledání pomocí zadaného výrazu.
+Pokud uživatel často mění zadaný regulární výraz, tak si může zkontrolovat zda všechny napsané testy správně proběhnou.
+
+\section{Debuggex}
+
+Dalším přístupem, pro vizualizaci je \textit{Debuggex}\footnote{https://debuggex.com}.
+Na rozdíl od zmíněných přístupů, tak Debuggex využívá nedeterministického konečného automatu pro vizualizaci.
+V NKA se následně nachází kurzor, který signalizuje aktuální pozici/e procházeného výrazu.
+Tato aplikace také zobrazuje pozici v původním regulárním výraze, ale není tolik detailní jako v případě \textit{Regex101}.
+Aktuální podpora jazyků je JavaScript, Python a PHP.
+
+\section{Visual Studio Code přístupy}
+
+Pro vývojové prostředí Visual Studio Code, existuje několik nástrojů.
+Nejstahovanějším nástrojem je \textit{Regex Previewer}.
+Ten funguje na principu testovacího okna, ve kterém je zadaný text pro vyhledávání.
+Pokud se v kódu nachází regulární výraz, tak se ve vedlejším okně zvýrazní části textu, kde vyhledávání proběhlo úspěšně. 
+
+Mezi další nástroje, které existují pro zvolené prostředí, lze zmínit například \textit{Visual Regex} společně s \textit{Regexper unofficial}.
+Tento nástroj, vygeneruje obrázek NKA, který následně uživateli zobrazí.
+Nedostatkem těchto nástrojů, je poměrně malá uživatelská interaktivita a flexibilita.
+
+Existují další přístupy, různých typů řešení. 
+V případě mé aplikace, tak podobný přístup, pro dané vývojové prostředí jsem nenašel.

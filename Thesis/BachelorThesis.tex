@@ -7,9 +7,11 @@
 \usepackage{subfig} % makra pro "podobrazky" a "podtabulky"
 \usepackage{dirtytalk}
 \usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
 
 \usepackage{newfloat}
 \usepackage{caption}
+\usepackage{dirtree}
 
 % new enviroment for codes
 \DeclareFloatingEnvironment[
@@ -112,14 +114,17 @@
 % TODO: check bold texts if makes sense
 % TODO: add citations
 % TODO: mby add file structure explanation
-% TODO: explain how backtracking could be achieved
+% TODO: explain how look-around could be achieved
 % TODO: explain that only one match can be found / not implemented flags in regex
-% TODO: explain how exactly the visualisation works, what should user see when looking in application
+% TODO: explain how exactly the visualization works, what should user see when looking in application
+% TODO: Testing of accomplished outcomes
 \input{Chapters/Introduction.tex}
 \input{Chapters/Principle.tex}
+\input{Chapters/ExistingApplications.tex}
 \input{Chapters/ApplicationTechnology.tex}
 \input{Chapters/Implementation1.tex}
 \input{Chapters/Implementation2.tex}
+\input{Chapters/Testing.tex}
 
 % Seznam literatury
 \printbibliography[title={Literatura}, heading=bibintoc]
@@ -127,6 +132,33 @@
 % Prilohy
 % TODO: appendix
 \appendix
+
+\chapter{Adresářová struktura projektu}\label{sec:FileStructure}
+
+\dirtree{%
+.1 /\DTcomment{Kořenový adresář projektu}.
+.2 libraries\DTcomment{Adresář vlastních knihoven}.
+.3 regex-visualization\DTcomment{Vizualizační knihovna}.
+.4 customTypes\DTcomment{Vlastní typy}.
+.4 src\DTcomment{Adresář zdrojových kódů}.
+.5 assets\DTcomment{Zdroje např. obrázky}.
+.5 core\DTcomment{Logická část knihovny}.
+.5 styles\DTcomment{Styly aplikace}.
+.5 templates\DTcomment{HTML vzory}.
+.3 regex-visualizer-extension\DTcomment{Knihovna rozšíření do VSCode}.
+.4 release\DTcomment{Výsledné vydání aplikace}.
+.4 src\DTcomment{Adresář zdrojových kódů}.
+.5 handlers\DTcomment{VSCode handelers}.
+.5 providers\DTcomment{VSCode providers}.
+.5 web\DTcomment{Adresář pro práci s webview}.
+.3 regexer\DTcomment{Knihovna pro zpracování regulárních výrazů}.
+.4 \_\_tests\_\_\DTcomment{Kódy pro testování}.
+.4 src\DTcomment{Adresář zdrojových kódů}.
+.5 core\DTcomment{Logická část knihovny}.
+.5 coreTypes\DTcomment{Vlastní typy}.
+.5 exceptions\DTcomment{Výjimky}.
+.5 structures\DTcomment{Různé stuktury}.
+}
 
 % Priloha vlozena primo do hlavniho LaTeX souboru. Ne vsechny prilohy je nutne mit ve zvlastnich souborech.
 % \chapter{Dlouhý zdrojový kód}
