@@ -5,4 +5,26 @@ To hlavně kvůli udržitelnosti kódu a včasnému zachycení chyb při vývoji
 Testy jsem používal pouze pro část aplikace, která používá hodně algoritmického kódu.
 Konkrétně při vývoji knihovny pro práci s regulárními výrazy \ref{sec:Implementation1}.
 Testy jsem psal postupně podle případů, které mě napadly, že by mohly rozbít fungování aplikace, či k nesprávným výsledkům.
-Tento přístup byl samozřejmě nedostačující a tak při testování samotné vizualizace, se mi povedlo najít několik případů, které jsem následně přidal do samotných testů.
+Tento přístup byl samozřejmě nedostačující a tak při testování samotné vizualizace, se mi povedlo najít několik případů špatných výsledků. 
+Ty jsem následně přidal do samotných testů.
+
+\begin{table}[!h]
+	\centering
+    \begin{tabular}{ |c||c|c|c|c|c|c|c|c| }
+        \hline
+        Testovací subjekt & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8  \\
+        \hline
+        Regexer (vlastní knihovna) & 1.936 & 0.672 & 1.061 & 34.205 & 1.004 & 1.556 & 2.382 & 116.117 \\
+        \hline
+        RegExp & 0.039 & 0.023 & 0.031 & 0.107 & 0.051 & 0.045 & 0.053 & 0.029 \\
+        \hline
+        match & 0.037 & 0.024 & 0.028 & 0.034 & 0.032 & 0.035 & 0.035 & 0.025 \\
+        \hline\hline
+        Nalezený výsledek & \Checkmark & \Checkmark & \Checkmark & \XSolid & \Checkmark & \Checkmark & \Checkmark & \XSolid \\
+        \hline
+        Násobné zpomalení Regexeru & 49x & 29x & 34x & 320x & 20x & 35x & 45x & 4000x \\
+        \hline
+    \end{tabular}
+	\caption{Testovací data výkonu aplikace}
+	\label{tab:DebuggerUI}
+\end{table}
