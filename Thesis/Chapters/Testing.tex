@@ -1,1 +1,8 @@
 \chapter{Zhodnocení a testování výsledků}\label{sec:Testing}
+
+Pro testování při vývoji, jsem používal technologii Jest, pro psaní vlastních testů.
+To hlavně kvůli udržitelnosti kódu a včasnému zachycení chyb při vývoji.
+Testy jsem používal pouze pro část aplikace, která používá hodně algoritmického kódu.
+Konkrétně při vývoji knihovny pro práci s regulárními výrazy \ref{sec:Implementation1}.
+Testy jsem psal postupně podle případů, které mě napadly, že by mohly rozbít fungování aplikace, či k nesprávným výsledkům.
+Tento přístup byl samozřejmě nedostačující a tak při testování samotné vizualizace, se mi povedlo najít několik případů, které jsem následně přidal do samotných testů.
