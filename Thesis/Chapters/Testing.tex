@@ -8,23 +8,44 @@ Testy jsem psal postupně podle případů, které mě napadly, že by mohly roz
 Tento přístup byl samozřejmě nedostačující a tak při testování samotné vizualizace, se mi povedlo najít několik případů špatných výsledků. 
 Ty jsem následně přidal do samotných testů.
 
+Testování proběhlo na počítači s 6 jádrovým procesorem a 12 vlákny, AMD Ryzen\texttrademark ~5 5600X.
+Dostupná paměť na použitém stroji, je 32GB RAM.
+
 \begin{table}[!h]
 	\centering
     \begin{tabular}{ |c||c|c|c|c|c|c|c|c| }
+        \cline{2-9}
+        \multicolumn{1}{c|}{} & \multicolumn{8}{c|}{\textbf{Regulární výraz a testovací řetězec}} \\
+        \multicolumn{1}{c|}{} & \multicolumn{8}{c|}{Čas v ms} \\
         \hline
-        Testovací subjekt & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8  \\
-        \hline
+        \textbf{Testovací subjekt} & \ref{itm:TD_1a} & \ref{itm:TD_2a} & \ref{itm:TD_3a} & \ref{itm:TD_4a} & \ref{itm:TD_5a} & \ref{itm:TD_6a} & \ref{itm:TD_7a} & \ref{itm:TD_7b}  \\
+        \hlineB{3}
         Regexer (vlastní knihovna) & 1.936 & 0.672 & 1.061 & 34.205 & 1.004 & 1.556 & 2.382 & 116.117 \\
         \hline
         RegExp & 0.039 & 0.023 & 0.031 & 0.107 & 0.051 & 0.045 & 0.053 & 0.029 \\
         \hline
         match & 0.037 & 0.024 & 0.028 & 0.034 & 0.032 & 0.035 & 0.035 & 0.025 \\
         \hline\hline
-        Nalezený výsledek & \Checkmark & \Checkmark & \Checkmark & \XSolid & \Checkmark & \Checkmark & \Checkmark & \XSolid \\
+        \rule{0pt}{14pt} \textbf{Nalezený výsledek} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{Red}{\XSolid} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{Red}{\XSolid} \\
         \hline
-        Násobné zpomalení Regexeru & 49x & 29x & 34x & 320x & 20x & 35x & 45x & 4000x \\
+        Násobné zpomalení \textit{Regexeru} & 49x & 29x & 34x & 320x & 20x & 35x & 45x & 4000x \\
         \hline
     \end{tabular}
-	\caption{Testovací data výkonu aplikace}
+	\caption{Výsledky testování výkonu zpracování regulárních výrazů}
 	\label{tab:DebuggerUI}
 \end{table}
+
+V tabulce \ref{tab:DebuggerUI} se nachází testovací výsledky časů zpracovávání.
+\textbf{Regulární výrazy a testované řetězce} vychází z přílohy \ref{sec:TestingData}. 
+Každý testovací subjekt je označený číslem, které značí regulární výraz a písmenem, které signalizuje vybraný testovací řetězec z listu pod výrazem.
+Nalezený výsledek, značí zda testovací řetězec byl nalezen, či nikoliv. 
+Násobné zpomalení \textit{Regexeru}, je porovnání oproti JavaScriptové implementaci \textit{RegExp}.
+
+Z výsledků je patrné, že vlastní implementace je značně pomalejší a to hlavně v případě nenalezeného výsledku.
+Zpomalení i ve větší míře je očekávané, jelikož se jedná o implementaci psanou v jazyce TS resp. JS.
+Také vlastní implementace, má za úkol vytvářet strukturu historie zpracování, což standardní implementace neřeší.
+Velké zpomalení při neúspěchu mohlo nastat tak, že každé zpracování probíhá pomocí NKA, ale dnešní jazyky často implementují hybridní variantu DKA s NKA.
+DKA v tomto případě má velkou výhodu, jelikož se nemusí vykonávat tolik operací.
+
+Výkonově je tedy vlastní implementace \textit{Regexer} pomalejší, ale pro účely této aplikace je tento výkon dostačující.
+Pro zlepšení výkonu, by bylo možné přepsat tuto část aplikace do více nízkoúrovňového jazyka, jako je například \textit{C++}, nebo \textit{Rust}.

@@ -9,7 +9,7 @@
 \usepackage{enumitem}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{bbding}
-
+\usepackage{boldline}
 \usepackage{newfloat}
 \usepackage{caption}
 \usepackage{dirtree}
@@ -113,11 +113,8 @@
 % TODO: check capital letters
 % TODO: check bold texts if makes sense
 % TODO: add citations
-% TODO: mby add file structure explanation
 % TODO: explain how look-around could be achieved
 % TODO: explain that only one match can be found / not implemented flags in regex
-% TODO: explain how exactly the visualization works, what should user see when looking in application
-% TODO: Testing of accomplished outcomes
 \input{Chapters/Introduction.tex}
 \input{Chapters/Principle.tex}
 \input{Chapters/ExistingApplications.tex}
@@ -125,6 +122,7 @@
 \input{Chapters/Implementation1.tex}
 \input{Chapters/Implementation2.tex}
 \input{Chapters/Testing.tex}
+\input{Chapters/Conclusion.tex}
 
 % Seznam literatury
 \printbibliography[title={Literatura}, heading=bibintoc]
@@ -159,6 +157,112 @@
 .5 exceptions\DTcomment{Výjimky}.
 .5 structures\DTcomment{Různé stuktury}.
 }
+
+\chapter{Testovací data}\label{sec:TestingData}
+
+Následující list testovacích dat obsahuje regulární výraz a testovací řetězce k danému výrazu.
+Za každým řetězcem se nachází signalizace, zda je řetězec přijímaný korespondujícím regulárním výrazem.
+
+
+\begin{enumerate}
+    %NEW ITEM
+    \item
+    \noindent\textbf{Regulární výraz:}
+
+    \textasciicircum (+ ?\textbackslash d\{3\})?( ?\textbackslash d\{3\})\{3\}\$
+
+    \noindent\textbf{Testovací řetězce:}
+
+    \begin{enumerate}
+        \item +420 123 456 789 \setlength\parindent{1em} \textcolor{OliveGreen}{\Checkmark} \label{itm:TD_1a}
+        \item +420123456 \setlength\parindent{1em} \textcolor{Red}{\XSolid} \label{itm:TD_1b}
+        \item 420 123 456 \setlength\parindent{1em} \textcolor{OliveGreen}{\Checkmark} \label{itm:TD_1c}
+        \item +421420 123456 \setlength\parindent{1em} \textcolor{OliveGreen}{\Checkmark} \label{itm:TD_1d}
+    \end{enumerate}
+
+
+    %NEW ITEM
+    \item
+    \noindent\textbf{Regulární výraz:} 
+
+    a*\_
+
+    \noindent\textbf{Testovací řetězce:}
+
+    \begin{enumerate}
+        \item aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\_ \setlength\parindent{1em} \textcolor{OliveGreen}{\Checkmark} \label{itm:TD_2a}
+    \end{enumerate}
+
+
+    %NEW ITEM
+    \item 
+    \noindent\textbf{Regulární výraz:} 
+
+    (?:ab(?<name>c)*)+\_
+
+    \noindent\textbf{Testovací řetězce:}
+
+    \begin{enumerate}
+        \item abcdabababccccabababababababccccccccc\_ \setlength\parindent{1em} \textcolor{OliveGreen}{\Checkmark} \label{itm:TD_3a}
+    \end{enumerate}
+
+
+    %NEW ITEM
+    \item 
+    \noindent\textbf{Regulární výraz:} 
+
+    (a|b|c)+(?:ab)+[a-z]\_
+
+    \noindent\textbf{Testovací řetězce:}
+
+    \begin{enumerate}
+        \item abcbbbcccbbccbbccbbababababgjgrehjb\_ \setlength\parindent{1em} \textcolor{Red}{\XSolid} \label{itm:TD_4a}
+    \end{enumerate}
+
+
+    %NEW ITEM
+    \item 
+    \noindent\textbf{Regulární výraz:} 
+
+    \textasciicircum (a\{2,\}|b\{3\}|(x+))\{3,9\}\$
+
+    \noindent\textbf{Testovací řetězce:}
+
+    \begin{enumerate}
+        \item aaxxxxxxxxxxxxbbbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxaaaaaabbb \setlength\parindent{1em} \textcolor{OliveGreen}{\Checkmark} \label{itm:TD_5a}
+        \item aaaxxaxx \setlength\parindent{1em} \textcolor{Red}{\XSolid}
+        \item aaaxxxx \setlength\parindent{1em} \textcolor{OliveGreen}{\Checkmark}
+        \item axxxxxxbxxxxxaxxxxxxbxxb \setlength\parindent{1em} \textcolor{Red}{\XSolid}
+    \end{enumerate}
+
+
+    %NEW ITEM
+    \item 
+    \noindent\textbf{Regulární výraz:} 
+    
+    ((a|b|()+)*|a|b|)+
+
+    \noindent\textbf{Testovací řetězce:}
+
+    \begin{enumerate}
+        \item \parbox[t]{14cm}{ababababababababababababbbbabababbbabababababababababbababababababbbbab\-aba \setlength\parindent{1em} \textcolor{OliveGreen}{\Checkmark}} \label{itm:TD_6a}
+        \item a \setlength\parindent{1em} \textcolor{OliveGreen}{\Checkmark}
+    \end{enumerate}
+
+
+    %NEW ITEM
+    \item 
+    \noindent\textbf{Regulární výraz:} 
+
+    (ab(c)*)+\_
+    
+    \noindent\textbf{Testovací řetězce:}
+
+    \begin{enumerate}
+        \item \parbox[t]{14cm}{abcabcabcccccccabababababccccabcabcabcccccccabababababccccabcabcabcccccccaba\-babababccccabcabcabcccccccabababababccccabcabcabcccccccabababababccccabcabca\-bcccccccabababababcccc\_ \setlength\parindent{1em} \textcolor{OliveGreen}{\Checkmark}} \label{itm:TD_7a}
+        \item \parbox[t]{14cm}{abcabcabcccccccabababababccccabcabcabcccccccabababababccccabcabcabcccccccaba\-babababccccabcabcabcccccccabababababccccabcabcabcccccccabababababccccabcabca\-bcccccccabababababcccc \setlength\parindent{1em} \textcolor{Red}{\XSolid}} \label{itm:TD_7b}
+    \end{enumerate}
+\end{enumerate}
 
 % Priloha vlozena primo do hlavniho LaTeX souboru. Ne vsechny prilohy je nutne mit ve zvlastnich souborech.
 % \chapter{Dlouhý zdrojový kód}
