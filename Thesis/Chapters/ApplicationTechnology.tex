@@ -22,19 +22,19 @@ Dále by měla aplikace obsahovat následující prvky:
 Aplikace je členěná na 3 základní knihovny, což je zřejmé na obrázku~\ref{fig:ARCH}.
 Každá část má vlastní účel a jsou navzájem izolovány.
 První z těchto knihoven je \textbf{regexer}, ta slouží pro zpracovávání a vyhodnocování regulárních výrazů.
-Jako jediná z těchto knihoven může existovat plně nezávisle na ostatních knihovnách, jelikož neobsahuje závislost na žádné z dalších knihoven.
+Jako jediná z těchto knihoven může existovat plně nezávisle bez ostatních knihoven, jelikož neobsahuje závislost na žádnou z nich.
 Druhou knihovnou je \textbf{vizualizační}, která slouží pro samotné zobrazení zpracovávaných regulárních výrazů.
-Jedná se o komponentu, která může být spuštěná mimo rozšíření VSCode, například ve webovém prostředí.
-Tato knihovna obsahuje závislost na Regexer, ale na VSCode extension není přímá závislost, jelikož pokud není nalezená funkce pro zasílání zpráv, tak je v rámci vizualizace ignorována.
-Poslední částí je samotné \textbf{rozšíření}, které se stará o komunikaci s API VSCode a o řízení všeho co se týká rozšíření.
+Jedná se o komponentu, která může být spuštěná mimo rozšíření VSCode, například ve webovém prohlížeči.
+Tato knihovna obsahuje závislost na knihovnu pro zpracovávání regulárních výrazů, ale na VSCode extension nemá přímou závislost, jelikož pokud není nalezená funkce pro zasílání zpráv, tak je v rámci vizualizace ignorována.
+Poslední částí je samotné \textbf{rozšíření}, které se stará o komunikaci s VSCode API a o řízení všeho co se týká rozšíření.
 Tato část aplikace implementuje vizualizační knihovnu v podobě webview (webové zobrazení).
 
 Na obrázku~\ref{fig:ARCH} je viditelná závislost mezi knihovnami. 
 Rovněž je patrná základní struktura těchto knihoven a jejich závislosti mezi sebou.
-Avšak jsou zakresleny jen ty komponenty, které můžeme považovat za nejdůležitější. 
-Je dobré zdůraznit asynchrony komunikaci, kterou poskytuje knihovna regexer (vyhodnocující regexy).
-Tuto komunikaci lze vidět mezi komponentou Regexer a RegexVisualizer s tím, že Regexer využívá vedlejší vlákno mimo hlavní. 
-Knihovna pro vlákna threads.js je popsána v sekci~\ref{sec:USEDtech}.
+Avšak jsou zakresleny jen ty komponenty, které můžeme považovat za důležité. 
+Je dobré zdůraznit asynchronní komunikaci, kterou poskytuje knihovna vyhodnocující regexy.
+Tuto komunikaci lze vidět mezi komponentou Regexer a RegexVisualizer s tím, že Regexer využívá vedlejší vlákno mimo vlákno hlavní. 
+Knihovna pro vlákna threads.js je blíže popsána v sekci~\ref{sec:USEDtech}.
 
 \begin{figure}[!h]
 	\centering
@@ -46,12 +46,11 @@ Knihovna pro vlákna threads.js je popsána v sekci~\ref{sec:USEDtech}.
 \newpage
 
 \section{Použité technologie}\label{sec:USEDtech}
-Tato aplikace je integrovaná do vývojového prostředí \textbf{visual studio code}, 
-zkráceně \textit{VSCode}. Jádro aplikace je psáno v programovacím jazyce \textbf{TypeScript}, zkráceně \textit{TS} verze 5.3, který je nadstavbou
-pro jazyk \textbf{JavaScript}, zkráceně \textit{JS}. TypeScript má jako hlavní nadstavbu, možnost využívání a přiřazování datových typů.
-Také platí, že kód napsaný v JS je správný pro TS, ale to neplatí naopak.
-Psaní větší aplikace je tak často vhodnější v TS, 
-kvůli svým typovým kontrolám, čímž se jako programátor mohu vyvarovat potencionálním chybám při běhu programu.
+Tato aplikace je integrovaná do vývojového prostředí \textbf{visual studio code}, zkráceně \textit{VSCode}. 
+Jádro aplikace je psáno v programovacím jazyce \textbf{TypeScript}, zkráceně \textit{TS} verze 5.3, který rozšiřuje jazyk \textbf{JavaScript}, zkráceně \textit{JS}. 
+TypeScript má jako hlavní nadstavbu, možnost využívání a přiřazování datových typů.
+Také platí, že kód napsaný v JS je správný v rámci TS, ale to neplatí naopak.
+Psaní větší aplikace je často vhodnější v TS, kvůli svým typovým kontrolám, čímž se jako programátor mohu vyvarovat potencionálním chybám při běhu programu.
 Také vývojové prostředí VSCode, zpřístupňuje API pouze pro JavaScript nebo TypeScript.
 Sice by bylo možné mít část aplikace napsané v jiném jazyce, to by ale mělo své komplikace při vývoji.
 
@@ -60,15 +59,15 @@ Ta umožňuje poměrně snadného zpracování textové podoby regulárních vý
 Tato výsledná struktura může být v podstatě jakákoliv.
 
 Všechny části aplikace, jsou zpravovány balíčkovým manažerem \textbf{NPM} (Node Package Manager).
-Také využívají některých balíčků, které jsou dostupné pro npm. 
-Část aplikace je pak postavená na technologii \textbf{NodeJS}.
-Jedná se o JavaScript runtime (běh programu). 
-Například runtime VSCode rozšíření je NodeJS, oproti tomu samotné webview běží na klasickém webovém runtime, které je typické pro webové prohlížeče.
+Také tyto části využívají některých balíčků, které jsou dostupné pro npm. 
+Určitá část aplikace je postavená na technologii \textbf{NodeJS}.
+Jedná se o JavaScript runtime (běh programu), typicky určený pro serverové aplikace. 
+Například runtime VSCode rozšíření je NodeJS, oproti tomu samotné webview běží ve webovém runtime, které je typické pro webové prohlížeče.
 
 Vizualizační část aplikace pak využívá základní \textbf{HTML} struktury.  
 HTML je základem pro webové stránky a definuje jejich strukturu pomocí značek.
-Pro následnou změnu vzhledu (styl), jsem využil technologie \textbf{LESS}\footnote{https://lesscss.org/}, což je rozšíření standardního \textbf{CSS}.
-Avšak LESS musí být transpilovaný\footnote{Typ překladu z jednoho jazyka na jazyk jiný} do CSS, jelikož webová stránka ho nezná. 
+Pro následnou změnu vzhledu (stylu), jsem využil technologie \textbf{LESS}\footnote{https://lesscss.org/}, což je rozšíření standardního \textbf{CSS}.
+Avšak LESS musí být transpilovaný\footnote{Typ překladu z jednoho jazyka na jazyk jiný} do CSS, jelikož webová stránka ho neumí zpracovat. 
 LESS umožňuje, například vnořování stylů nebo tvorbu vlastních proměnných.
 Pro logickou část vizualizační knihovny je také využit TypeScript.
 
@@ -81,17 +80,16 @@ Pro optimalizaci a úpravu kódu, se zde využívá takzvaných \textit{loaderů
 které dokážou v určité části překladu zasáhnout a popřípadě změnit určitou část kódu.
 Ve výsledku se jedná o velice silný nástroj, který dává programátorovi větší kontrolu nad výsledným přeloženým kódem aplikace.
 
-Jelikož jsem chtěl mít větší jistotu, nad správností aplikace, je v algoritmické části aplikace využito technologie pro tvorbu testů. 
+Jelikož jsem chtěl mít větší jistotu, co se týče správnosti aplikace, je v algoritmické části aplikace využito technologie pro tvorbu testů. 
 Tato knihovna se nazývá \textbf{Jest}\footnote{https://jestjs.io/}.
-Avšak tato knihovna slouží převážně pro testování JavaScriptových kódů, proto jsem k ní využil balíčku \textbf{ts-jest}\footnote{https://www.npmjs.com/package/ts-jest}, pro TypeScript.
-To mi pak umožňuje psát testy, které mohou využít typů.
+Avšak tato knihovna slouží převážně pro testování JavaScriptových kódů, proto jsem k ní využil balíčku \textbf{TS-Jest}\footnote{https://www.npmjs.com/package/ts-jest}, pro TypeScript.
+To mi pak umožňuje psát testy, které mohou využívat TypeScriptové typy.
 
 Jednou z posledních knihoven, kterou jsem použil, je \textbf{Threads.js}\footnote{https://threads.js.org/}. 
 Jelikož existují různé runtime JavaScriptu, tak neexistuje jednotný standard pro implementaci vláken (threads).
 Browser má tzv. \textit{web workery} a NodeJS má \textit{worker thready}, sice si jsou podobné, ale mají změny které znemožňují univerzálního použití.
 Proto je v této aplikaci využito threads.js, které eliminuje tyto problémy.
 Navíc dokáže nabídnout větší bezpečnost pro programátora, který píše kód v TS. 
-Tato bezpečnost je docílená tím, že knihovna dokáže poskytnout z vlákna rozhraní, které může obsahovat i typy.
+Tato bezpečnost je docílená tím, že knihovna dokáže poskytnout z vlákna rozhraní, které může obsahovat také typy.
 
-% TODO: popsat peggy syntax
 \endinput
