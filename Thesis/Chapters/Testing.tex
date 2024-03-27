@@ -4,16 +4,16 @@ Pro testování při vývoji, jsem používal technologii Jest, pro psaní vlast
 To hlavně kvůli udržitelnosti kódu a včasnému zachycení chyb při vývoji.
 Testy jsem používal pouze pro část aplikace, která používá hodně algoritmického kódu.
 Konkrétně při vývoji knihovny pro práci s regulárními výrazy \ref{sec:Implementation1}.
-Testy jsem psal postupně podle případů, které mě napadly, že by mohly rozbít fungování aplikace, či k nesprávným výsledkům.
-Tento přístup byl samozřejmě nedostačující a tak při testování samotné vizualizace, se mi povedlo najít několik případů špatných výsledků. 
-Ty jsem následně přidal do samotných testů.
+Testy jsem psal postupně podle případů, které mě napadly při vývoji v určitých částech vývoje.
+Tento přístup byl samozřejmě nedostačující a tak při testování samotné vizualizace, se mi povedlo najít několik dalších případů špatných výsledků. 
+Ty jsem následně opravil a přidal do samotných testů.
 
 Testování proběhlo na počítači s 6 jádrovým procesorem a 12 vlákny, AMD Ryzen\texttrademark ~5 5600X.
 Dostupná paměť na použitém stroji, je 32GB RAM.
 
 \begin{table}[!h]
 	\centering
-    \begin{tabular}{ |c||c|c|c|c|c|c|c|c| }
+    \begin{tabular}{ |c|c|c|c|c|c|c|c|c| }
         \cline{2-9}
         \multicolumn{1}{c|}{} & \multicolumn{8}{c|}{\textbf{Regulární výraz a testovací řetězec}} \\
         \multicolumn{1}{c|}{} & \multicolumn{8}{c|}{Čas v ms} \\
@@ -28,7 +28,7 @@ Dostupná paměť na použitém stroji, je 32GB RAM.
         \hline\hline
         \rule{0pt}{14pt} \textbf{Nalezený výsledek} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{Red}{\XSolid} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{Red}{\XSolid} \\
         \hline
-        Násobné zpomalení \textit{Regexeru} & 49x & 29x & 34x & 320x & 20x & 35x & 45x & 4000x \\
+        \textbf{Násobné zpomalení Regexeru} & 49x & 29x & 34x & 320x & 20x & 35x & 45x & 4000x \\
         \hline
     \end{tabular}
 	\caption{Výsledky testování výkonu zpracování regulárních výrazů}

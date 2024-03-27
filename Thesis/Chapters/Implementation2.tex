@@ -272,19 +272,6 @@ Komunikaci jsem se pokusil omezit na minimum, aby nedocházelo k přetížení a
 Proto se posílají pouze zprávy, které souvisí s samotným rozšířením pro VSCode.
 Například pokud dojde, k otevření výrazu z VSCode, tak musí dojít k jeho poslání pomoci zprávy do webview.
 Vizualizace se také může nacházet samostatně, mimo kontext rozšíření, proto je posílání a přijímání zpráv vypnuto.
-%TODO
-
-\subsection*{Výsledný instalační soubor}
-
-Výsledným souborem, pro VSCode rozšíření, je soubor s příponou \textit{.vsix}.
-Tyto soubory slouží pro lokální instalaci rozšíření. 
-Samotná rozšíření lze publikovat veřejně součástí VSCode, ale aktuálně jsem se rozhodl, nepublikoval tuto aplikaci.
-Pro získání \textit{vsix} souboru, slouží příkaz \textit{vsce}, který dokáže sjednotit všechny závislosti do jednoho výsledného souboru.
-
-Pro instalaci rozšíření, lze použít příkazovou paletu od VSCode.
-Tu lze otevřít pomocí zkratky \textbf{Shift + Command + P} pro Mac a \textbf{Ctrl + Shift + P} pro Windows nebo Linux.
-Po otevření příkazové palety, stačí zadat příkaz \textit{Extensions: Install from VSIX}.
-Poté se otevře průzkumník souborů, kde stačí otevřít zvolený \textit{vsix} soubor, který se nainstaluje.
 
 %TODO
 
@@ -299,15 +286,25 @@ Lze použít i jiné balíčkové manažery místo NPM, ale v návodu na sestave
 Rozšíření bylo vyvíjeno pro VSCode verze 1.84.0, ale mělo by fungovat i na novějších verzích.
 
 V příloze~\ref{sec:FileStructure}, je ukázaná částečná adresářová struktura projektu.
-Instalace probíhá ve následujících krocích:
+Instalace probíhá v následujících krocích:
 
 \begin{enumerate}
-	\item Pro instalaci všech externích závislostí, v kořenovém adresáři použijeme příkaz \textbf{\textcolor{OliveGreen}{npm install}}
+	\item Pro instalaci všech externích závislostí, v kořenovém adresáři se použije příkaz \textbf{\textcolor{OliveGreen}{npm install}}
 	\item K sestavení projektu slouží npm skript \textbf{\textcolor{OliveGreen}{npm run build}}
-	\item Pro vytvoření instalačního souboru rozšíření \textbf{\textcolor{OliveGreen}{npm run release}}
-	\item Výsledný instalační soubory se nachází v \textit{/libraries/regex-visualizer-extension/release}
+	\item Pro vytvoření instalačního souboru rozšíření se použije příkaz \textbf{\textcolor{OliveGreen}{npm run release}}
+	\item Výsledný instalační soubory se nachází v \textit{/libraries/regex-visualizer-extension/release}, podle přílohy \ref{sec:FileStructure}
 \end{enumerate}
 
-%TODO
+\subsection*{Výsledný instalační soubor}
+
+Výsledným souborem, pro VSCode rozšíření, je soubor s příponou \textit{.vsix}.
+Tyto soubory slouží pro lokální instalaci rozšíření. 
+Samotná rozšíření lze publikovat veřejně součástí VSCode, ale aktuálně jsem se rozhodl, nepublikoval tuto aplikaci.
+Pro získání \textit{vsix} souboru, slouží příkaz \textit{vsce}, který dokáže sjednotit všechny závislosti do jednoho výsledného souboru.
+
+Pro instalaci rozšíření, lze použít příkazovou paletu od VSCode.
+Tu lze otevřít pomocí zkratky \textbf{Shift + Command + P} pro Mac a \textbf{Ctrl + Shift + P} pro Windows nebo Linux.
+Po otevření příkazové palety, stačí zadat příkaz \textit{Extensions: Install from VSIX}.
+Poté se otevře průzkumník souborů, kde stačí otevřít zvolený \textit{vsix} soubor, který se nainstaluje.
 
 \endinput

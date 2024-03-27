@@ -1,1 +1,25 @@
 \chapter{Závěr}\label{sec:Conclusion}
+
+Práce se zabývala tématem regulárních výrazů a možností jejich vizualizace.
+Její implementace byla integrována do vývojového prostředí Visual Studio Code, s tím že může existovat mimo vývojové prostředí, jako samostatná webová stránka.
+Pro porovnání a ukázku jsem zmínil existující nástroje pro vizualizaci regulárních výrazů, společně s jejich funkcionalitami.
+Následně jsem vytvořil vlastní knihovnu. která dokáže tyto výrazy zpracovávat.
+Přesněji daný výraz vyhodnotí a vytvoří strukturu nedeterministického konečného automatu.
+Ten slouží pro následující vyhledávání v zadaném řetězci.
+Výsledkem vyhledávání je struktura stavů, nebo-li historie procházení.
+Vizualizační knihovna tyto stavy přebírá a následně zprostředkovává rozhraní pro průchod historie stavů.
+Část aplikace pro rozšíření, zobrazí vizualizaci do webového okna jako jeho součást.
+
+Na konci po otestování aplikace, jsem došel k závěru že její výkon je pro své účely dostatečný.
+Také aplikace sice nabízí limitované množství implementovaných vzorů, ale i přesto může mít dostatečný přínos pro programátory.
+Aplikace byla psána tak, aby mohla být v budoucnu poměrně lehce rozšířitelná o další vymoženosti, kterými současně nedisponuje.
+
+Každá ze tří knihoven integrovaných do aplikace, by mohla být rozšířená o další vzory, nastavení, druhy zobrazení atd.
+Mezi tyto možné rozšíření, hlavně patří doplnění všech možných vzorů pro regulární výrazy z jazyka JavaScript.
+Další možným doplnění aplikace, je přidání podpory vícero standardů regulárních výrazů, z jiných jazyků.
+Aplikace v případě nutnosti, by mohla být potencionálně zrychlená a to například přepsáním části kódu do nízkoúrovňového jazyka, jako je C++ nebo Rust.
+Ve vizualizaci by bylo možné, doplnit možnost zobrazení nedeterministického konečného automatu a abstraktního syntaktického stromu daného výrazu.
+
+Jelikož už teď může být aplikace přínosná pro ostatní programátory, existuje možnost toto rozšíření do VSCode publikovat veřejně.
+Samotná publikace, by mohla také urychlit případný vývoj, jelikož by existovalo více lidí, kteří by mohli aplikaci testovat.
+Také lze celý projekt nastavit jako veřejný, aby se na vývoji mohli podílet další programátoři.
