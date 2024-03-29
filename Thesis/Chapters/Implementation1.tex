@@ -45,11 +45,6 @@ Vztahy mezi jednotlivými třídami, lze vidět na obrázku~\ref{fig:ARCH_RGXR}.
 Myslím si že je vhodné poukázat na obalující blok \textbf{MatchingWorker}.
 Jedná se o vstupní soubor vedlejšího vlákna, který slouží pro asynchronní komunikaci s hlavním vláknem.
 
-
-% Je-li vytvořena instance této třídy, je potřeba parsnout zadaný regulární výraz, pomocí metody \textbf{parse}.
-% Regexer, jako řídící třída zavolá RegexParser, který dokáže zpracovat textovou podobu regulárního výrazu na strukturu AST a NKA.
-% TODO ^ update, change location probably
-
 % TODO \/ check if all information is relevant and maybe add more explanation
 
 \begin{figure}[!h]
@@ -71,8 +66,6 @@ V ukázce~\ref{code:grammar1} se nachází vstupní neterminál bezkontextové g
 Ten obsahuje výběr mezi dvěma začátky.
 Výběr je pak dostupný pod názvem \textit{type}, podle toho který se zvolí.
 Před dokončením pravidla a vracením dat, se zde může nacházet jejich modifikace.
-%TODO: move somewhere \/
-%Tato modifikace je uzavřená ve složených závorkách \{\} a data po změně jsou vrácena pomocí return.
 Modifikace v rámci pravidla začátku, probíhá zavoláním instance vlastní třídy \textbf{ParserHandler}, která je součástí gramatiky.
 Třída má za úkol zpracovávat příchozí data do struktury, která je ukázaná na obrázku~\ref{fig:JSONex}.
 
@@ -111,7 +104,6 @@ Nebo-li byla by dříve zpracována, než-li samotný výběr.
 Příkladem může být výraz $a*|b*$, při kterém by se první zpracovala iterace $a*$.
 Výsledkem výběru by byly 2 možnosti $\epsilon$ nebo $b*$, což je sice sám o sobě správný tvar, ale ve zvoleném výrazu \textbf{musí} být výsledný výběr $a*$ nebo $b*$.
 
-% TODO: fix & shorten
 \begin{code}[!ht]
 	\begin{minted}{peg}
 any_element 
@@ -153,7 +145,6 @@ Ne každý stav musí mít potomky, ale například skupina potomky má.
 
 \section{Vyhledání pomocí regulárního výrazu}\label{sec:PatternMatching}
 
-%TODO: popsat výslednou strukturu
 Vyhledání je jednou z hlavních částí této knihovny, jedná se o procházení regulárním výrazem a hledaným řetězcem.
 Výsledkem je struktura JSON dat, která obsahuje informace o zpracovaném vyhledávání.
 V této části textu popisuji, jak jsem na implementoval vyhledávání, důležité koncepce a výslednou strukturu.
