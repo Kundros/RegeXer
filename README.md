@@ -1,20 +1,22 @@
 <div align="center">
     <h1>Regex visualisation extension for vscode</h1>
     <div align="center">
-        <img src="https://img.shields.io/badge/npm-v0.0.1-0172b3.svg" alt="npm">
+        <img src="https://img.shields.io/badge/npm-v0.0.3-0172b3.svg" alt="npm">
         <img src="https://img.shields.io/badge/typescript-v5.2.2-3178c6.svg" alt="typescript">
     </div>
 </div>
 
 ## Introduction
 
-This project is root for **regex visualisation extension for visual studio**. Its purpose is to give programers tool built in vscode to debug regular expressions in real time. Also this whole project is part of Thesis at VSB-TUO, by Dominik Kundra. All parts of this extension could be not fully-fledged so please take that in concideration. Now this extension can only recognise limited number of regular expressions, and only regular expressions for ECMAScript (JavaScript) specification. The parts that are not implemented, but might be in future are mainly lookarounds.
+This project is root of **regex visualization extension** for **Visual Studio Code**. Purpose of this project is to give programers tool built in VSCode to debug regular expressions in real time. This extension is still mostly work in progress and many features are not implemented, so please take that in consideration. Now this extension can only recognize some regular expressions, and only regexes for ECMAScript (JavaScript) specification. Parts that are not implemented yet, might be in future.
 
 ## Setup
 
 If you're building this library on your own, you'll need to have installed NPM along with node.js minimal version 14.17, but it is recommended to use version >=20.
 
-All commands expects using NPM package manager, replace NPM with alternative package manager if you want to (supporting node packages).
+All commands expects you're using node package manager (NPM), replace NPM with alternative package manager if you want to (supporting node packages).
+
+After cloning this repository, you can build this project with following commands:
 
 ### Download npm packages using command below in root:
 ```bash
@@ -53,7 +55,9 @@ This will trigger hover pop-up with link to open regex visualization window.
 
 ### Application window
 
-Application initial view consists of:
+Application window is the main page of regex visualization. You can interact with this window by writing your regular expressions along with text, where matching should be performed.
+
+**Application initial view consists of:**
 * Input for writing regular expressions. 
 * Input for matching string.
 * General information about parsing and matching progress. It is located at bottom of matching text input. 
@@ -65,13 +69,15 @@ Application initial view consists of:
 
 ### Debugger window
 
-Debugger window consists of:
-* Slider for manipulating with matching history.
-* Editable current history/slider position/value.
-* Action buttons for quick slider manipulation, and it's corresponding history.
+Debugger window can be opened by clicking at the gray debug button, at bottom of main page. This action will open window, in which you can see and browse history of match.
+
+**Debugger window consists of:**
+* Slider used to browse match history.
+* Editable position/value of history/slider.
+* Action buttons for quick slider manipulation, and it's history.
 * Editable Auto-play speed. 
 * Parsed regular expression text with highlighting.
-* Matching string text with highlighting. 
+* Matching string text with position highlighting. 
 
 <p align="center">
     <img src="./images/showcase_usage2.gif" alt="app window">
