@@ -9,32 +9,35 @@ Vizualizace stavů průchodu regulárním výrazem, by měla být ve formě hist
 Program by měl umět zpracovávat, nejzákladnější a běžně používané vzory regulárních výrazů, tak aby mohl být v praxi použitelný na reálných příkladech.
 Dále by měla aplikace obsahovat následující prvky:
 \begin{itemize}
-	\item Lehce rozšířitelná, pro další možné funkcionality, které lze implementovat.
-	\item Vizualizační část aplikace, by měla obsahovat možnost zadávání regulárních výrazů a text pro následné vyhledávání.
+	\item Lehká budoucí rozšířitelnost pro další možné funkcionality, které lze na implementovat.
+	\item Vizualizační část aplikace, by měla obsahovat možnost zadávání regulárních výrazů a textu pro následné vyhledávání.
 	\item Možnost spuštění mimo vývojové prostředí Visual Studio Code.
-	\item Ladící nástroj pro vizualizaci stavů
-	\item Implementaci základních vzorů regulárních výrazů
-	\item Možnost analýzy regulárních výrazů ze zdrojových kódů
+	\item Ladící nástroj pro vizualizaci stavů.
+	\item Implementaci základních vzorů regulárních výrazů.
+	\item Možnost analýzy regulárních výrazů ze zdrojových kódů.
 \end{itemize}
 
 \section{Zvolený návrh}
 
 Aplikace je členěná na 3 základní knihovny, což je zřejmé na obrázku~\ref{fig:ARCH}.
-Každá část má vlastní účel a jsou navzájem izolovány.
-První z těchto knihoven je \textbf{regexer}, ta slouží pro zpracovávání a vyhodnocování regulárních výrazů.
-Jako jediná z těchto knihoven může existovat plně nezávisle bez ostatních knihoven, jelikož neobsahuje závislost na žádnou z nich.
+Každá část má vlastní účel a jsou od sebe navzájem izolovány.
+První knihovna \textbf{vyhodnocuje regulární výrazy}, přesněji slouží pro zpracovávání a vyhodnocování regulárních výrazů a pro vytváření historie stavů vyhledávání.
+Jako jediná může existovat plně nezávisle bez ostatních knihoven, jelikož neobsahuje závislost na žádnou z nich.
 Druhou knihovnou je \textbf{vizualizační}, která slouží pro samotné zobrazení zpracovávaných regulárních výrazů.
 Jedná se o komponentu, která může být spuštěná mimo rozšíření VSCode, například ve webovém prohlížeči.
-Tato knihovna obsahuje závislost na knihovnu pro zpracovávání regulárních výrazů, ale na VSCode extension nemá přímou závislost, jelikož pokud není nalezená funkce pro zasílání zpráv, tak je v rámci vizualizace ignorována.
-Poslední částí je samotné \textbf{rozšíření}, které se stará o komunikaci s VSCode API a o řízení všeho co se týká rozšíření.
+Tato knihovna obsahuje závislost na knihovnu pro zpracovávání regulárních výrazů, ale na VSCode rozšíření nemá přímou závislost.
+Poslední částí je samotné \textbf{rozšíření}, které se stará o komunikaci s VSCode API a o řízení všeho týkajícího se rozšíření.
 Tato část aplikace implementuje vizualizační knihovnu v podobě webview (webové zobrazení).
 
-Na obrázku~\ref{fig:ARCH} je viditelná závislost mezi knihovnami. 
-Rovněž je patrná základní struktura těchto knihoven a jejich závislosti mezi sebou.
-Avšak jsou zakresleny jen ty komponenty, které můžeme považovat za důležité. 
+Na obrázku~\ref{fig:ARCH} je viditelná závislost mezi všemi komponentami. 
+Rovněž je zde patrná základní struktura těchto knihoven a jejich závislosti mezi sebou.
+Avšak jsou zakresleny jen ty komponenty, které je možné považovat za důležité. 
 Je dobré zdůraznit asynchronní komunikaci, kterou poskytuje knihovna vyhodnocující regexy.
 Tuto komunikaci lze vidět mezi komponentou Regexer a RegexVisualizer s tím, že Regexer využívá vedlejší vlákno mimo vlákno hlavní. 
 Knihovna pro vlákna threads.js je blíže popsána v sekci~\ref{sec:USEDtech}.
+Rozšíření VSCode v rámci webview, zobrazuje HTML soubor index.html z vizualizační knihovny.
+Také rozšíření může komunikovat s touto knihovnou pomocí zpráv, pro předávání dat a pro vyvolávání událostí. 
+RegexMatch je pak využívaný vizualizační knihovnou, pro zobrazování stavů vyhledávání.
 
 \begin{figure}[!h]
 	\centering
@@ -46,7 +49,7 @@ Knihovna pro vlákna threads.js je blíže popsána v sekci~\ref{sec:USEDtech}.
 \newpage
 
 \section{Použité technologie}\label{sec:USEDtech}
-Tato aplikace je integrovaná do vývojového prostředí \textbf{visual studio code}, zkráceně \textit{VSCode}. 
+Celá aplikace je integrovaná do vývojového prostředí \textbf{Visual Studio Code}, zkráceně \textit{VSCode}. 
 Jádro aplikace je psáno v programovacím jazyce \textbf{TypeScript}, zkráceně \textit{TS} verze 5.3, který rozšiřuje jazyk \textbf{JavaScript}, zkráceně \textit{JS}. 
 TypeScript má jako hlavní nadstavbu, možnost využívání a přiřazování datových typů.
 Také platí, že kód napsaný v JS je správný v rámci TS, ale to neplatí naopak.
