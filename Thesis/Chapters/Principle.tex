@@ -1,38 +1,58 @@
 \chapter{Principy a historie regulárních výrazů}\label{sec:Principle}
 
 Tato kapitola se zabývá definicí regulárních výrazů, jejich fungováním a jak se jednotlivé implementace mohu lišit. 
-Součástí jejích implementace, provází několik pojmů z teoretické informatiky, odkud pocházejí.
+Součástí jejich implementace provází několik pojmů z teoretické informatiky, odkud pocházejí.
 Hlavně se jedná o \textbf{Konečné automaty} a \textbf{Thompsonovo sestrojení}.
 
 \section{Formální jazyk}
 Formální jazyk je libovolná množina konečných slov nad určitou abecedou \cite{MUNIFL}. 
 Slova chápeme jako řetězce znaků, která jsou přijímaná zadaným jazykem.
-Tato slova musí být sice konečná ale množina těchto slov může být nekonečná. 
-Tyto jazyky mohou být definovány regulárními výrazy, formální gramatikou,
-konečnými automaty a dalšími. Regulární jazyky jsou pak jednou z možných definic formálních jazyků. 
+Délka slov musí být sice konečná, ale množina těchto slov může být nekonečná. 
+Tyto jazyky mohou být například definovány regulárními výrazy, formální gramatikou nebo konečnými automaty. 
 
 \section{Konečný automat}\label{sec:FiniteAutomaton}
-Ve spojení s regulárními výrazy se často pojí konečné automaty, jedná se o další oblast z teoretické informatiky.
-Tato práce implementuje regulární výrazy právě ve forme konečných automatů.
-Zjednodušeně se dá říct, že konečný automat je model jednoduchého počítače, který má určitý počet stavů a přechodů \cite{Havrlant}. 
+S regulárními výrazy se často pojí konečné automaty, jedná se o další oblast z teoretické informatiky.
+Tato práce implementuje regulární výrazy právě ve formě konečných automatů.
+Zjednodušeně se dá říct, že konečný automat je výpočetní model jednoduchého počítače, který má určitý počet stavů a přechodů \cite{Havrlant}. 
 
-Stavy jsou typicky zakreslovány jako kružnice, a každý automat musí obsahovat alespoň jeden počáteční stav, ale může jich také obsahovat více. 
-To stejné platí pro konečný/é stav/y. 
-Konečné stavy se také vyznačují jako kruh, ale z dvojitou čárou. 
-Počáteční stavy, jsou označovány jako stav, do kterého vede šipka, která ale nevychází z jiného stavu.
-Přechody jsou pak šipky vedoucí z jednoho stavu do druhého a jsou označeny přechodovým symbolem.
-Pro upřesnění, přechod může odkazovat na stejný stav ze kterého vychází.
-Tyto přechody nám říkají, že pokud chceme přejít z jednoho stavu do druhého, tak musíme v přijímaném slově se posunout o přechodový symbol. 
-Pokud to není možné, tak nelze přejít do tohoto stavu.
+\subsection*{Definice}
 
 Konečné automaty se dělí na \textbf{deterministické} a \textbf{nedeterministické}, zkráceně \textbf{DKA} (deterministický konečný automat) a \textbf{NKA} (nedeterministický konečný automat).
-DKA mohou mít v daném stavu pro každý znak abecedy \textbf{maximálně} jeden přechod, dále \textbf{nemohou} obsahovat tzv. prázdný znak často označovaný řeckým písmenem epsilon $\epsilon$.
-Příklad tohoto automatu je možné vidět na obrázku~\ref{fig:DFAex}.
-Naopak NKA umožňují jak prázdné znaky, tak více stejných přesunů z daného stavu. 
+DKA mohou mít v daném stavu pro každý znak abecedy \textbf{právě jeden} přechod, zatímco NKA umožňují více stejných přechodů z daného stavu. 
+NKA také mohou obsahovat tzv.\ prázdný znak často označovaný řeckým písmenem epsilon $\epsilon$. 
 Prázdné znaky slouží pro změnu stavu bez změny aktuální pozice ve hledaném slově. 
-Pro ukázku lze porovnat dva ekvivalentní konečné automaty,
-NKA na obrázku~\ref{fig:NFAex} a DKA na obrázku~\ref{fig:DFAex}.
 Na závěr lze podotknout, že každý NKA je možné převést na ekvivalentní DKA.
+
+\newpage
+
+\noindent Deterministický konečný automat je pětice $(Q, \Sigma, \delta, q_0, F)$\cite{Viswanathan_2017}:
+\begin{itemize}
+	\item $Q$ --- konečná množina stavů.
+	\item $\Sigma$ --- konečná vstupní abeceda.
+	\item $\delta: Q \times \Sigma \rightarrow Q$ --- přechodová funkce.
+	\item $q_0 \in Q$ --- počáteční stav.
+	\item $F \subseteq Q$ --- množina konečných stavů.
+\end{itemize}
+
+\noindent Nedeterministický konečný automat je pětice $(Q, \Sigma, \Delta, S, F)$\cite{Viswanathan_2017}:
+\begin{itemize}
+	\item $Q$ --- konečná množina stavů.
+	\item $\Sigma$ --- konečná vstupní abeceda.
+	\item $\Delta: Q \times \Sigma \rightarrow 2^Q$ --- přechodová funkce, kde stav a vstupní symbol určuje množinu možných následujících stavů.
+	\item $S \subseteq Q$ --- množina počátečních stavů.
+	\item $F \subseteq Q$ --- množina konečných stavů.
+\end{itemize}
+
+\subsection*{Vizualizace}
+
+Stavy jsou typicky zakreslovány jako kružnice. 
+Konečné stavy se označují jako kružnice s dvojitou čárou. 
+Počáteční stavy jsou označovány jako stav, do kterého vede šipka, která ale nevychází z jiného stavu.
+Přechody jsou znázorněny jako šipky vedoucí z jednoho stavu do druhého a jsou označeny přechodovým symbolem.
+Pro upřesnění, přechod může odkazovat na stejný stav ze kterého vychází.
+Tyto přechody nám říkají, že pokud chceme přejít z jednoho stavu do druhého, tak se musíme v přijímaném slově posunout o přechodový symbol. 
+Pokud to není možné, tak nelze tímto přechodem přejít do tohoto stavu.
+Pro ukázku lze porovnat dva ekvivalentní konečné automaty, NKA na obrázku~\ref{fig:NFAex} a DKA na obrázku~\ref{fig:DFAex}.
 
 \begin{figure}[!h]
 	\centering
@@ -51,7 +71,7 @@ Na závěr lze podotknout, že každý NKA je možné převést na ekvivalentní
 \section{Bezkontextová gramatika}
 Součástí této práce je i využití Bezkontextové gramatiky, pro nadefinování syntaxe regulárních výrazů.
 
-Bezkontextová gramatika, je jedna další z možných definic formálních jazyků. 
+Bezkontextová gramatika je jedna další z možných definic formálních jazyků. 
 Je určená konečnou množinou \textbf{neterminálních symbolů} (proměnných), konečnou množinou \textbf{terminálních symbolů}, která nesmí mít žádné prvky společné s předchozí množinou.
 Dále je součástí \textbf{počáteční neterminál}, s konečnou množinou \textbf{přepisových pravidel}\cite{MUNIFL}.
 
@@ -61,10 +81,9 @@ Konečný řetězec generovaný danou gramatikou, je pouze tvořen terminálním
 Aby mohl být řetězec přijímaný zadanou gramatikou, musí ho být schopná vygenerovat.
 
 \section{Vznik, implementace a vzory}
-Regulární výrazy byly poprvé nadefinovány Americkým matematikem \textbf{Stephan Cole Kleene}, jako regulární jazyky. 
-Dále se aplikovali v teoretické informatice, jako podkategorie \textbf{teorie automatů} a součást \textbf{formálních jazyků}.
-Ačkoliv byly nadefinovány začátkem padesátých let, tak jejich využití v počítačích nastalo až na konci šedesátých let a to v 
-jedním z nejznámějších operačních systémů UNIX.
+Regulární výrazy byly poprvé nadefinovány Americkým matematikem \textbf{Stephan Cole Kleenem}, jako regulární jazyky. 
+Dále se aplikovaly v teoretické informatice, jako podkategorie \textbf{teorie automatů} a součást \textbf{formálních jazyků}.
+Ačkoliv byly nadefinovány začátkem padesátých let, tak jeho využití v počítačích nastalo až na konci šedesátých let a to v jednom z nejznámějších operačních systémů UNIX.
 
 \subsection*{Thompsonovo sestrojení}
 
@@ -77,9 +96,9 @@ Toto sestrojení je využito v této práci a blíže jej popisuje následujíc�
 NKA se běžně využívá, jelikož je poměrně jednoduchý na implementaci.
 Také oproti DKA využívá \textbf{zpětného krokování} (backtracking) a povoluje složitější operace jako je \textit{rozhlédnutí se kolem sebe} (look-around).
 Backtracking je důležitý pro NKA, jelikož neexistuje jednoznačná cesta vyhodnocení.
-To znamená že, pokud je NKA ve stavu, ze kterého nelze pokračovat dále, tak je potřeba se vrátit do předchozího stavu.
-DKA mají výhodu že jsou rychlejší, ale jsou typicky mnohem větší než jejich ekvivalentní NKA a neumožňují lehce implementovat některé složitější operace.
-Také nepotřebují zpětné krokování, jelikož jejich cesta je deterministická tzn. existuje vždy jen jedna cesta pro hledané slovo.
+To znamená, že pokud je NKA ve stavu, ze kterého nelze pokračovat dále, tak je potřeba se vrátit do předchozího stavu.
+DKA mají výhodu, že jsou rychlejší, ale jsou typicky mnohem větší než jejich ekvivalentní NKA a neumožňují lehce implementovat některé složitější operace.
+Také nepotřebují zpětné krokování, jelikož jejich cesta je deterministická, tzn. existuje vždy jen jedna cesta pro hledané slovo.
 Dnes se ale často využívá kombinace DKA i NKA, kdy DKA se využije pro rychlé vyhledání daného slova a pokud bylo slovo nalezeno, 
 tak se použije NKA pro jejich rozšířené možnosti.
 
@@ -104,7 +123,7 @@ Konečný automat, který tímto převodem vznikne je ukázán na obrázku~\ref{
 	\label{fig:NFAa}
 \end{figure}
 
-Pro zadaný výraz \textbf{s|t} (varianta), kde \textit{s} je levá strana varianty a \textit{t} je pravá strana varianty, platí že ze stavu \textit{q} (počáteční stav) vedou dva přechody
+Pro zadaný výraz \textbf{s|t} (varianta), kde \textit{s} je levá strana varianty a \textit{t} je pravá strana varianty, platí, že ze stavu \textit{q} (počáteční stav) vedou dva přechody
 \textit{$\epsilon$}, na počáteční stavy variant \textit{s} a \textit{t}. 
 Z těchto počátečních stavů dále pokračuje sekvence stavů \textit{N(s)} pro \textit{s} a \textit{N(t)} pro \textit{t}.
 Konce variant \textit{s} a \textit{t} mají každé jediný přechod \textit{$\epsilon$} na konečný stav \textit{f}.
@@ -116,37 +135,37 @@ Na obrázku~\ref{fig:NFAunion} je znázorněný výsledný NKA, kde skupina stav
 	\label{fig:NFAunion}
 \end{figure}
 
-Další pravidla pro sestrojení lze například najít, v následujících článcích \cite{Thompson1,Thompson2}.
-Některé pravidla, jsou v této práci upravená, ale fungují na stejném principu.
+Další pravidla pro sestrojení lze například najít v následujících článcích \cite{Thompson1,Thompson2}.
+Některé pravidla jsou v této práci upravená, ale fungují na stejném principu.
 
 \subsection*{Základní vzory regulárních výrazů}
-V Předchozích sekcích, již byly popsány základní konstrukce týkající se regulárních výrazů.
-Tato sekce se zabývá jejich základními vzory, nebo-li jejich formou zápisu a syntaxí.
+V předchozích sekcích již byly popsány základní konstrukce týkající se regulárních výrazů.
+Tato sekce se zabývá jejich základními vzory, neboli jejich formou zápisu a syntaxí.
+Popis následujících vzorů vychází ze syntaxe regulárních výrazů pro jazyk JavaScript.
 
 Za nejjednodušší výraz lze považovat prázdný výraz, také označovaný jako $\epsilon$. 
-Tento výraz dokáže přijímat slova délky 0 resp. prázdné slova.
+Tento výraz dokáže přijímat slova délky 0, resp. prázdná slova.
 Výrazy mohou obsahovat \textbf{téměř} libovolný znak, který bude přijímat slova s tímto znakem. 
-Avšak nemohou být použity znaky, které jsou rezervované, nebo-li jsou součástí syntaxe regulárních výrazů.
-Chceme-li použít tyto znaky je potřeba použít zpětné lomítko \textbackslash. 
+Avšak nemohou být použity znaky, které jsou rezervované, neboli jsou součástí syntaxe regulárních výrazů.
+Chceme-li použít tyto znaky, je potřeba použít zpětné lomítko \textbackslash. 
 Takové spojení znaku a zpětného lomítka se pak anglicky nazývá \textbf{escaped character}.
-Ačkoliv také existují znaky, které nejsou součástí rezervovaných znaků, ale lze před nimi použít zpětné lomítko.
-Funkcionalita těchto znaků se následně mění. 
-Například pokud použijeme zpětné lomítko před znakem \textit{d}, tak to ve výrazu značí přijmutí čísla od 0 do 9.
+Také existují znaky, které nejsou součástí rezervovaných znaků, ale lze před nimi použít zpětné lomítko.
+Funkcionalita těchto znaků se následně mění, např. pokud použijeme zpětné lomítko před znakem \textit{d}, tak to ve výrazu značí přijmutí čísla od 0 do 9.
 
-Iterace, je možnost jak lze opakovaně provádět nějaký vzor.
+Iterace je možnost jak lze opakovaně provádět nějaký vzor.
 Například lze iterovat znak, skupinu a další konstrukce. 
 Nelze však opakovat jakýkoliv vzor.
 Prvním typem iterace je \textbf{*}, známa jako \textbf{Kleene star}.
-Tento druh iterace, může mít počet opakování od \textbf{0} do \textbf{n}. 
+Tento druh iterace může mít počet opakování od \textbf{0} do \textbf{n}. 
 Dále existují další 2 typy iterací, a to je iterace v rozmezí $1-n$ označována znakem + a \textit{iterace v rozmezí}, která se značí \{od,do\}.
 V regulárních výrazech se vždy vzor opakování vyskytuje za konstrukcí, které se má opakovaně provádět.
 
-Operace \textit{výběr}, je dalším základním vzorem pro regulární výrazy. 
+Operace \textit{varianta} je dalším základním vzorem pro regulární výrazy. 
 Jedná se o výběr mezi pravou a levou stranou. 
 Oddělovacím znakem je typicky | podobně jako bitová operace \textit{OR} v mnoha programovacích jazycích.
 
 Dalšími základními konstrukty jsou například skupiny, které jsou obaleny v jednoduchých závorkách.
-Ty slouží k rozdělení částí regulárních výrazů, které jsou po dokončení vyhledávání, přístupné jako oddělené části vyhledání.
+Ty slouží k rozdělení částí regulárních výrazů, které jsou po dokončení vyhledávání přístupné jako oddělené části vyhledání.
 
 Na obrázku \ref{fig:REGEXEXMP} lze vidět příklad regulárního výrazu, ve kterém jsou použity a popsány některé ze zmíněných vzorů.
 
@@ -159,23 +178,22 @@ Na obrázku \ref{fig:REGEXEXMP} lze vidět příklad regulárního výrazu, ve k
 
 \subsection*{Implementace v programovacích jazycích}\label{sec:impipl}
 
-V dnešní době mají v podstatě skoro všechny programovací jazyky, nějakou formou implementované regulární výrazy.
-Tato implementace se však často liší. 
-Sice jejich základ bývá stejný, ale co se týče obsáhlosti a syntaxe se často liší.
-Může se tak stát to, že funkcionalita podporována jedním jazykem, není podporovana druhým.
-Taktéž oproti původním regulárním výrazům, dnešní implementace obsahují mnohdy složitější koncepce, jako je look-around, nebo například rekurze.
+V dnešní době mají v podstatě skoro všechny programovací jazyky nějakou formou implementované regulární výrazy.
+Implementace v programovacích jazycích se často liší svou syntaxí a obsáhlostí, ale jejich základ bývá stejný.
+Může se tak stát to, že funkcionalita podporována jedním jazykem není podporovana druhým.
+Taktéž oproti původním regulárním výrazům, dnešní implementace obsahují mnohdy složitější koncepce, jako je look-around nebo například rekurze.
 Někdy jazyky sice sdílí stejné konstrukce, ale mohou se lišit syntaxí.
 
-Look-around je již celkem pokročilá funkcionalita, jejímž principem je, takzvané nezachytávání znaků při zpracovávání.
-Typicky je dělíme podle směru a to na \textit{dopředné} a \textit{zpětné}.
-Pak je dělíme podle podmínění a to na \textit{kladné} a \textit{negativní}.
-Pokud máme kladné podmínění \textbf{musí} uzavřený výraz být splněný a pokud máme záporné tak \textbf{nesmí} být splněný.
-V původní formě regulárních výrazů, tato funkce neexistovala.
+Look-around je již celkem pokročilá funkcionalita, jejímž principem je takzvané nezachytávání znaků při zpracovávání.
+Typicky je dělíme podle směru, a to na \textit{dopředné} a \textit{zpětné}.
+Pak je dělíme podle podmínění, a to na \textit{kladné} a \textit{negativní}.
+Pokud máme kladné podmínění, \textbf{musí} uzavřený výraz být splněný a pokud máme záporné, tak \textbf{nesmí} být splněný.
+V původní formě regulárních výrazů tato funkce neexistovala.
 
-Mnohdy je potřeba, nalezený řetězec rozdělit do skupin. 
+Mnohdy je potřeba nalezený řetězec rozdělit do skupin. 
 Tuto možnost dnešní implementace také umožňují.
-Chceme-li zdůraznit že zadaný podvýraz je skupinou, obalíme ho do závorek.
-Tato vlastnost je důležitá, jelikož není potřeba v již nalezeném řetězci, hledat další podřetězce pomocí dalšího výrazu.
+Chceme-li zdůraznit, že zadaný podvýraz je skupinou, obalíme ho do závorek.
+Tato vlastnost je důležitá, jelikož není potřeba v již nalezeném řetězci hledat další podřetězce pomocí dalšího výrazu.
 Skupiny se dělí na zachytávající (capturing), pojmenované (named) a nezachytávající (non-capturing).
 Pojmenované patří pod zachytávající, akorát jsou identifikovány pomocí názvu místo indexu.
 Obě skupiny zůstávají zachycené po dokončeném vyhledávání.
@@ -183,7 +201,7 @@ Nezachytávající skupiny slouží čistě pro regulární výrazy, například
 
 Asi nejobsáhlejší implementací je \textit{PCRE} (Perl-Compatible Regular Expressions) a \textit{PCRE2}.
 Tento standard pochází z jazyka Perl, ale také je například součástí jazyka PHP.
-Nachází se zde již poměrně složité vzory, jako jsou podmínky, nebo rekurze.
+Nachází se zde již poměrně složité vzory, jako jsou podmínky nebo rekurze.
 
 \endinput
 

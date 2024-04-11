@@ -1,7 +1,6 @@
 \chapter{Knihovna pro práci s regulárními výrazy}\label{sec:Implementation1}
 
-Před tvorbou samotné vizualizace, jsem měl úvahu o použití knihovny, 
-která by mi umožňovala získat zpracovanou strukturu historie průchodu regulárním výrazem.
+Před tvorbou samotné vizualizace jsem měl úvahu o použití knihovny, která by mi umožňovala získat zpracovanou strukturu historie průchodu regulárním výrazem.
 Sice implementace regulárních výrazů se nachází v samotné specifikaci JavaScriptu,
 ale ta mi neumožňuje získat informaci o samotném vyhledávání.
 Po prozkoumání existujících řešení, která by vyhovovala této práci, 
@@ -11,39 +10,39 @@ zároveň lehce integrovatelné do programovacího jazyka TypeScript.
 Sice vlastní implementace může být pracná, ale jelikož chci mít co nejvyšší kontrolu nad výslednou strukturou, 
 tak jsem toto řešení vyhodnotil za vhodné. 
 
-V této části práce se pokusím vysvětlit, návrh této knihovny~\ref{sec:Imp1LayoutReal}, 
-princip parsování regulárních výrazů~\ref{sec:Parse}, jak funguje vyhledávání a jak vypadá jeho výsledná struktura \ref{sec:PatternMatching}.
+Nejprve v podkapitole~\ref{sec:Imp1LayoutReal} se pokusím vysvětlit návrh této knihovny.
+Dále princip parsování regulárních výrazů v podkapitole~\ref{sec:Parse}.
+Nakonec v podkapitole~\ref{sec:PatternMatching} popíšu funkčnost vyhledávání s jeho výsledkem.
 
-\section{Rozvržení}\label{sec:Imp1LayoutReal}
+\section{Architektura}\label{sec:Imp1LayoutReal}
 
-Vstupní třídou, pro tuto knihovnu je \textbf{Regexer}. 
-Slouží jako spojující a zároveň obsluhující třída a také poskytuje rozhraní této knihovny.
+Vstupní třídou pro tuto knihovnu je \textbf{Regexer}. 
+Propojuje jednotlivé části této knihovny a také poskytuje její rozhraní.
 Dále si drží důležité informace, které souvisí s aktuálně zpracovaným regulárním výrazem.
 \textit{RegexMatch} je třída, která reprezentuje jeden výsledek vyhledávání zadaným výrazem.
 Její data jsou soukromá, ale umožňuje je procházet pomocí svých metod.
-Jedna instance teto třídy, je ekvivalentní jednomu vyhledání v textu.
 Data této třídy jsou generována třídou \textit{MatchBuilder}.
 Její instance existuje pouze ve chvíli, kdy probíhá vyhledávání v zadaném řetězci.
-Poskytuje rozhraní, které umožňuje přidávat stavy, s tím že může tato data upravovat, dle své potřeby.
-Tento objekt je pak vlastněný ve třídě \textit{MatcherInternal}, která má za úkol průchod zadaným řetězcem, pro konkrétní výraz.
-Tato třída, je izolována a není dostupná z vnější, jak její název \textit{internal} (česky vnitřní) napovídá.
+Rozhraní této třídy umožňuje přidávání stavů, které mají v rámci vyhledávání význam informace o aktuálním stavu v regulárním výrazu a hledaném řetězci.
+Dále třída \textit{MatcherInternal} má za úkol průchod zadaným řetězcem pro konkrétní výraz.
+Tato třída je izolována a není dostupná z vnější, jak její název \textit{internal} (česky vnitřní) napovídá.
 Obsahuje hlavní algoritmickou část průchodu nedeterministickým automatem.
-Naopak třídou, která poskytuje viditelné rozhraní a volá metody třídy MatcherInternal je \textit{Matcher}.
+Naopak třídou, která poskytuje viditelné rozhraní a volá metody třídy MatcherInternal, je \textit{Matcher}.
 Její rozhraní je poskytováno třídě Regexer.
 Pro parsování textové reprezentace regulárního výrazu na strukturu NKA a AST, slouží rozhraní \textit{RegexParser}.
 Jedná se o parser, který vzniká vždy po překladu bezkontextové gramatiky.
 Stack je jednoduchá struktura, která je ale velmi důležitou součástí vyhledávání.
 Zásobník programu umožňuje zbavit se rekurzivního volání funkce.
 Rekurze obecně vede k pomalejšímu chodu programu a nelze ji jednoduše pozastavit v jakémkoliv čase a stavu.
-Také může jednoduše při složitějším zpracování dojít k přetečení zásobníku, který je často limitován aby nedošlo k nekonečnému rekurzivnímu volání.
+Také může jednoduše při složitějším zpracování dojít k přetečení zásobníku, který je často limitován, aby nedošlo k nekonečnému rekurzivnímu volání.
 Sice rozhraní pole v JS je připraveno na funkcionalitu zásobníku, ale nezaručuje programátorovi striktní pravidla pro zásobník. 
-Z tohoto důvodu jsem zvolil jednoduchou implementaci zásobníku, která omezuje manipulaci s základním polem, na operace určené pro zásobník.
+Z tohoto důvodu jsem zvolil jednoduchou implementaci zásobníku, která omezuje manipulaci se základním polem, na operace určené pro zásobník.
 
-Vztahy mezi jednotlivými třídami, lze vidět na obrázku~\ref{fig:ARCH_RGXR}. 
+Vztahy mezi jednotlivými třídami lze vidět na obrázku~\ref{fig:ARCH_RGXR}. 
 Nachází se zde také obalující blok \textbf{MatchingWorker}, který reprezentuje vstupní soubor vedlejšího vlákna, jež slouží pro asynchronní komunikaci s hlavním vláknem.
-\textit{Regexer} jako vstupní třída, uchovává informace o AST a NKA regulárního výrazu.
-Poskytuje také 2 hlavní metody, a to parse pro zpracování výrazu a match pro vyhledání v textu.
-Po zavolání metody match, se zavolá metoda třídy \textit{Matcher}, pro zpracování výrazu na straně vlákna.
+\textit{Regexer} jako vstupní třída uchovává informace o AST a NKA regulárního výrazu.
+Poskytuje také dvě hlavní metody, a to parse pro zpracování výrazu a match pro vyhledání v textu.
+Po zavolání metody match se zavolá metoda třídy \textit{Matcher} pro zpracování výrazu.
 
 \begin{figure}[!h]
 	\centering
@@ -60,12 +59,12 @@ Jak již bylo zmíněno, pro parsování regulárních výrazu jsem použil bezk
 Jedná se o pokračování projektu PegJS, ale ten se již dlouho nevyvíjí. 
 Jelikož knihovna Peggy je stále aktualizována a má velkou podporu vývojářů, tak jsem zvolil její využití pro tuto práci.
 
-V ukázce~\ref{code:grammar1} se nachází vstupní neterminál bezkontextové gramatiky. 
+V ukázce~\ref{code:grammar1} se nachází vstupní neterminál bezkontextové gramatiky \textit{start}. 
 Ten obsahuje výběr mezi dvěma začátky \textit{moded\_start} a \textit{general\_start}.
 Výběr je pak dostupný pod názvem \textit{type}, podle toho který se zvolí.
-Před dokončením pravidla, se na jeho konci může nacházet blok "\{\}", který může modifikovat výsledná data.
-Modifikace v rámci pravidla pro začátek, probíhá zavoláním instance vlastní třídy \textbf{ParserHandler}, která je součástí gramatiky.
-Třída má za úkol zpracovávat příchozí data do JSON struktury, která je ukázaná na obrázku~\ref{fig:JSONex}.
+Před dokončením pravidla se na jeho konci může nacházet blok "\{\}", který může modifikovat výsledná data.
+Modifikace v rámci pravidla pro začátek probíhá zavoláním instance vlastní třídy \textbf{ParserHandler}, která je součástí gramatiky.
+Třída má za úkol zpracovávat příchozí data do struktury, která je ukázaná na obrázku~\ref{fig:JSONex}.
 
 \begin{code}[!ht]
 	\begin{minted}{peg}
@@ -77,30 +76,30 @@ start
 		return handler.handle(data, type?.elements, States.ROOT);
 	}
 	\end{minted}
-	\caption{Počáteční neterminál}
+	\caption{Jednoduché pravidlo gramatiky}
 	\label{code:grammar1}
 \end{code}
 
 Existuje několik různých vzorů regulárních výrazů.
-Každý ze vzorů má pravidla, pro možné kombinování s ostatními vzory.
-Ukázka kódu~\ref{code:grammar2}, obsahuje příklad možných výběrů pravidel, které lze společně kombinovat.
+Každý ze vzorů má pravidla pro možné kombinování s ostatními vzory.
+Ukázka kódu~\ref{code:grammar2} obsahuje příklad možných výběrů pravidel, které lze společně kombinovat.
 Například možnosti pro iteraci, ve zmíněném kódu \textit{to\_iterate}, obsahují pouze následující vzory, které mohou být opakovány.
 
 \begin{itemize}
-	\item Speciální znaky (\textit{escaped\_special}) -- "$\textbackslash s$", "$\textbackslash d$"
-	\item Základní znaky (\textit{primitive}) -- "$a$", "$b$", "$0$"
+	\item Speciální znaky (\textit{escaped\_special}) --- "$\textbackslash s$", "$\textbackslash d$"
+	\item Základní znaky (\textit{primitive}) --- "$a$", "$b$", "$0$"
 	\item Výběr jakéhokoliv znaku (\textit{any\_character}) -- "$.$"
-	\item Skupina (\textit{group}) -- "$()$"
-	\item List znaků (\textit{list}) -- "$[a-z]$"
+	\item Skupina (\textit{group}) --- "$()$"
+	\item List znaků (\textit{list}) --- "$[a-z]$"
 \end{itemize}
 
 V mnoha případech záleží na pořadí výběru z dostupných vzorů, proto je potřeba určit, které možnosti upřednostnit.
-Abych vysvětlil, proč je pořadí důležité vybral jsem si jako příklad \textbf{iteraci} (iteration) a \textbf{výběr} (option).
+Abych vysvětlil, proč je pořadí důležité, vybral jsem si jako příklad \textbf{iteraci} (iteration) a \textbf{výběr} (option).
 Zjednodušeně výběr má vyšší přednost, jelikož může mít za potomka iteraci.
-Kdyby se neterminál iterace nacházel před neterminálem výběru, tak by došlo k tomu že by iterace nebyla součástí výběru, v případě že by se nacházela na pozici první možnosti výběru. 
-Nebo-li byla by dříve zpracována, než-li samotný výběr.
+Kdyby se neterminál iterace nacházel před neterminálem výběru, tak by došlo k tomu, že by iterace nebyla součástí výběru, v případě, že by se nacházela na pozici první možnosti výběru. 
+Neboli byla by dříve zpracována, nežli samotný výběr.
 Jako příklad může sloužit výraz $a*|b*$, při kterém by se první zpracovala iterace $a*$.
-Výsledkem výběru by byly 2 možnosti $\epsilon$ nebo $b*$, což je sice sám o sobě správný tvar výběru, ale ve zvoleném výrazu \textbf{musí} být výsledný výběr $a*$ nebo $b*$.
+Výsledkem výběru by byly dvě možnosti $\epsilon$ nebo $b*$, což je sice sám o sobě správný tvar výběru, ale ve zvoleném výrazu \textbf{musí} být výsledný výběr $a*$ nebo $b*$.
 
 \begin{code}[!ht]
 	\begin{minted}{peg}
@@ -110,36 +109,36 @@ any_element
 to_iterate
 	= escaped_special / primitive / any_character / group / list
 	\end{minted}
-	\caption{Výběry neterminálů, pro některé vzory regulárních výrazů}
+	\caption{Výběry neterminálů pro některé vzory regulárních výrazů}
 	\label{code:grammar2}
 \end{code}
 
 \subsection*{Struktura zpracovaného regulárního výrazu}
 
-Pro zpracovaný regulární výraz, jsem zvolil strukturu, která obsahuje \textbf{nedeterministický konečný automat} (NKA), zároveň s \textbf{abstraktním syntaktickým stromem} (AST).
+Pro zpracovaný regulární výraz jsem zvolil strukturu, která obsahuje \textbf{nedeterministický konečný automat} (NKA), zároveň s \textbf{abstraktním syntaktickým stromem} (AST).
 AST pak slouží k dohledání informací o původním regulárním výrazu. 
-Výsledná struktura je datového typu, JSON (JavaScript Object Notation).
-JSON strukturu je možné vidět na obrázku~\ref{fig:JSONex}.
+Výsledná struktura je objektem, který obsahuje pouze data a má výchozí prototype\footnote{https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Object\_prototypes}.
+Tuto strukturu je možné vidět na obrázku~\ref{fig:JSONex}.
 NKA je ve formě \textbf{přesunové tabulky (transition table)}. 
 Ta má tvar pole, kde každá položka obsahuje informaci o konkrétním stavu a přesunech na další stavy.
 Stav je identifikovaný na základě indexu v poli. 
 Přesuny jsou pak implementovány tak, že každý stav si uchovává všechny své přesuny, které vedou z daného stavu do stavu jiného.
 Každý přesun pak má informaci, o jaký znak přesunu se jedná a na jaký index (stav) v poli odkazuje. 
 
-Na obrázku~\ref{fig:JSONex} lze vidět základní JSON strukturu, která obsahuje dvě vstupní hodnoty AST a NFA.
+Na obrázku~\ref{fig:JSONex} lze vidět výslednou strukturu pro výraz $a+$, která obsahuje dva atributy AST a NFA.
 Klíč NFA odkazuje na pole stavů přesunové tabulky. 
 AST má odkaz na počátek struktury, který signalizuje začátek regulárního výrazu.
-Je zde patrné, že každý stav v tabulce přesunů, má odkaz na příslušící prvek v AST. 
+Je zde patrné, že každý stav v tabulce přesunů má odkaz na odpovídající prvek v AST. 
 AST prvek/vzor drží různé informace, např. pozice v původním řetězci (start a end), 
-potomky daného stavu, nebo typ vzoru. 
+potomky daného stavu nebo typ vzoru. 
 Ne každý stav musí mít potomky, ale například skupina potomky má.
-Některé vzory, jako je například iterace obsahují v AST dodatečné informace, jako je rozsah iterace (range).
+Některé vzory, jako je například iterace, obsahují v AST dodatečné informace, jako je rozsah iterace (range).
 Typy stavů jsou číselné hodnoty, a ty které se nacházejí na obrázku jsou zde také popsány.
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=1\textwidth]{Figures/BP-JSON.pdf}
-	\caption{Příklad výsledné JSON struktury regulárního výrazu a+}
+	\caption{Příklad výsledné struktury regulárního výrazu a+}
 	\label{fig:JSONex}
 \end{figure}
 
@@ -148,8 +147,8 @@ Typy stavů jsou číselné hodnoty, a ty které se nacházejí na obrázku jsou
 \section{Vyhledání pomocí regulárního výrazu}\label{sec:PatternMatching}
 
 Vyhledání je jednou z hlavních částí této knihovny, jedná se o procházení regulárním výrazem a hledaným řetězcem.
-Výsledkem je struktura JSON dat, která obsahuje informace o zpracovaném vyhledávání.
-V této části textu popisuji, jak jsem na implementoval vyhledávání, důležité koncepce a výslednou strukturu.
+Výsledkem je struktura dat, která obsahuje informace o zpracovaném vyhledávání.
+V této části textu popisuji, jak jsem naimplementoval vyhledávání, důležité koncepce a výslednou strukturu.
 
 \subsection*{Odstranění rekurze}
 
@@ -315,8 +314,7 @@ Modifikace vznikne na základě předem určených nastavení.
 Ta například umožňují zahodit nežádoucí informace, nebo naopak přidat rozšiřující.
 Zvolil jsem tuto možnost nastavení, aby knihovna mohla být univerzálnější a flexibilnější.
 
-Data jsou uložená v JSON struktuře. 
-Ta je dále součástí třídy \textbf{RegexMatch}.
+Data jsou uložená v objektu, který je dále součástí třídy \textbf{RegexMatch}.
 Samotná třída poskytuje pouze rozhraní pro procházení stavů, nebo popřípadě pro získání dalších základních informací o vyhledávání.
 
 \endinput

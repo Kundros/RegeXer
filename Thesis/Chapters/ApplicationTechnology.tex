@@ -4,29 +4,29 @@
 \section{Specifikace požadavků}
 
 Aplikace by měla umožňovat vizualizaci a ladění regulárních výrazů.
-Ladicí nástroj, má být integrovaný součástí zvoleného vývojového prostředí.
-Vizualizace stavů průchodu regulárním výrazem, by měla být ve formě historie s intuitivním a interaktivním ovládáním.
-Program by měl umět zpracovávat, nejzákladnější a běžně používané vzory regulárních výrazů, tak aby mohl být v praxi použitelný na reálných příkladech.
+Ladicí nástroj by měl být integrovanou součástí zvoleného vývojového prostředí.
+Vizualizace stavů průchodu regulárním výrazem by měla být ve formě historie s intuitivním a interaktivním ovládáním.
+Program by měl umět zpracovávat nejzákladnější a běžně používané vzory regulárních výrazů, tak aby mohl být v praxi použitelný na reálných příkladech.
 Dále by měla aplikace obsahovat následující prvky:
 \begin{itemize}
-	\item Lehká budoucí rozšířitelnost pro další možné funkcionality, které lze na implementovat.
-	\item Vizualizační část aplikace, by měla obsahovat možnost zadávání regulárních výrazů a textu pro následné vyhledávání.
+	\item Lehká budoucí rozšířitelnost pro další možné funkcionality, které lze naimplementovat.
+	\item Vizualizační část aplikace by měla obsahovat možnost zadávání regulárních výrazů a textu pro následné vyhledávání.
 	\item Možnost spuštění mimo vývojové prostředí Visual Studio Code.
 	\item Ladící nástroj pro vizualizaci stavů.
 	\item Implementaci základních vzorů regulárních výrazů.
 	\item Možnost analýzy regulárních výrazů ze zdrojových kódů.
 \end{itemize}
 
-\section{Zvolený návrh}
+\section{Návrh aplikace}
 
-Aplikace je členěná na 3 základní knihovny, což je zřejmé na obrázku~\ref{fig:ARCH}.
+Aplikace je členěná na tři základní knihovny, což je zřejmé na obrázku~\ref{fig:ARCH}.
 Každá část má vlastní účel a jsou od sebe navzájem izolovány.
 První knihovna \textbf{vyhodnocuje regulární výrazy}, přesněji slouží pro zpracovávání a vyhodnocování regulárních výrazů a pro vytváření historie stavů vyhledávání.
 Jako jediná může existovat plně nezávisle bez ostatních knihoven, jelikož neobsahuje závislost na žádnou z nich.
-Druhou knihovnou je \textbf{vizualizační}, která slouží pro samotné zobrazení zpracovávaných regulárních výrazů.
+Druhá knihovna je \textbf{vizualizační}, která slouží pro samotné zobrazení zpracovávaných regulárních výrazů.
 Jedná se o komponentu, která může být spuštěná mimo rozšíření VSCode, například ve webovém prohlížeči.
-Tato knihovna obsahuje závislost na knihovnu pro zpracovávání regulárních výrazů, ale na VSCode rozšíření nemá přímou závislost.
-Poslední částí je samotné \textbf{rozšíření}, které se stará o komunikaci s VSCode API a o řízení všeho týkajícího se rozšíření.
+Tato knihovna závisí na knihovně pro zpracovávání regulárních výrazů, ale na VSCode rozšíření nemá přímou závislost.
+Poslední částí je samotné \textbf{rozšíření}, které se stará o komunikaci s aplikační rozhraní (API) VSCode a o řízení všeho týkajícího se rozšíření.
 Tato část aplikace implementuje vizualizační knihovnu v podobě webview (webové zobrazení).
 
 Na obrázku~\ref{fig:ARCH} je viditelná závislost mezi všemi komponentami. 
@@ -49,9 +49,9 @@ RegexMatch je pak využívaný vizualizační knihovnou, pro zobrazování stav�
 \newpage
 
 \section{Použité technologie}\label{sec:USEDtech}
-Celá aplikace je integrovaná do vývojového prostředí \textbf{Visual Studio Code}, zkráceně \textit{VSCode}. 
-Jádro aplikace je psáno v programovacím jazyce \textbf{TypeScript}, zkráceně \textit{TS} verze 5.3, který rozšiřuje jazyk \textbf{JavaScript}, zkráceně \textit{JS}. 
-TypeScript má jako hlavní nadstavbu, možnost využívání a přiřazování datových typů.
+Celá aplikace je integrovaná do vývojového prostředí \textbf{Visual Studio Code}. 
+Jádro aplikace je psáno v programovacím jazyce \textbf{TypeScript} (\textit{TS}) verze 5.3, který rozšiřuje jazyk \textbf{JavaScript}, zkráceně \textit{JS}. 
+TypeScript má jako hlavní nástavbu možnost využívání a přiřazování datových typů.
 Také platí, že kód napsaný v JS je správný v rámci TS, ale to neplatí naopak.
 Psaní větší aplikace je často vhodnější v TS, kvůli svým typovým kontrolám, čímž se jako programátor mohu vyvarovat potencionálním chybám při běhu programu.
 Také vývojové prostředí VSCode, zpřístupňuje API pouze pro JavaScript nebo TypeScript.
@@ -61,25 +61,25 @@ Pro parsování jsem se rozhodl použít bezkontextovou gramatiku \textbf{Peggy}
 Ta umožňuje poměrně snadného zpracování textové podoby regulárních výrazů, do podoby nějaké struktury.
 Tato výsledná struktura může být v podstatě jakákoliv.
 
-Všechny části aplikace, jsou zpravovány balíčkovým manažerem \textbf{NPM} (Node Package Manager).
+Všechny části aplikace jsou spravovány balíčkovým manažerem \textbf{NPM} (Node Package Manager).
 Také tyto části využívají některých balíčků, které jsou dostupné pro npm. 
 Určitá část aplikace je postavená na technologii \textbf{NodeJS}.
-Jedná se o JavaScript runtime (běh programu), typicky určený pro serverové aplikace. 
+Jedná se o JavaScript runtime (běhové prostředí), typicky určené pro serverové aplikace. 
 Například runtime VSCode rozšíření je NodeJS, oproti tomu samotné webview běží ve webovém runtime, které je typické pro webové prohlížeče.
 
-Vizualizační část aplikace pak využívá základní \textbf{HTML} struktury.  
+Vizualizační část aplikace pak využívá základní \textbf{HTML} (HyperText Markup Language) struktury.  
 HTML je základem pro webové stránky a definuje jejich strukturu pomocí značek.
-Pro následnou změnu vzhledu (stylu), jsem využil technologie \textbf{LESS}\footnote{https://lesscss.org/}, což je rozšíření standardního \textbf{CSS}.
-Avšak LESS musí být transpilovaný\footnote{Typ překladu z jednoho jazyka na jazyk jiný} do CSS, jelikož webová stránka ho neumí zpracovat. 
-LESS umožňuje, například vnořování stylů nebo tvorbu vlastních proměnných.
+Pro následnou změnu vzhledu (stylu) jsem využil technologie \textbf{LESS}\footnote{https://lesscss.org/}, což je rozšíření standardního \textbf{CSS} (Cascading Style Sheets).
+Avšak LESS musí být transpilovaný\footnote{Typ překladu z jednoho jazyka na jazyk jiný.} do CSS, jelikož webové prohlížeče ho neumí zpracovat. 
+LESS umožňuje například vnořování stylů nebo tvorbu vlastních proměnných.
 Pro logickou část vizualizační knihovny je také využit TypeScript.
 
-Pro výsledný přeložený kód, je použit balící nástroj \textbf{Webpack}\footnote{https://webpack.js.org/}.
-Ten mi umožňuje, všechny části aplikace poměrně efektivně zabalit, do malého počtu souborů. 
-Tento nástroj se pak hodí, pro menší výslednou aplikaci a hlavně pro seskupení všech závislostí.
+Pro výsledný přeložený kód je použit balící nástroj \textbf{Webpack}\footnote{https://webpack.js.org/}.
+Ten mi umožňuje všechny části aplikace poměrně efektivně zabalit do malého počtu souborů. 
+Tento nástroj se pak hodí pro menší výslednou aplikaci a hlavně pro seskupení všech závislostí.
 Mohu mít i větší kontrolu nad výsledným kódem.
 Například lze udávat, kdy se mají soubory dělit, jak se mají zpracovávat přílohy, jako jsou obrázky atd.
-Pro optimalizaci a úpravu kódu, se zde využívá takzvaných \textit{loaderů} a \textit{pluginů}, 
+Pro optimalizaci a úpravu kódu se zde využívá takzvaných \textit{loaderů} a \textit{pluginů}, 
 které dokážou v určité části překladu zasáhnout a popřípadě změnit určitou část kódu.
 Ve výsledku se jedná o velice silný nástroj, který dává programátorovi větší kontrolu nad výsledným přeloženým kódem aplikace.
 
