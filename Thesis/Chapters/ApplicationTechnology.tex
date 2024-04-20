@@ -5,7 +5,7 @@
 
 Aplikace by měla umožňovat vizualizaci a ladění regulárních výrazů.
 Ladicí nástroj by měl být integrovanou součástí zvoleného vývojového prostředí.
-Vizualizace stavů průchodu regulárním výrazem by měla být ve formě historie s intuitivním a interaktivním ovládáním.
+Vizualizace stavů průchodu regulárním výrazem by měla být ve formě historie s intuitivním a interaktivním ovládáním, aby mohl programátor jednodušeji testovat regulární výrazy při vývoji JavaScriptových aplikací.
 Program by měl umět zpracovávat nejzákladnější a běžně používané vzory regulárních výrazů, tak aby mohl být v praxi použitelný na reálných příkladech.
 Dále by měla aplikace obsahovat následující prvky:
 \begin{itemize}
@@ -21,23 +21,29 @@ Dále by měla aplikace obsahovat následující prvky:
 
 Aplikace je členěná na tři základní knihovny, což je zřejmé na obrázku~\ref{fig:ARCH}.
 Každá část má vlastní účel a jsou od sebe navzájem izolovány.
-První knihovna \textbf{vyhodnocuje regulární výrazy}, přesněji slouží pro zpracovávání a vyhodnocování regulárních výrazů a pro vytváření historie stavů vyhledávání.
-Jako jediná může existovat plně nezávisle bez ostatních knihoven, jelikož neobsahuje závislost na žádnou z nich.
-Druhá knihovna je \textbf{vizualizační}, která slouží pro samotné zobrazení zpracovávaných regulárních výrazů.
-Jedná se o komponentu, která může být spuštěná mimo rozšíření VSCode, například ve webovém prohlížeči.
-Tato knihovna závisí na knihovně pro zpracovávání regulárních výrazů, ale na VSCode rozšíření nemá přímou závislost.
-Poslední částí je samotné \textbf{rozšíření}, které se stará o komunikaci s aplikační rozhraní (API) VSCode a o řízení všeho týkajícího se rozšíření.
-Tato část aplikace implementuje vizualizační knihovnu v podobě webview (webové zobrazení).
 
-Na obrázku~\ref{fig:ARCH} je viditelná závislost mezi všemi komponentami. 
-Rovněž je zde patrná základní struktura těchto knihoven a jejich závislosti mezi sebou.
-Avšak jsou zakresleny jen ty komponenty, které je možné považovat za důležité. 
-Je dobré zdůraznit asynchronní komunikaci, kterou poskytuje knihovna vyhodnocující regexy.
-Tuto komunikaci lze vidět mezi komponentou Regexer a RegexVisualizer s tím, že Regexer využívá vedlejší vlákno mimo vlákno hlavní. 
-Knihovna pro vlákna threads.js je blíže popsána v sekci~\ref{sec:USEDtech}.
+\textbf{Knihovna rozšíření pro VSCode} se stará o komunikaci s aplikačním rozhraním (API) VSCode a o řízení všeho týkajícího se rozšíření.
+Tato knihovna používá webview (webové zobrazení) k vykreslování uživatelského rozhraní pomocí vizualizační knihovny.
 Rozšíření VSCode v rámci webview, zobrazuje HTML soubor index.html z vizualizační knihovny.
-Také rozšíření může komunikovat s touto knihovnou pomocí zpráv, pro předávání dat a pro vyvolávání událostí. 
-RegexMatch je pak využívaný vizualizační knihovnou, pro zobrazování stavů vyhledávání.
+
+\textbf{Vizualizační knihovna} slouží pro zobrazení zpracovávaných regulárních výrazů.
+Umožňuje zadávat regulární výrazy a testovací řetězce pro následné vyhledávání zadaným výrazem.
+Jedná se o komponentu, která může být spuštěná mimo rozšíření VSCode, například ve webovém prohlížeči.
+Tato knihovna závisí na knihovně vyhodnocující regulární výrazy, ale na VSCode rozšíření nemá přímou závislost.
+
+\textbf{Knihovna vyhodnocující regexy} (zkrácení slova regular expression) slouží pro zpracovávání a vyhodnocování regulárních výrazů a pro vytváření historie stavů vyhledávání.
+Tato knihovna neobsahuje závislost na dvě již zmíněné knihovny, proto může být využita například jinou aplikací.
+Výsledkem této knihovny je struktura vyhledávání zadaným regulárním výrazem v podobě instance třídy \textit{RegexMatch}.
+
+Na obrázku~\ref{fig:ARCH} je viditelná závislost mezi různými částmi aplikace. 
+Rovněž je zde patrná základní struktura těchto knihoven a jejich závislosti mezi sebou.
+Avšak jsou zakresleny jen ty komponenty, které lze považovat za důležité. 
+%Je dobré zdůraznit asynchronní komunikaci, kterou poskytuje knihovna vyhodnocující regexy.
+%Tuto komunikaci lze vidět mezi komponentou Regexer a RegexVisualizer s tím, že Regexer využívá vedlejší vlákno mimo vlákno hlavní. 
+%Knihovna pro vlákna Threads.js je blíže popsána v sekci~\ref{sec:USEDtech}.
+%Rozšíření VSCode v rámci webview, zobrazuje HTML soubor index.html z vizualizační knihovny.
+%Také rozšíření může komunikovat s touto knihovnou pomocí zpráv, pro předávání dat a pro vyvolávání událostí. 
+%RegexMatch je pak využívaný vizualizační knihovnou, pro zobrazování stavů vyhledávání.
 
 \begin{figure}[!h]
 	\centering
@@ -52,7 +58,6 @@ RegexMatch je pak využívaný vizualizační knihovnou, pro zobrazování stav�
 Celá aplikace je integrovaná do vývojového prostředí \textbf{Visual Studio Code}. 
 Jádro aplikace je psáno v programovacím jazyce \textbf{TypeScript} (\textit{TS}) verze 5.3, který rozšiřuje jazyk \textbf{JavaScript}, zkráceně \textit{JS}. 
 TypeScript má jako hlavní nástavbu možnost využívání a přiřazování datových typů.
-Také platí, že kód napsaný v JS je správný v rámci TS, ale to neplatí naopak.
 Psaní větší aplikace je často vhodnější v TS, kvůli svým typovým kontrolám, čímž se jako programátor mohu vyvarovat potencionálním chybám při běhu programu.
 Také vývojové prostředí VSCode, zpřístupňuje API pouze pro JavaScript nebo TypeScript.
 Sice by bylo možné mít část aplikace napsané v jiném jazyce, to by ale mělo své komplikace při vývoji.
@@ -89,9 +94,11 @@ Avšak tato knihovna slouží převážně pro testování JavaScriptových kód
 To mi pak umožňuje psát testy, které mohou využívat TypeScriptové typy.
 
 Jednou z posledních knihoven, kterou jsem použil, je \textbf{Threads.js}\footnote{https://threads.js.org/}. 
-Jelikož existují různé runtime JavaScriptu, tak neexistuje jednotný standard pro implementaci vláken (threads).
-Browser má tzv. \textit{web workery} a NodeJS má \textit{worker thready}, sice si jsou podobné, ale mají změny které znemožňují univerzálního použití.
-Proto je v této aplikaci využito threads.js, které eliminuje tyto problémy.
+JavaScript byl navržený jako single-threaded jazyk, tudíž využití vláken, jako je známe v jiných jazycích, zde v této podobě neexistuje.
+Proto existují alespoň řešení, která se snaží tuto problematiku řešit, ale neexistuje jednotná implementace pro různé runtime.
+Browser má \textit{web workery} a NodeJS má \textit{worker thready}.
+Sice si jsou podobné, ale mají změny, které znemožňují univerzálního použití.
+Proto je v této aplikaci využito Threads.js, které eliminuje tyto problémy.
 Navíc dokáže nabídnout větší bezpečnost pro programátora, který píše kód v TS. 
 Tato bezpečnost je docílená tím, že knihovna dokáže poskytnout z vlákna rozhraní, které může obsahovat také typy.
 

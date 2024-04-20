@@ -145,6 +145,40 @@
 % Prilohy
 \appendix
 
+\chapter{Sestavení a spuštění projektu}\label{sec:ProjectBuild}
+
+Pro vlastní sestavení aplikace je potřeba mít nainstalovaný NodeJS společně s NPM.
+Při vývoji jsem používal NodeJS verze 20.9.0 a NPM verze 10.2.1.
+Avšak pro vlastní sestavení by měla stačit verze NodeJS 14.17 společně s NPM verzí 6.14.
+Zároveň může být použité i novější verze. 
+Pokud uživatel nemá NodeJS, lze jej nainstalovat ze stránky \textit{https://nodejs.org}, NPM je součástí instalace.
+Lze použít i jiné balíčkové manažery místo NPM, ale v návodu na sestavení používám právě NPM.
+Rozšíření bylo vyvíjeno pro VSCode verze 1.84.0, ale mělo by fungovat i na novějších verzích.
+
+V příloze~\ref{sec:FileStructure} je ukázaná částečná adresářová struktura projektu.
+Instalace probíhá v následujících krocích:
+
+\begin{enumerate}
+	\item Pro instalaci všech externích závislostí, v kořenovém adresáři se použije příkaz \textbf{\textcolor{OliveGreen}{npm install}}.
+	\item K sestavení projektu slouží npm skript \textbf{\textcolor{OliveGreen}{npm run build}}.
+	\item Pro vytvoření instalačního souboru rozšíření se použije příkaz \textbf{\textcolor{OliveGreen}{npm run release}}.
+	\item Výsledné instalační soubory se nachází v \textit{/libraries/regex-visualizer-extension/release}, podle přílohy \ref{sec:FileStructure}.
+\end{enumerate}
+
+Všechny potřebné soubory pro lokální spuštění ve webovém prohlížeči se po přeložení nachází v adresáři \textit{/libraries/regex-visualization/dist}. 
+Pro spuštění je poté potřeba mít jakýkoliv webový server, kvůli podpoře web workeru.
+
+\section*{Výsledný instalační soubor}
+
+Výsledným souborem pro VSCode rozšíření je soubor s příponou \textit{.vsix}.
+Tyto soubory slouží pro lokální instalaci rozšíření.
+Pro získání \textit{vsix} souboru slouží příkaz \textit{vsce}, který dokáže sjednotit všechny závislosti do jednoho výsledného souboru.
+
+Pro instalaci rozšíření lze použít příkazovou paletu od VSCode.
+Tu lze otevřít přímo ve vývojovém prostředí, pomocí zkratky \textbf{Shift + Command + P} pro Mac, nebo pomocí \textbf{Ctrl + Shift + P} pro Windows/Linux.
+Po otevření příkazové palety, stačí zadat příkaz \textit{Extensions: Install from VSIX}.
+Poté se otevře průzkumník souborů, kde stačí otevřít zvolený \textit{vsix} soubor, který se nainstaluje.
+
 \chapter{Adresářová struktura projektu}\label{sec:FileStructure}
 
 \dirtree{%
@@ -160,7 +194,7 @@
 .3 regex-visualizer-extension\DTcomment{Knihovna rozšíření do VSCode}.
 .4 release\DTcomment{Výsledné vydání aplikace}.
 .4 src\DTcomment{Adresář zdrojových kódů}.
-.5 handlers\DTcomment{VSCode handelers}.
+.5 handlers\DTcomment{VSCode handlers}.
 .5 providers\DTcomment{VSCode providers}.
 .5 web\DTcomment{Adresář pro práci s webview}.
 .3 regexer\DTcomment{Knihovna pro zpracování regulárních výrazů}.
@@ -175,8 +209,7 @@
 \chapter{Testovací data}\label{sec:TestingData}
 
 Následující list testovacích dat obsahuje regulární výraz a testovací řetězce k danému výrazu.
-Za každým řetězcem se nachází signalizace, zda je řetězec přijímaný korespondujícím regulárním výrazem.
-
+Za každým řetězcem se nachází signalizace, zda je řetězec přijímaný korespondujícím regulárním výrazem dle standardu pro jazyk JavaScript.
 
 \begin{enumerate}
     %NEW ITEM

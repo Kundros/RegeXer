@@ -6,19 +6,19 @@ Pro porovnání a ukázku jsem zmínil existující nástroje pro vizualizaci re
 Následně jsem vytvořil vlastní knihovnu, která dokáže tyto výrazy zpracovávat.
 Přesněji daný výraz vyhodnotí a vytvoří strukturu nedeterministického konečného automatu.
 Ten slouží pro následující vyhledávání v zadaném řetězci.
-Výsledkem vyhledávání je struktura stavů, nebo-li historie procházení.
+Výsledkem vyhledávání je struktura stavů, neboli historie procházení.
 Vizualizační knihovna tyto stavy přebírá a následně zprostředkovává uživatelské rozhraní pro průchod historie stavů.
 Rozšíření vývojového prostředí zobrazí vizualizaci do webového okna jako jeho součást.
 
-Na konci po otestování aplikace, jsem došel k závěru že její výkon je pro své účely dostatečný.
+Na konci po otestování aplikace, jsem došel k závěru, že její výkon je pro své účely dostatečný.
 Také aplikace sice nabízí limitované množství implementovaných vzorů, ale i přesto může mít dostatečný přínos pro programátory.
 Aplikace byla psána tak, aby mohla být v budoucnu poměrně lehce rozšířitelná o další funkcionality, kterými současně nedisponuje.
 
-Každá ze tří knihoven integrovaných do aplikace, by mohla být v budoucnu rozšířená.
-Mezi tyto možné rozšíření, hlavně patří doplnění všech možných vzorů pro regulární výrazy z jazyka JavaScript.
-Další možným rozšířením aplikace, je přidání podpory vícero standardů regulárních výrazů z jiných jazyků, jako je například PCRE.
-Aplikace v případě nutnosti, by mohla být potencionálně zrychlená optimalizací kódu, nebo přepsáním části kódu do nízkoúrovňového jazyka, jako je C++ nebo Rust.
-Ve vizualizaci by bylo možné, doplnit možnost zobrazení nedeterministického konečného automatu a abstraktního syntaktického stromu daného výrazu.
+Každá ze tří knihoven integrovaných do aplikace by mohla být v budoucnu rozšířená.
+Mezi tato možná rozšíření patří hlavně doplnění dalších vzorů pro regulární výrazy z jazyka JavaScript.
+Dalším možným rozšířením aplikace by mohlo být přidání podpory více standardů regulárních výrazů z jiných jazyků, jako je například PCRE.
+Aplikace by mohla v případě nutnosti být potencionálně zrychlená optimalizací kódu, nebo přepsáním části kódu do nízkoúrovňového jazyka, jako je C++ nebo Rust.
+Ve vizualizaci by bylo možné doplnit možnost zobrazení nedeterministického konečného automatu a abstraktního syntaktického stromu daného výrazu.
 
 Současně může být aplikace přínosná pro ostatní programátory, proto existuje možnost toto rozšíření publikovat veřejně na VSCode marketplace.
 Samotná publikace by mohla také urychlit případný vývoj, jelikož by existovalo více lidí, kteří by mohli aplikaci testovat.
