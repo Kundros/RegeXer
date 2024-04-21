@@ -1,7 +1,7 @@
 import { RegexMatch } from "@kundros/regexer";
 import { TextEditor, TextEditorOptions } from "./TextEditor";
 import { ElementHelper } from "./other/ElementHelper";
-import { HighlighGroupsOptions, HighlighTextOptions, getGroupBoundings, getTextBounding, highlightGroups, highlightPosition } from "./other/textRowsBoundingHelper";
+import { HighlighGroupsOptions, HighlighTextOptions, getGroupDimensions, getTextDimensions, highlightGroups, highlightPosition } from "./other/textRowsHighlightHelper";
 import { MatchHighlightingOptions } from "./coreTypes/MatchHighlightOptions";
 
 export type MatchEditorOptions = 
@@ -38,7 +38,7 @@ export class StringMatchEditor extends TextEditor
         this.matchesHighlightings_.push({
             context: this.context_, 
             textElement: this.textInput_, 
-            boundings: getTextBounding({textElement: this.textInput_, from, to}),
+            dimensions: getTextDimensions({textElement: this.textInput_, from, to}),
             highlightColor: this.matchOptions_?.highlightColor ?? "#2b85c2"
         });
         highlightPosition(this.matchesHighlightings_[this.matchesHighlightings_.length-1]);
@@ -90,7 +90,7 @@ export class StringMatchEditor extends TextEditor
                 this.groupsHighlightings_.push({
                     context: this.context_, 
                     textElement: this.textInput_, 
-                    groupsBoundings: getGroupBoundings({context: this.context_, textElement: this.textInput_, groups: match.groups}),
+                    groupsDimensions: getGroupDimensions({context: this.context_, textElement: this.textInput_, groups: match.groups}),
                     colors: this.matchOptions_.groupColors,
                     fallbackColor: this.matchOptions_.groupFallbackColor,
                 });
