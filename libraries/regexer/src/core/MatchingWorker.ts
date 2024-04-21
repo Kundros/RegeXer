@@ -157,7 +157,7 @@ class MatcherInternal
             {
                 if(ASTtype & (RegexTypes.RegexStates.ITERATION_ONE | RegexTypes.RegexStates.ITERATION_ZERO | RegexTypes.RegexStates.ITERATION_RANGE | RegexTypes.RegexStates.ITERATION_END))
                 {
-                    const returnedIteration = this.handleItaration(nfaState, transitions);
+                    const returnedIteration = this.handleIteration(nfaState, transitions);
 
                     if(typeof returnedIteration !== "boolean")
                         return returnedIteration;
@@ -214,7 +214,7 @@ class MatcherInternal
                 currentStringPos = <number>this.stringPosStack_.top();
 
                 if(nfaState.ASTelement)
-                    {
+                {
                     this.matchBuilder_.addState({ 
                         type: nfaState.ASTelement.type, 
                         regAt: [nfaState.ASTelement.start, nfaState.ASTelement.end], 
@@ -255,7 +255,7 @@ class MatcherInternal
      * false - can't continue in current loop (should invoke 'continue') \
      * true - can continue in current loop
      */
-    private handleItaration(nfaState : NFAtype, transitions : RegexTypes.NFATransition[]) : boolean | ReturnBatch | ReturnMatch
+    private handleIteration(nfaState : NFAtype, transitions : RegexTypes.NFATransition[]) : boolean | ReturnBatch | ReturnMatch
     {
         let topState = <matchingState>this.statesStack_.top();
         let transition = transitions[topState?.transition];
@@ -299,7 +299,8 @@ class MatcherInternal
             }
             else 
             {
-                if ((currentIteration[0].type & RegexTypes.RegexStates.ITERATION_RANGE) && (currentIteration[1] + 1 < currentIteration[0].range[0] || currentIteration[1] + 1 > <number>currentIteration[0].range[1])) {
+                if ((currentIteration[0].type & RegexTypes.RegexStates.ITERATION_RANGE) && (currentIteration[1] + 1 < currentIteration[0].range[0] || currentIteration[1] + 1 > <number>currentIteration[0].range[1])) 
+                {
                     const returned = this.handleBacktracking();
                     if (returned !== null)
                         return returned;
@@ -507,6 +508,18 @@ class MatcherInternal
         {
             this.regexPosStack_.push(<number>this.regexPosStack_.top() + 1);
             this.stringPosStack_.push(stringPosition + 1);
+
+            const currentStringPos = <number>this.stringPosStack_.top();
+
+            if(listState.ASTelement)
+            {
+                this.matchBuilder_.addState({ 
+                    type: listState.ASTelement.type, 
+                    regAt: [listState.ASTelement.start, listState.ASTelement.end], 
+                    strAt: [this.matchBuilder_.matchData.start ?? 0 , currentStringPos]
+                });
+                this.matchBuilder_.newGroups(this.getGroups());
+            }
         }
         else
             return this.handleBacktracking();
