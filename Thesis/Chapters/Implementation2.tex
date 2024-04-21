@@ -227,8 +227,17 @@ Pokud ano, tak samotné zvýraznění musí být vertikálně posunuto v plátn�
 
 Backtracking je vyhodnocený stejnou funkcí, jako pro zvýraznění pozice.
 Jediná věc, která se liší, je forma zobrazení. 
-Ta je ve tvaru šipky, signalizující odkud a kam se přesouvá v regulárním výrazu.
-Výška šipky není stejná, jako výška řádku, ale je zkrácená konkrétně na dva pixely.
+To je ve tvaru šipky, signalizující odkud a kam se přesouvá v regulárním výrazu.
+Na obrázku \ref{fig:backtrackingShowcase} lze vidět ukázku backtrackingu.
+Konkrétně se na zde nachází regulární výraz, který vyhodnocuje telefonní čísla.
+K backtrackingu došlo, jelikož znak + z předčíslí se nenachází v aktuálně zpracovávaném řetězci.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{Figures/backtrackingShowcase.png}
+	\caption{Ukázka backtrackingu}
+	\label{fig:backtrackingShowcase}
+\end{figure} 
 
 \subsection*{Zobrazení skupin}
 
@@ -237,6 +246,15 @@ Jelikož skupiny mohou být vnořené, je třeba předem určit pořadí, ve kte
 Kdyby nebyly řazeny, tak by se mohlo stát, že vnější skupina přepíše vnitřní.
 Pro samotné zobrazení je potřeba měnit barvu každé skupiny, nebo zvolit jiný způsob jejich rozlišení, aby je bylo možné rozeznat.
 Zvolil jsem první způsob, kdy podle indexu skupiny je zvolená její barva.
+Na obrázku \ref{fig:groupShowcase} se nachází ukázka zobrazení těchto skupin na příkladu telefonního čísla.
+První skupina obaluje předčíslí a druhá obsahuje telefonní číslo bez předčíslí.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{Figures/groupShowcase.png}
+	\caption{Ukázka skupin}
+	\label{fig:groupShowcase}
+\end{figure} 
 
 \section{VSCode rozšíření}
 
