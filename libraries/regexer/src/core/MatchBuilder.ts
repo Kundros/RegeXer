@@ -18,15 +18,18 @@ export class MatchBuilder
     {
         const top : MatchState | undefined = this.matchData.states[this.matchData.states.length-1];
 
+        /* shorten sequence of backtracking if flag is set */
         if((this.flags_ & MatchFlags.SHORTEN_BACKTRACKING))
         {
             if(<number>state?.action & MatchAction.BACKTRACKING)
             {
+                /* add additional information about exact position of backtracking from */
                 if(this.flags_ & MatchFlags.BACKTRACKED_FROM_EXACT)
-                    state.fromExact = top?.fromExact ?? [state.regAt[0], state.regAt[1]];
+                    state.fromExact = [state.regAt[0], state.regAt[1]];
 
-                if(<number>top?.action & MatchAction.BACKTRACKING)
+                if((<number>top?.action & MatchAction.BACKTRACKING) && top.regAt[0] > state.regAt[0])
                 {
+                    state.fromExact = top?.fromExact;
                     this.matchData.states.pop();
                     this.matchData.statesCount--;
                     this.batchPosition_[1]--;
