@@ -63,16 +63,16 @@ export type MatchAction = typeof MatchAction[keyof typeof MatchAction];
  * Flags used to generate different instances of matched history (the end history length can differ too)
  * @property {number} SHORTEN_BACKTRACKING backtracking is shortened to closest non-completed path decision 
  * @property {number} BACKTRACKED_FROM_EXACT 
- *   used when shortened backtracking is used, otherwise has no efect \
+ *   used when shortened backtracking is used, otherwise has no effect \
  *   adds to backtracking information on where backtracking has started exactly
- * @property {number} IGNORE_GROUP_ENTERS all enterings to group will be ignored and not captured by match history
+ * @property {number} IGNORE_GROUP_ENTERS all enters to group will be ignored and not captured by match history
  * @property {number} IGNORE_GROUP_ENTERS all leavings from group will be ignored and not captured by match history
  * @property {number} IGNORE_OPTION_LEAVES all leavings from option will be ignored and not captured by match history
- * @property {number} IGNORE_OPTION_LEAVES all enterings to option will be ignored and not captured by match history
- * @property {number} BACKTRACK_TRIM_POSITION the position that is backtracked to is trimed to first coordinate
+ * @property {number} IGNORE_OPTION_LEAVES all enters to option will be ignored and not captured by match history
+ * @property {number} BACKTRACK_TRIM_POSITION the position that is backtracked to is trimmed to first coordinate
  * @property {number} OPTION_ENTERS_SHOW_ACTIVE only current selected option will be highlighted
  * @property {number} IGNORE_STR_START_POSITION_CHANGE when starting position is changed then the new position isn't recorded by match history
- * @property {number} OPTION_SHOW_FIRST_ENTER is added aditional match state of first enter into option
+ * @property {number} OPTION_SHOW_FIRST_ENTER is added additional match state of first enter into option
  * @property {number} OPTION_NO_ERROR_RETURN 
  *   if single option cannot be matched the return of backtracking isn't updated to start of the regex option, \
  *   but stays at the same position just with action of backtracking set
