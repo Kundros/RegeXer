@@ -59,3 +59,4 @@ All notable changes to the "Regex Visualizer" extension will be documented in th
 ### Fixed
 
 - list now correctly generates states and displays them
+- shortened backtracking (old pos > new pos)
