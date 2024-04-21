@@ -1,7 +1,7 @@
 <div align="center">
     <h1>Regex visualisation extension for vscode</h1>
     <div align="center">
-        <img src="https://img.shields.io/badge/npm-v0.0.3-0172b3.svg" alt="npm">
+        <img src="https://img.shields.io/badge/npm-v0.0.4-0172b3.svg" alt="npm">
         <img src="https://img.shields.io/badge/typescript-v5.2.2-3178c6.svg" alt="typescript">
     </div>
 </div>
