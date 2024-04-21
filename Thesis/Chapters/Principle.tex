@@ -87,20 +87,21 @@ Ačkoliv byly nadefinovány začátkem padesátých let, tak jeho využití v po
 
 \subsection*{Thompsonovo sestrojení}
 
-První kdo navrhl implementaci používanou v počítačích byl \textbf{Ken Thompson}.
+První, kdo navrhl implementaci používanou v počítačích, byl \textbf{Ken Thompson}.
 Principem byl převod regulárního výrazu na NKA.
 Tato metoda se často používá doposud, v podobné či nezměněné podobě.
 Algoritmus se pojmenoval \textbf{Thompson's construction} (Thompsonovo sestrojení), který převádí textovou reprezentaci výrazu na ekvivalentní nedeterministický automat.
 Toto sestrojení je využito v této práci a blíže jej popisuje následující část textu.
 
-NKA se běžně využívá, jelikož je poměrně jednoduchý na implementaci.
-Také oproti DKA využívá \textbf{zpětného krokování} (backtracking) a povoluje složitější operace jako je \textit{rozhlédnutí se kolem sebe} (look-around).
+Převod na NKA se běžně využívá, jelikož je poměrně jednoduchý na implementaci.
+Thompsonovo sestrojení poskytuje řešení, jak tento převod uskutečnit.
+Konečné automaty jsou vhodnou formou reprezentace regulárních výrazů, protože mohou být na počítačích rychle vyhodnoceny.
+NKA jsou obecně pomalejší oproti DKA, ale jelikož dnešní formy výrazů umožňují složitější konstrukce, tak nelze vždy použít převod na DKA.
+Hlavním důvodem je, že NKA na rozdíl od DKA umožňuje backtracking (zpětné krokování), kterého může být využito pro složitější operace, jako je look-around (rozhlédnutí se kolem sebe).
 Backtracking je důležitý pro NKA, jelikož neexistuje jednoznačná cesta vyhodnocení.
 To znamená, že pokud je NKA ve stavu, ze kterého nelze pokračovat dále, tak je potřeba se vrátit do předchozího stavu.
-DKA mají výhodu, že jsou rychlejší, ale jsou typicky mnohem větší než jejich ekvivalentní NKA a neumožňují lehce implementovat některé složitější operace.
-Také nepotřebují zpětné krokování, jelikož jejich cesta je deterministická, tzn. existuje vždy jen jedna cesta pro hledané slovo.
-Dnes se ale často využívá kombinace DKA i NKA, kdy DKA se využije pro rychlé vyhledání daného slova a pokud bylo slovo nalezeno, 
-tak se použije NKA pro jejich rozšířené možnosti.
+DKA mají výhodu, že jsou rychlejší, ale jsou typicky mnohem větší než jejich ekvivalentní NKA.
+Dnes se ale často využívá kombinace DKA a NKA, kdy DKA se využije, pokud je to možné, jinak se využije NKA.
 
 Výsledný NKA po Thompsonově sestrojení má právě jeden vstupní a výstupní stav. 
 Thompsonovo sestrojení dále definuje několik následujících pravidel.
@@ -137,6 +138,8 @@ Na obrázku~\ref{fig:NFAunion} je znázorněný výsledný NKA, kde skupina stav
 
 Další pravidla pro sestrojení lze například najít v následujících článcích \cite{Thompson1,Thompson2}.
 Některé pravidla jsou v této práci upravená, ale fungují na stejném principu.
+
+\newpage
 
 \subsection*{Základní vzory regulárních výrazů}
 V předchozích sekcích již byly popsány základní konstrukce týkající se regulárních výrazů.
@@ -190,19 +193,20 @@ Pak je dělíme podle podmínění, a to na \textit{kladné} a \textit{negativn�
 Pokud máme kladné podmínění, \textbf{musí} uzavřený výraz být splněný a pokud máme záporné, tak \textbf{nesmí} být splněný.
 V původní formě regulárních výrazů tato funkce neexistovala.
 
-Mnohdy je potřeba nalezený řetězec rozdělit do skupin. 
+Mnohdy je potřeba nalezený řetězec rozdělit do skupin.
+Skupiny mohou být použity pro získání strukturovaných dat nebo pro obalení logického celku, na který lze aplikovat některé operátory, jako je třeba iterace.
+Příkladem strukturovaných dat může být vyhledání jména, které lze rozdělit na křestní jméno a příjmení.
+Za pomocí skupin lze získat tyto jednotlivé části po dokončeném vyhledání. 
 Tuto možnost dnešní implementace také umožňují.
 Chceme-li zdůraznit, že zadaný podvýraz je skupinou, obalíme ho do závorek.
 Tato vlastnost je důležitá, jelikož není potřeba v již nalezeném řetězci hledat další podřetězce pomocí dalšího výrazu.
 Skupiny se dělí na zachytávající (capturing), pojmenované (named) a nezachytávající (non-capturing).
 Pojmenované patří pod zachytávající, akorát jsou identifikovány pomocí názvu místo indexu.
 Obě skupiny zůstávají zachycené po dokončeném vyhledávání.
-Nezachytávající skupiny slouží čistě pro regulární výrazy, například při opakování části výrazu, ale ve výsledku se již nenachází.
+Nezachytávající skupiny slouží čistě pro regulární výrazy, například při opakování části výrazu, ale ve výsledku vyhledání se již nenachází.
 
 Asi nejobsáhlejší implementací je \textit{PCRE} (Perl-Compatible Regular Expressions) a \textit{PCRE2}.
 Tento standard pochází z jazyka Perl, ale také je například součástí jazyka PHP.
 Nachází se zde již poměrně složité vzory, jako jsou podmínky nebo rekurze.
 
 \endinput
-
-%TODO: popsat blíže rozložení na DKA a proč to není praktické

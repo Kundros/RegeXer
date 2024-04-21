@@ -210,6 +210,7 @@ Princip byl již jiný, jelikož nebylo třeba znát velikost písmene a mezery.
 Kurzor jsem nejprve umístil na začáteční pozici zvýraznění. 
 V cyklu jsem postupně posouval kurzorem až na konec zvýraznění.
 Během tohoto procesu jsem si ukládal souřadnice, kde se nachází.
+Souřadnice pak sloužili pro získání informace o zalomení řádku a vymezení výsledného bloku pro zvýraznění.
 Tento způsob již zamezil problému při zalamování řádku, ale byl poměrně neefektivní a dokázal zpomalovat uživatelské rozhraní.
 
 Poslední zpusob implementace dokázal vyřešit i zmíněný problém se zpomalením.
@@ -220,7 +221,7 @@ Kvůli toho jsem upravil kód pro získání a nastavení pozice kurzoru, tak ab
 Tato implementace se ukázala jako nejlepší, z důvodu výkonu a správné funkčnosti.
 
 Pokud je pozice délky nula, neboli \textit{min} je stejný jako \textit{max}, tak je stále zobrazena. 
-Její šířka je pak velikost mezery mezi dvěma písmeny. 
+Její šířka je pak nastavena na velikost mezery mezi dvěma písmeny. 
 Dále jsem musel zohlednit, jestli text má vertikální posuvník. 
 Pokud ano, tak samotné zvýraznění musí být vertikálně posunuto v plátně o výšku aktuálního posunu.
 
