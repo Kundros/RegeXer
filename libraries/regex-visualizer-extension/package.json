@@ -1,13 +1,13 @@
 {
-  "name": "regex-visualizer-extension",
+  "version": "0.0.4",
+  "publisher": "Kundros",
+  "description": "Regex Visualizer & Debugger",
   "displayName": "Regex Visualizer / Debugger",
+  "name": "regex-visualizer-extension",
   "icon": "logo.png",
   "author": {
     "name": "Dominik Kundra"
   },
-  "publisher": "Kundros",
-  "description": "Regex Visualizer & Debugger",
-  "version": "0.0.3",
   "repository": {
     "url": "https://github.com/Kundros/regex-visualization-thesis/tree/master/libraries/regex-visualizer-extension"
   },

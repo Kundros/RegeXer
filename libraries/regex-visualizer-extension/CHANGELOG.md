@@ -49,3 +49,13 @@ All notable changes to the "Regex Visualizer" extension will be documented in th
 - Highlighting - was incorrect sometimes for multiline expressions
 - Mozilla styles
 - (.) character backtracking wasn't working properly
+
+## [0.0.4] - 2024-04-21
+
+### Changed
+
+- Highlighting slightly shifted
+
+### Fixed
+
+- list now correctly generates states and displays them
