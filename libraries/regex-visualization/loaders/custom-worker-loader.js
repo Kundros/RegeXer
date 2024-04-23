@@ -29,7 +29,7 @@ module.exports = function (source) {
         path = path.replace("[target]", target);
         console.log('The original file was here:', this.resourcePath);
 
-        const filePath = this.resourcePath + "/../" + path;
+        const filePath = this.resourcePath.split(/\/|\\/g).slice(0, -1).join("/") + "/" + path;
         let fileContent = fs.readFileSync(filePath, 'utf-8');
         fileContent = fileContent.replace(/\\/gm, "\\\\");
         fileContent = fileContent.replace(/\`/gm, "\\\`");
