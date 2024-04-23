@@ -1,6 +1,6 @@
 {
   "name": "regex-visualization-thesis",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "This package is source package for thesis on regex visualisation plugin for vs-code.",
   "main": "index.js",
   "scripts": {
