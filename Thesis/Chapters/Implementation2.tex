@@ -165,7 +165,7 @@ To ale pro uživatele není příjemná vlastnost, kterou jsem tedy musel vyře�
 Před přepsáním textového pole je uložená pozice kurzoru.
 Po vložení textu je nutné vrátit se na uloženou pozici. 
 Nejedná se ale o jednoduchou úlohu, jelikož pokud se v textu nachází HTML elementy, musí být brány v potaz.
-Použil jsem základ algoritmu ze stránky \textit{stackoverflow}\footnote{https://stackoverflow.com/questions/69956977}, který dokáže jak zjistit aktuální pozici kurzoru, tak z pozice umístit kurzor na správné místo.
+Použil jsem základ algoritmu ze stránky \textit{stackoverflow}\cite{the_Hutt_2022}, který dokáže jak zjistit aktuální pozici kurzoru, tak z pozice umístit kurzor na správné místo.
 Ten jsem upravil pro potřeby mého projektu a dále rozšířil.
 Například jsem přidal možnost vytvoření nového kurzoru, který není přímo vložený do dokumentu, což se například může hodit pokud je potřeba získat souřadnice písmena.
 
@@ -297,7 +297,7 @@ Nastavení by mohlo být v budoucnu rozšířenější, aby umožňovalo uživat
 \subsection*{Komunikace rozšíření a vizualizace}
 
 Ke komunikaci VSCode s webview dochází pomocí zpráv.
-Jedná se o komunikaci, která je předepsána pro VSCode API součástí jejich dokumentaci\footnote{https://code.visualstudio.com/api/extension-guides/webview\#scripts-and-message-passing}.
+Jedná se o komunikaci, která je předepsána pro VSCode API součástí jejich dokumentaci\cite{Microsoft_2021_2}.
 Komunikaci jsem se pokusil omezit na minimum, aby nedocházelo k přetížení aplikace.
 Proto se posílají pouze zprávy, které souvisí s samotným rozšířením pro VSCode.
 Například pokud dojde k otevření výrazu z VSCode, tak musí dojít k jeho zaslání pomocí zprávy do webview.

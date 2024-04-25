@@ -7,7 +7,7 @@ Další formou může být například zobrazení výsledného konečného autom
 
 \section{Regex101}
 
-Jedním z nejznámějších nástrojů pro vizualizaci regulárních výrazů je webová stránka \textit{Regex101}\footnote{https://regex101.com}.
+Jedním z nejznámějších nástrojů pro vizualizaci regulárních výrazů je webová stránka \textit{Regex101}\cite{Dib}.
 Ta využívá principu debuggeru, kde se nachází historie vyhledávání daným výrazem.
 Procházením této historie se zvýrazňují části regulárního výrazu, což má signalizovat zpracovávanou část v konkrétním stavu.
 Dále se zvýrazňuje již vyhledaná část textu.
@@ -28,7 +28,7 @@ Proto jsem se rozhodl použít alespoň některé z nich.
 
 \section{RegExr}
 
-\textit{RegExr}\footnote{https://regexr.com} je dalším webovým nástrojem, který lze použít pro vizualizaci regulárních výrazů.
+\textit{RegExr}\cite{RegExr} je dalším webovým nástrojem, který lze použít pro vizualizaci regulárních výrazů.
 Tato stránka již nedisponuje debuggerem.
 Spíše využívá jednoduššího zvýrazňování částí vyhledaného textu.
 Podobně jako \textit{Regex101} se zde nachází zobrazení AST s popisem syntaxe.
@@ -40,7 +40,7 @@ Pokud uživatel často mění zadaný regulární výraz, tak si může zkontrol
 
 \section{Debuggex}
 
-Dalším přístupem pro vizualizaci je \textit{Debuggex}\footnote{https://debuggex.com}.
+Dalším přístupem pro vizualizaci je \textit{Debuggex}\cite{Toarca}.
 Na rozdíl od zmíněných přístupů Debuggex využívá vizualizace nedeterministického konečného automatu.
 V NKA se následně nachází kurzor, který signalizuje aktuální pozici procházeného výrazu.
 Tato aplikace také zobrazuje pozici v původním regulárním výrazu, ale není tolik detailní jako v případě \textit{Regex101}.
@@ -49,10 +49,10 @@ Aktuální podpora jazyků je JavaScript, Python a PHP.
 \section{Visual Studio Code přístupy}
 
 Pro vývojové prostředí Visual Studio Code existuje několik nástrojů.
-Nejstahovanějším nástrojem je \textit{Regex Previewer}\footnote{https://github.com/chrmarti/vscode-regex}.
+Nejstahovanějším nástrojem je \textit{Regex Previewer}\cite{Marti_2016}.
 Ten funguje na principu testovacího okna, ve kterém je zadaný text pro vyhledávání.
 Pokud se v kódu nachází regulární výraz, tak se ve vedlejším okně zvýrazní části textu, kde vyhledávání proběhlo úspěšně. 
 
-Mezi další nástroje, které existují pro zvolené prostředí, stojí za zmínku například \textit{Visual Regex}\footnote{https://github.com/roberthgnz/visual-regex} společně s \textit{Regexper unofficial}\footnote{https://github.com/APerricone/vscode-regexper-unofficial}.
+Mezi další nástroje, které existují pro zvolené prostředí, stojí za zmínku například \textit{Visual Regex}\cite{González_2021} společně s \textit{Regexper unofficial}\cite{Perricone_2019}.
 Tyto nástroje vygenerují obrázek NKA, který následně uživateli zobrazí.
 Nedostatkem těchto nástrojů je poměrně malá uživatelská interaktivita a flexibilita.

@@ -49,7 +49,7 @@ Z výsledků je patrné, že vlastní implementace je značně pomalejší a to 
 Zpomalení, i ve větší míře, je očekávané, jelikož se jedná o implementaci psanou v jazyce TS resp. JS.
 Také vlastní implementace má za úkol vytvářet strukturu historie zpracování, což standardní implementace nemusí řešit.
 K velkému zpomalení při neúspěchu mohlo dojít, jelikož každé zpracování probíhá pomocí NKA, ale dnešní jazyky často implementují hybridní variantu DKA s NKA a jsou velice optimalizované.
-Konkrétně V8 se snaží tento problém adresovat a pokud je to možné, pokouší se o vyhledávání bez využití backtrackingu.
+Konkrétně V8 se snaží tento problém adresovat, a to tak, že se první pokouší o vyhledávání bez využití backtrackingu.
 DKA v tomto případě má velkou výhodu, jelikož nemusí vykonávat tolik operací kvůli svému jednoznačnému průchodu řetězcem.
 
 Výkonově je sice vlastní implementace \textit{Regexer} pomalejší, ale pro účely této aplikace je tento výkon dostačující.
