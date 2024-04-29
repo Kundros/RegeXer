@@ -19,10 +19,12 @@ export class TextEditor{
         this.registerEvents();
     }
 
+    /** @description function that allows to register event from outside */
     public bindEvent(eventName : keyof HTMLElementEventMap, callback : (event : Event, text : HTMLElement) => void) {
         this.textInput_.addEventListener(eventName, (event : InputEvent) => callback(event, this.textInput_));
     }
     
+    /** @description if text is updated this function should be called */
     public updateText(event? : InputEvent)
     {
         if(this.textInput_.textContent === '\r')
@@ -48,6 +50,7 @@ export class TextEditor{
         this.textInput_.textContent = newText;
     }
 
+    /** @description handle text history addition (undo/redo) */
     protected handleHistory(event : InputEvent)
     {
         const historyCurrent = this.inputHistory_[this.historyAt_];
@@ -57,7 +60,7 @@ export class TextEditor{
             const historyCurrent = this.inputHistory_[this.historyAt_];
             this.textInput_.textContent = historyCurrent[0];
             setCursorPosition(this.textInput_, historyCurrent[1]);
-            this.handleFormating();
+            this.handleFormatting();
         }
 
         if(historyCurrent[0] != this.textInput_.textContent)
@@ -76,6 +79,7 @@ export class TextEditor{
         }
     }
 
+    /** @description disable original undo or redo operation */
     protected handleUndoRedo(event : KeyboardEvent)
     {
         if((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'z' || event.key === 'Z'))
@@ -133,7 +137,8 @@ export class TextEditor{
         }
     }
 
-    protected handleFormating()
+    /** @description handles formatting such as tab/new line */
+    protected handleFormatting()
     {
         let chars = this.textInput_.textContent;
 
@@ -224,7 +229,7 @@ export class TextEditor{
         this.textInput_.addEventListener('focus', () => this.handleFocus());
         this.textInput_.addEventListener('keydown', (event : KeyboardEvent) => this.handleKeydown(event));
         this.textInput_.addEventListener('keydown', (event : KeyboardEvent) => this.handleUndoRedo(event));
-        this.textInput_.addEventListener('input', () => this.handleFormating());
+        this.textInput_.addEventListener('input', () => this.handleFormatting());
         this.textInput_.addEventListener('input', (event : InputEvent) => this.updateText(event));
         this.textInput_.addEventListener('input', (event : InputEvent) => this.handleHistory(event));
     }

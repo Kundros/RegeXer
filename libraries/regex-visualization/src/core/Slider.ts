@@ -15,6 +15,7 @@ export type SliderEvent = Event & {
     }
 }
 
+/** @description customizable slider with action buttons */
 export class Slider{
     constructor(container : string | Element, options?: SliderOptions)
     {
@@ -265,6 +266,7 @@ export class Slider{
         this.updateSegments();
     }
 
+    /** @description creates listener on play button and handles timing behind autoplay */
     private handleAutoplay(autoplay : HTMLElement)
     {
         autoplay.addEventListener("click", () => {

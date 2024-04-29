@@ -19,6 +19,7 @@ const HighlightingTypes =
 
 type HighlightingTypes = typeof HighlightingTypes[keyof typeof HighlightingTypes];
 
+/** @description handles debugger window */
 export class RegexDebugger {
     constructor(overlay : HTMLElement, openBtn : HTMLElement, debuggerOptions? : DebuggerOptions)
     {

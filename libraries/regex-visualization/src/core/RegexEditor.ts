@@ -10,6 +10,7 @@ export class RegexEditor extends TextEditor
         super(textInput, options);
     }
 
+    /** @description highlights syntax of regular expression */
     public highlight(AST: ASTtype, isRoot: boolean = true) : Node[] | null
     {
         let elements : Node[] = [];
@@ -36,6 +37,7 @@ export class RegexEditor extends TextEditor
             return elements;
     }
 
+    /** @description highlights error position in regular expression */
     public highlightError(textPos : [number, number])
     {
         const text = this.textInput_.textContent;

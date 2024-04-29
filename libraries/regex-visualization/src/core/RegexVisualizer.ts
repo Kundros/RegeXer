@@ -53,7 +53,7 @@ export class RegexVisualizer {
         });
 
         const observer = new ResizeObserver(() => {
-            this.stringMatchEditor_.highlightMatches(this.regexEditor_.textInput.textContent);
+            this.stringMatchEditor_.highlightMatchesFromRegExp(this.regexEditor_.textInput.textContent);
             this.stringMatchEditor_.highlightGroups(this.matches_);
         });
 
@@ -94,7 +94,7 @@ export class RegexVisualizer {
             clearTimeout(this.matchWait_);
 
         this.stringMatchEditor_.setSignLoading();
-        this.stringMatchEditor_.highlightMatches(this.regexEditor_.textInput.textContent);
+        this.stringMatchEditor_.highlightMatchesFromRegExp(this.regexEditor_.textInput.textContent);
         
         if(this.options_.matchWait > 0)
         {

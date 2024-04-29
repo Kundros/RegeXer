@@ -32,6 +32,7 @@ export class StringMatchEditor extends TextEditor
         this.registerMatchEvents();
     }
 
+    /** @description highlights match position (from,to) */
     public highlightMatch(from: number, to: number)
     {
         
@@ -53,7 +54,7 @@ export class StringMatchEditor extends TextEditor
         this.context_.clearRect(0, 0, boundingCanvas.width, boundingCanvas.height);
     }
 
-    public highlightMatches(regexText: string, flags?: string)
+    public highlightMatchesFromRegExp(regexText: string, flags?: string)
     {
         const regex = new RegExp(regexText, flags);
 
@@ -79,6 +80,7 @@ export class StringMatchEditor extends TextEditor
         }
     }
 
+    /** @description highlights all groups from all matches */
     public highlightGroups(matches : RegexMatch[])
     {
         this.groupsHighlightings_ = [];
@@ -99,6 +101,7 @@ export class StringMatchEditor extends TextEditor
         }
     }
 
+    /** @description edits the message that contains basic information about current matching process */
     public updateMatchStatesMessage(steps: number, matches : number)
     {
         this.matchSteps_.replaceChildren(
