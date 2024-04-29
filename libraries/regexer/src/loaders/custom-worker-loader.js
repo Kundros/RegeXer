@@ -16,6 +16,7 @@ const validateOptions = (options) => {
     }
 };
 
+/* function finds url to worker and takes its contents which is embedded instead of found worker url */
 module.exports = function (source) {
     const callback = this.async();
     const options = this.getOptions();
