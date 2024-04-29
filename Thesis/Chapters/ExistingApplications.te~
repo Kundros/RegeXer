@@ -2,39 +2,39 @@
 
 Pro vizualizaci regulárních výrazů existuje několik přístupů realizace tohoto problému.
 Avšak tato řešení se často liší a neexistuje jednotný způsob, který by implementoval všechny nástroje jednotně.
-Jednou z~forem zobrazení je pomocí ladícího nástroje, neboli debuggeru.
+Jednou z forem zobrazení je pomocí ladícího nástroje, neboli debuggeru.
 Další formou může být například zobrazení výsledného konečného automatu a případná vizualizace průchodu tímto automatem.
 
 \section{Regex101}
 
-Jedním z~nejznámějších nástrojů pro vizualizaci regulárních výrazů je webová stránka \textit{Regex101}\cite{Dib}.
+Jedním z nejznámějších nástrojů pro vizualizaci regulárních výrazů je webová stránka \textit{Regex101}\cite{Dib}.
 Ta využívá principu debuggeru, kde se nachází historie vyhledávání daným výrazem.
-Procházením této historie se zvýrazňují části regulárního výrazu, což má signalizovat zpracovávanou část v~konkrétním stavu.
+Procházením této historie se zvýrazňují části regulárního výrazu, což má signalizovat zpracovávanou část v konkrétním stavu.
 Dále se zvýrazňuje již vyhledaná část textu.
 
 Nachází se zde dvě textová pole, do kterých uživatel může psát regulární výrazy a text pro vyhledávání.
 Tato stránka také podporuje syntaxi regulárních výrazů různých programovacích jazyků.
 Jejich debugger pouze podporuje standardy \textit{PCRE} a \textit{PCRE2}.
 Velkou výhodou tohoto nástroje je možnost zobrazit si seznam všech vzorů pro daný jazyk.
-Pokud se někdo poprvé seznamuje s~těmito výrazy, může využít tohoto seznamu pro jejich rychlejší pochopení.
+Pokud se někdo poprvé seznamuje s těmito výrazy, může využít tohoto seznamu pro jejich rychlejší pochopení.
 Dále tento nástroj obsahuje mimo jiné zvýraznění částí textu, kde zadaný výraz úspěšně dokázal vyhledat shody.
 Také jsou zvýrazněny některé syntaktické prvky zadaného regulárního výrazu, jako jsou například skupiny.
 Mezi poslední funkcionality, kterými tento nástroj disponuje, je zobrazení abstraktního syntaktického stromu (AST) pro zadaný výraz.
 Tato AST struktura také obsahuje, popis jednotlivých částí výrazu.
 
 Tento nástroj byl ve výsledku mou velkou inspirací pro tuto aplikaci. 
-Jelikož se jedná o~obsáhlou aplikaci, není možné v~této práci naimplementovat stejné množství funkcionalit.
-Proto jsem se rozhodl použít alespoň některé z~nich.
+Jelikož se jedná o obsáhlou aplikaci, není možné v této práci naimplementovat stejné množství funkcionalit.
+Proto jsem se rozhodl použít alespoň některé z nich.
 
 \section{RegExr}
 
 \textit{RegExr}\cite{RegExr} je dalším webovým nástrojem, který lze použít pro vizualizaci regulárních výrazů.
 Tato stránka již nedisponuje debuggerem.
 Spíše využívá jednoduššího zvýrazňování částí vyhledaného textu.
-Podobně jako \textit{Regex101} se zde nachází zobrazení AST s~popisem syntaxe.
+Podobně jako \textit{Regex101} se zde nachází zobrazení AST s popisem syntaxe.
 
 Zajímavou částí této aplikace je možnost použití testovacích řetězců.
-V~aplikaci se lze přepnout do sekce pro psaní vlastních testů.
+V aplikaci se lze přepnout do sekce pro psaní vlastních testů.
 Uživatel zde může zadávat textové řetězce, ve kterých následně proběhne hledání pomocí zadaného výrazu.
 Pokud uživatel často mění zadaný regulární výraz, tak si může zkontrolovat, zda všechny napsané testy správně proběhnou.
 
@@ -42,8 +42,8 @@ Pokud uživatel často mění zadaný regulární výraz, tak si může zkontrol
 
 Dalším přístupem pro vizualizaci je \textit{Debuggex}\cite{Toarca}.
 Na rozdíl od zmíněných přístupů Debuggex využívá vizualizace nedeterministického konečného automatu.
-V~NKA se následně nachází kurzor, který signalizuje aktuální pozici procházeného výrazu.
-Tato aplikace také zobrazuje pozici v~původním regulárním výrazu, ale není tolik detailní jako v~případě \textit{Regex101}.
+V NKA se následně nachází kurzor, který signalizuje aktuální pozici procházeného výrazu.
+Tato aplikace také zobrazuje pozici v původním regulárním výrazu, ale není tolik detailní jako v případě \textit{Regex101}.
 Aktuální podpora jazyků je JavaScript, Python a PHP.
 
 \section{Visual Studio Code přístupy}
@@ -51,8 +51,8 @@ Aktuální podpora jazyků je JavaScript, Python a PHP.
 Pro vývojové prostředí Visual Studio Code existuje několik nástrojů.
 Nejstahovanějším nástrojem je \textit{Regex Previewer}\cite{Marti_2016}.
 Ten funguje na principu testovacího okna, ve kterém je zadaný text pro vyhledávání.
-Pokud se v~kódu nachází regulární výraz, tak se ve vedlejším okně zvýrazní části textu, kde vyhledávání proběhlo úspěšně. 
+Pokud se v kódu nachází regulární výraz, tak se ve vedlejším okně zvýrazní části textu, kde vyhledávání proběhlo úspěšně. 
 
-Mezi další nástroje, které existují pro zvolené prostředí, stojí za zmínku například \textit{Visual Regex}\cite{González_2021} společně s~\textit{Regexper unofficial}\cite{Perricone_2019}.
+Mezi další nástroje, které existují pro zvolené prostředí, stojí za zmínku například \textit{Visual Regex}\cite{González_2021} společně s \textit{Regexper unofficial}\cite{Perricone_2019}.
 Tyto nástroje vygenerují obrázek NKA, který následně uživateli zobrazí.
 Nedostatkem těchto nástrojů je poměrně malá uživatelská interaktivita a flexibilita.

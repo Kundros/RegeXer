@@ -1,23 +1,23 @@
 \chapter{Závěr}\label{sec:Conclusion}
 
 Práce se zabývala tématem regulárních výrazů a možností jejich vizualizace.
-Její implementace byla integrována do vývojového prostředí Visual Studio Code, s~tím že může existovat také mimo toto prostředí, jako samostatná webová stránka.
-Pro porovnání a ukázku jsem zmínil existující nástroje pro vizualizaci regulárních výrazů, společně s~jejich funkcionalitami.
+Její implementace byla integrována do vývojového prostředí Visual Studio Code, s tím že může existovat také mimo toto prostředí, jako samostatná webová stránka.
+Pro porovnání a ukázku jsem zmínil existující nástroje pro vizualizaci regulárních výrazů, společně s jejich funkcionalitami.
 Následně jsem vytvořil vlastní knihovnu, která dokáže tyto výrazy zpracovávat.
 Přesněji daný výraz vyhodnotí a vytvoří strukturu nedeterministického konečného automatu.
-Ten slouží pro následující vyhledávání v~zadaném řetězci.
+Ten slouží pro následující vyhledávání v zadaném řetězci.
 Výsledkem vyhledávání je struktura stavů, neboli historie procházení.
 Vizualizační knihovna tyto stavy přebírá a následně zprostředkovává uživatelské rozhraní pro průchod historie stavů.
 Rozšíření vývojového prostředí zobrazí vizualizaci do webového okna jako jeho součást.
 
-Na konci po otestování aplikace, jsem došel k~závěru, že její výkon je pro své účely dostatečný.
+Na konci po otestování aplikace, jsem došel k závěru, že její výkon je pro své účely dostatečný.
 Také aplikace sice nabízí limitované množství implementovaných vzorů, ale i přesto může mít dostatečný přínos pro programátory.
-Aplikace byla psána tak, aby mohla být v~budoucnu poměrně lehce rozšířitelná o~další funkcionality, kterými současně nedisponuje.
+Aplikace byla psána tak, aby mohla být v budoucnu poměrně lehce rozšířitelná o další funkcionality, kterými současně nedisponuje.
 
-Každá ze tří knihoven integrovaných do aplikace by mohla být v~budoucnu rozšířená.
-Mezi tato možná rozšíření patří hlavně doplnění dalších vzorů pro regulární výrazy z~jazyka JavaScript.
-Dalším možným rozšířením aplikace by mohlo být přidání podpory více standardů regulárních výrazů z~jiných jazyků, jako je například PCRE.
-Aplikace by mohla v~případě nutnosti být potencionálně zrychlená optimalizací kódu, nebo přepsáním části kódu do nízkoúrovňového jazyka, jako je C++ nebo Rust.
+Každá ze tří knihoven integrovaných do aplikace by mohla být v budoucnu rozšířená.
+Mezi tato možná rozšíření patří hlavně doplnění dalších vzorů pro regulární výrazy z jazyka JavaScript.
+Dalším možným rozšířením aplikace by mohlo být přidání podpory více standardů regulárních výrazů z jiných jazyků, jako je například PCRE.
+Aplikace by mohla v případě nutnosti být potencionálně zrychlená optimalizací kódu, nebo přepsáním části kódu do nízkoúrovňového jazyka, jako je C++ nebo Rust.
 Ve vizualizaci by bylo možné doplnit možnost zobrazení nedeterministického konečného automatu a abstraktního syntaktického stromu daného výrazu.
 
 Současně může být aplikace přínosná pro ostatní programátory, proto existuje možnost toto rozšíření publikovat veřejně na VSCode marketplace.

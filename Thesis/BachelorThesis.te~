@@ -69,24 +69,24 @@
 }
 
 \CzechAbstract{
-    Tato práce se věnuje vizualizaci regulárních výrazů, slouží pro pochopení jejich fungování a k~potencionálnímu odhalení chyb při jejich ladění.
+    Tato práce se věnuje vizualizaci regulárních výrazů, slouží pro pochopení jejich fungování a k potencionálnímu odhalení chyb při jejich ladění.
     První část práce popisuje principy fungování regulárních výrazů, historii a jejich základní vzory.
     Druhá část srovnává existující nástroje, jejich možnosti a inspirace pro tuto práci. 
     Třetí část probírá specifikaci požadavků, zvolený návrh a použité technologie aplikace.
     Dále se detailněji zabývá implementací samotné aplikace, konkrétně zpracováním regulárních výrazů, vizualizací a rozšířením pro vývojové prostředí Visual Studio Code.
 }
 
-\CzechKeywords{vizualizace regulárních výrazů; rozšíření vývojového prostředí Visual Studio Code}
+\CzechKeywords{vizualizace regulárních výrazů; vývojové prostředí Visual Studio Code}
 
 \EnglishAbstract{
-    This thesis focuses on the visualization of regular expressions, serving a purpose for understanding their functioning and for potential error detection while debugging them.
-    The first part of the thesis describes the functioning principles of regular expressions, history, and their basic patterns.
-    The second part compares existing tools, their options, and inspirations for this thesis.
-    The third part discusses the specification of requirements, selected design, and used technologies in application.
-    Furthermore, this part focuses more on the implementation of the application alone, specifically on regular expression evaluation, visualization, and extension for the development environment Visual Studio Code.
+    This thesis focuses on visualization of regular expressions, serving a purpose for understanding their functioning and for potentional error detection while debugging them.
+    First part of thesis describes functioning principles of regular expressions, history and their basic patterns.
+    Second part compares existing tools, their options and inspirations for this thesis.
+    Third part discusses specification of requirements, selected design and used technologies in application.
+    Furthermore this part more focuses on implementation of the application alone, specifically about regular expression evaluation, visualization and extension for development enviroment Visual Studio Code.
 }
 
-\EnglishKeywords{visualization of regular expressions; extension for development environment Visual Studio Code}
+\EnglishKeywords{visualization of regular expressions; development enviroment Visual Studio Code}
 
 \AddAcronym{AST}{Abstract Syntax Tree}
 \AddAcronym{NKA}{Nedeterministický konečný automat}
@@ -151,30 +151,30 @@
 
 \chapter{Sestavení a spuštění projektu}\label{sec:ProjectBuild}
 
-Pro vlastní sestavení aplikace je potřeba mít nainstalovaný NodeJS společně s~NPM.
+Pro vlastní sestavení aplikace je potřeba mít nainstalovaný NodeJS společně s NPM.
 Při vývoji jsem používal NodeJS verze 20.9.0 a NPM verze 10.2.1.
-Avšak pro vlastní sestavení by měla stačit verze NodeJS 14.17 společně s~NPM verzí 6.14.
+Avšak pro vlastní sestavení by měla stačit verze NodeJS 14.17 společně s NPM verzí 6.14.
 Zároveň může být použité i novější verze. 
 Pokud uživatel nemá NodeJS, lze jej nainstalovat ze stránky \textit{https://nodejs.org}, NPM je součástí instalace.
-Lze použít i jiné balíčkové manažery místo NPM, ale v~návodu na sestavení používám právě NPM.
+Lze použít i jiné balíčkové manažery místo NPM, ale v návodu na sestavení používám právě NPM.
 Rozšíření bylo vyvíjeno pro VSCode verze 1.84.0, ale mělo by fungovat i na novějších verzích.
 
-V~příloze~\ref{sec:FileStructure} je ukázaná částečná adresářová struktura projektu.
-Instalace probíhá v~následujících krocích:
+V příloze~\ref{sec:FileStructure} je ukázaná částečná adresářová struktura projektu.
+Instalace probíhá v následujících krocích:
 
 \begin{enumerate}
-	\item Pro instalaci všech externích závislostí, v~kořenovém adresáři se použije příkaz \texttt{\textbf{\textcolor{OliveGreen}{npm install}}}.
-	\item K~sestavení projektu slouží npm skript \texttt{\textbf{\textcolor{OliveGreen}{npm run build}}}.
+	\item Pro instalaci všech externích závislostí, v kořenovém adresáři se použije příkaz \texttt{\textbf{\textcolor{OliveGreen}{npm install}}}.
+	\item K sestavení projektu slouží npm skript \texttt{\textbf{\textcolor{OliveGreen}{npm run build}}}.
 	\item Pro vytvoření instalačního souboru rozšíření se použije příkaz \texttt{\textbf{\textcolor{OliveGreen}{npm run release}}}.
-	\item Výsledné instalační soubory se nachází v~\textit{/libraries/regex-visualizer-extension/release}, podle přílohy \ref{sec:FileStructure}.
+	\item Výsledné instalační soubory se nachází v \textit{/libraries/regex-visualizer-extension/release}, podle přílohy \ref{sec:FileStructure}.
 \end{enumerate}
 
-Všechny potřebné soubory pro lokální spuštění ve webovém prohlížeči se po přeložení nachází v~adresáři \textit{/libraries/regex-visualization/dist}. 
+Všechny potřebné soubory pro lokální spuštění ve webovém prohlížeči se po přeložení nachází v adresáři \textit{/libraries/regex-visualization/dist}. 
 Pro spuštění je poté potřeba mít jakýkoliv webový server, kvůli podpoře web workeru.
 
 \section*{Výsledný instalační soubor}
 
-Výsledným souborem pro VSCode rozšíření je soubor s~příponou \textit{.vsix}.
+Výsledným souborem pro VSCode rozšíření je soubor s příponou \textit{.vsix}.
 Tyto soubory slouží pro lokální instalaci rozšíření.
 Pro získání \textit{vsix} souboru slouží příkaz \textit{vsce}, který dokáže sjednotit všechny závislosti do jednoho výsledného souboru.
 
@@ -202,7 +202,7 @@ Po dokončení instalace si lze otevřít okno aplikace, a to napsáním \texttt
 .4 src\DTcomment{Adresář zdrojových kódů}.
 .5 handlers\DTcomment{VSCode handlers}.
 .5 providers\DTcomment{VSCode providers}.
-.5 web\DTcomment{Adresář pro práci s~webview}.
+.5 web\DTcomment{Adresář pro práci s webview}.
 .3 regexer\DTcomment{Knihovna pro zpracování regulárních výrazů}.
 .4 \_\_tests\_\_\DTcomment{Kódy pro testování}.
 .4 src\DTcomment{Adresář zdrojových kódů}.
@@ -214,7 +214,7 @@ Po dokončení instalace si lze otevřít okno aplikace, a to napsáním \texttt
 
 \chapter{Testovací data}\label{sec:TestingData}
 
-Následující list testovacích dat obsahuje regulární výraz a testovací řetězce k~danému výrazu.
+Následující list testovacích dat obsahuje regulární výraz a testovací řetězce k danému výrazu.
 Za každým řetězcem se nachází signalizace, zda je řetězec přijímaný korespondujícím regulárním výrazem dle standardu pro jazyk JavaScript.
 
 \begin{enumerate}

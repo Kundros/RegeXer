@@ -3,12 +3,12 @@
 Pro testování při vývoji jsem používal technologii Jest, pro psaní vlastních testů.
 To hlavně kvůli udržitelnosti kódu a včasnému zachycení chyb při vývoji.
 Testy jsem používal pouze pro část aplikace, která používá složitějších algoritmů.
-Konkrétně při vývoji knihovny pro práci s~regulárními výrazy.
+Konkrétně při vývoji knihovny pro práci s regulárními výrazy.
 Testy jsem psal postupně podle případů, které mě napadly při vývoji.
 Tento přístup byl samozřejmě nedostačující, a tak jsem při testování samotné vizualizace našel několik dalších příkladů se špatnými výsledky. 
 Ty jsem následně opravil a přidal do samotných testů.
 
-Testování výkonu pak proběhlo na počítači s~6 jádrovým procesorem a 12 vlákny, AMD Ryzen\texttrademark ~5 5600X.
+Testování výkonu pak proběhlo na počítači s 6 jádrovým procesorem a 12 vlákny, AMD Ryzen\texttrademark ~5 5600X.
 Dostupná paměť na použitém stroji je 32GB RAM.
 
 \begin{table}[!h]
@@ -18,7 +18,7 @@ Dostupná paměť na použitém stroji je 32GB RAM.
     \begin{tabularx}{\linewidth}{ |Y|c|c|c|c|c|c|c|c| }
         \cline{2-9}
         \multicolumn{1}{c|}{} & \multicolumn{8}{c|}{\textbf{Regulární výraz a testovací řetězec}} \\
-        \multicolumn{1}{c|}{} & \multicolumn{8}{c|}{Čas v~ms} \\
+        \multicolumn{1}{c|}{} & \multicolumn{8}{c|}{Čas v ms} \\
         \hline
         \textbf{Testovací subjekt} & \ref{itm:TD_1a} & \ref{itm:TD_2a} & \ref{itm:TD_3a} & \ref{itm:TD_4a} & \ref{itm:TD_5a} & \ref{itm:TD_6a} & \ref{itm:TD_7a} & \ref{itm:TD_7b}  \\
         \hlineB{3}
@@ -37,21 +37,21 @@ Dostupná paměť na použitém stroji je 32GB RAM.
 	\label{tab:DebuggerUI}
 \end{table}
 
-V~tabulce \ref{tab:DebuggerUI} se nachází srovnání výsledků testování vlastní implementace a standardních funkcí z~jazyka JavaScript.
-Testovací data v~tabulce jsou označená číslem, které značí vybraný regulární výraz z~přílohy \ref{sec:TestingData}, a písmenem, které odkazuje na vybraný testovací řetězec z~listu pod daným výrazem.
+V tabulce \ref{tab:DebuggerUI} se nachází srovnání výsledků testování vlastní implementace a standardních funkcí z jazyka JavaScript.
+Testovací data v tabulce jsou označená číslem, které značí vybraný regulární výraz z přílohy \ref{sec:TestingData}, a písmenem, které odkazuje na vybraný testovací řetězec z listu pod daným výrazem.
 Nalezený výsledek značí, zda testovací řetězec byl úspěšně vyhledaný výrazem, či nikoliv. 
-Řádek \textit{násobné zpomalení Regexeru} v~tabulce porovnává vlastní implementaci s~JavaScriptovou (RegExp).
+Řádek \textit{násobné zpomalení Regexeru} v tabulce porovnává vlastní implementaci s JavaScriptovou (RegExp).
 Testování bylo spuštěno přibližně desetkrát a výsledky byly zprůměrovány.
 
-Výsledky jsem konkrétně porovnával s~implementací, která je součástí V8 engine.
-V8 je jeden z~nejrozšířenějších enginů pro JavaScript používaných například v~Chrome nebo NodeJS.
-Tento engine implementuje regulární výrazy v~jazyce C++ \cite{Bidlingmaie_2021, Gruber_2017}.
-Z~výsledků je patrné, že vlastní implementace je značně pomalejší, a to hlavně v~případě nenalezeného výsledku.
-Zpomalení, i ve větší míře, je očekávané, jelikož se jedná o~implementaci psanou v~jazyce TS resp. JS.
+Výsledky jsem konkrétně porovnával s implementací, která je součástí V8 engine.
+V8 je jeden z nejrozšířenějších enginů pro JavaScript používaných například v Chrome nebo NodeJS.
+Tento engine implementuje regulární výrazy v jazyce C++ \cite{Bidlingmaie_2021, Gruber_2017}.
+Z výsledků je patrné, že vlastní implementace je značně pomalejší, a to hlavně v případě nenalezeného výsledku.
+Zpomalení, i ve větší míře, je očekávané, jelikož se jedná o implementaci psanou v jazyce TS resp. JS.
 Také vlastní implementace má za úkol vytvářet strukturu historie zpracování, což standardní implementace nemusí řešit.
-K~velkému zpomalení při neúspěchu mohlo dojít, jelikož každé zpracování probíhá pomocí NKA, ale dnešní jazyky často implementují hybridní variantu DKA s~NKA a jsou velice optimalizované.
-Konkrétně V8 se snaží tento problém adresovat, a to tak, že se první pokouší o~vyhledávání bez využití backtrackingu.
-DKA v~tomto případě má velkou výhodu, jelikož nemusí vykonávat tolik operací kvůli svému jednoznačnému průchodu řetězcem.
+K velkému zpomalení při neúspěchu mohlo dojít, jelikož každé zpracování probíhá pomocí NKA, ale dnešní jazyky často implementují hybridní variantu DKA s NKA a jsou velice optimalizované.
+Konkrétně V8 se snaží tento problém adresovat, a to tak, že se první pokouší o vyhledávání bez využití backtrackingu.
+DKA v tomto případě má velkou výhodu, jelikož nemusí vykonávat tolik operací kvůli svému jednoznačnému průchodu řetězcem.
 
 Výkonově je sice vlastní implementace \textit{Regexer} pomalejší, ale pro účely této aplikace je tento výkon dostačující.
 Pro zlepšení výkonu by bylo možné přepsat tuto část aplikace do více nízkoúrovňového jazyka, jako je například \textit{C++} nebo \textit{Rust}.

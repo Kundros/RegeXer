@@ -1,50 +1,50 @@
 \chapter{Úvod}\label{sec:Introduction}
 
-Vyhledávání v textu patří mezi základní problémy, se kterými se velmi pravděpodobně potká skoro každý programátor. 
+Vyhledávání v~textu patří mezi základní problémy, se kterými se velmi pravděpodobně potká skoro každý programátor. 
 Tento problém se dá řešit mnoha způsoby, avšak ne všechna řešení lze použít univerzálně a každý ze způsobů má své výhody a nevýhody.
 Jedním ze přístupů je využití \textbf{regulárních výrazů}. 
-Jedná se o sekvenci znaků, která nám umožňuje popsat nějakou množinu textových řetězců\cite{article_Bhatia}.
-Nejčastěji je jejich výsledná forma v podobě \textbf{konečného automatu}. 
-Konečné automaty jsou blíže vysvětleny v sekci~\ref{sec:FiniteAutomaton}.
-Téměř každý programovací jazyk v dnešní době obsahuje regulární výrazy, ale jejich implementace se mohou lišit.
+Jedná se o~sekvenci znaků, která nám umožňuje popsat nějakou množinu textových řetězců\cite{article_Bhatia}.
+Nejčastěji je jejich výsledná forma v~podobě \textbf{konečného automatu}. 
+Konečné automaty jsou blíže vysvětleny v~sekci~\ref{sec:FiniteAutomaton}.
+Téměř každý programovací jazyk v~dnešní době obsahuje regulární výrazy, ale jejich implementace se mohou lišit.
 
 Cílem této práce je naimplementovat nástroj, který bude schopný zpracovávat a procházet regulární výrazy. 
 Následně lze vizualizovat tyto průchody, a to jako součást rozšíření ve zvoleném vývojovém prostředí.
 
-Při vývoji programů se programátor často setkává s regulárními výrazy, jedná se totiž o poměrně rychlý způsob vyhledávání v textu. 
-Můžeme se s nimi setkat v podstatě skoro ve všech částech softwaru, např. validace formulářů, vyhledávání v textu, nebo například v příkazovém řádku.
-Avšak v těchto výrazech je někdy poměrně složité se vyznat, jelikož neumožňují téměř žádné formátování \cite{inproceedings}. 
+Při vývoji programů se programátor často setkává s~regulárními výrazy, jedná se totiž o~poměrně rychlý způsob vyhledávání v~textu. 
+Můžeme se s~nimi setkat v~podstatě skoro ve všech částech softwaru, např. validace formulářů, vyhledávání v~textu, nebo například v~příkazovém řádku.
+Avšak v~těchto výrazech je někdy poměrně složité se vyznat, jelikož neumožňují téměř žádné formátování \cite{inproceedings}. 
 Taktéž mohou být pro mnoho lidí matoucí, či nepřehledné.
-Z tohoto důvodu je vhodné mít nástroj, který potencionálně usnadní práci programátorům, tak aby si mohli zobrazit průchod zadaným výrazem.
-Dále pro někoho, kdo například vidí tyto výrazy poprvé v životě, může být snazší jim porozumět, existuje-li možnost zobrazit princip jejich fungování v jednotlivých krocích.
-Sice již existují řešení tohoto problému, a to v různých formách \cite{Dib, Regexper, RegExr}, ale pro zvolené prostředí Visual Studio Code (VSCode) mnoho přístupů neexistuje.
-Tato situace je motivací zabývat se problémem a pokusit se nabídnout originální řešení v daném směru, které by mohlo být přínosem pro ostatní.
+Z~tohoto důvodu je vhodné mít nástroj, který potencionálně usnadní práci programátorům, tak aby si mohli zobrazit průchod zadaným výrazem.
+Dále pro někoho, kdo například vidí tyto výrazy poprvé v~životě, může být snazší jim porozumět, existuje-li možnost zobrazit princip jejich fungování v~jednotlivých krocích.
+Sice již existují řešení tohoto problému, a to v~různých formách \cite{Dib, Regexper, RegExr}, ale pro zvolené prostředí Visual Studio Code (VSCode) mnoho přístupů neexistuje.
+Tato situace je motivací zabývat se problémem a pokusit se nabídnout originální řešení v~daném směru, které by mohlo být přínosem pro ostatní.
 
-Implementace těchto výrazů bývá nejčastěji formou konečných automatů, jedná se o poměrně výkonné řešení. 
+Implementace těchto výrazů bývá nejčastěji formou konečných automatů, jedná se o~poměrně výkonné řešení. 
 Aby bylo možné tohoto dosáhnout musí být převedena jejich textová forma na strukturu konečného automatu.
 Toho může být dosaženo například využitím bezkontextové gramatiky, nebo implementací vlastního parseru.
 Bezkontextová gramatika je formální gramatika, která definuje nějaký formální jazyk\cite{GeeksforGeeks_2023}. 
 Výsledkem jejího překladu je parser.
 Parser je program, který slouží pro analýzu a zpracování textového řetězce\cite{Lutkevich_2022}.
-Později v kapitole~\ref{sec:ApplicationTechnology} je vysvětleno, který ze způsobů byl zvolen a důvod této volby.
+Později v~kapitole~\ref{sec:ApplicationTechnology} je vysvětleno, který ze způsobů byl zvolen a důvod této volby.
 
 Vizualizaci regulárních výrazů je možné chápat několika způsoby, lze si ji např. představit jako zobrazení ekvivalentního konečného automatu.
-Dalším možným přístupem je vizualizace současného stavu regulárního výrazu přímo v jeho textové podobě a v hledaném řetězci. 
+Dalším možným přístupem je vizualizace současného stavu regulárního výrazu přímo v~jeho textové podobě a v~hledaném řetězci. 
 Druhý přístup jsem zvolil pro tuto práci, a to ve smyslu \textbf{ladícího nástroje (debugger)}. 
-Debugger v tomto případě funguje jako historie jednotlivých kroků průchodu zadaným výrazem. 
+Debugger v~tomto případě funguje jako historie jednotlivých kroků průchodu zadaným výrazem. 
 Tento průchod se také nazývá jako krokování.
 
-Regulární výrazy pocházejí z \textbf{teoretické informatiky}\footnote{Vědní obor na pomezí mezi informatikou a matematikou.}, byly nadefinovány roku 1956, ale k jejich využití v počítačích se dostalo až v roce 1968 v operačním systému \textbf{UNIX}.
+Regulární výrazy pocházejí z~\textbf{teoretické informatiky}\footnote{Vědní obor na pomezí mezi informatikou a matematikou.}, byly nadefinovány roku 1956, ale k~jejich využití v~počítačích se dostalo až v~roce 1968 v~operačním systému \textbf{UNIX}.
 Od své původní formy se dnes ve svém základu téměř neliší, ale často již obsahují složitější funkcionality a rozšířenou syntaxi.
-Jedno z jejich nejznámějších využití je v příkazovém řádku v linuxových operačních systémech, původně v UNIXu, a to pod názvem \textbf{g/re/p} neboli \textbf{grep} 
+Jedno z~jejich nejznámějších využití je v~příkazovém řádku v~linuxových operačních systémech, původně v~UNIXu, a to pod názvem \textbf{g/re/p} neboli \textbf{grep} 
 „Global search for Regular Expression and Print matching lines“\cite{Aho_Ullman_1992}. 
 
-V kapitole~\ref{sec:Principle} jsou podrobněji popsány pojmy z teoretické informatiky, dále implementace regulárních výrazů, jejich vzory a vznik.
-Popis existujících nástrojů a přístupů řešení se nachází v kapitole~\ref{sec:ExistingApplications}.
+V~kapitole~\ref{sec:Principle} jsou podrobněji popsány pojmy z~teoretické informatiky, dále implementace regulárních výrazů, jejich vzory a vznik.
+Popis existujících nástrojů a přístupů řešení se nachází v~kapitole~\ref{sec:ExistingApplications}.
 Následně kapitola~\ref{sec:ApplicationTechnology} popisuje specifikaci požadavků, návrh aplikace a použité technologie při vývoji aplikace.
 Kapitola~\ref{sec:Implementation1} se zabývá implementací knihovny pro zpracování regulárních výrazů. 
-Ta je pak využita v samotné vizualizaci, která je blíže popsána v kapitole~\ref{sec:Implementation2}, společně s rozšířením pro \textit{Visual Studio Code}.
-Zhodnocení a testování výsledků je blíže popsáno v kapitole \ref{sec:Testing}.
+Ta je pak využita v~samotné vizualizaci, která je blíže popsána v~kapitole~\ref{sec:Implementation2}, společně s~rozšířením pro \textit{Visual Studio Code}.
+Zhodnocení a testování výsledků je blíže popsáno v~kapitole \ref{sec:Testing}.
 Poslední kapitola \ref{sec:Conclusion} shrnuje obsah práce, dosažené výsledky a možné rozšíření aplikace do budoucna. 
 
 \endinput
