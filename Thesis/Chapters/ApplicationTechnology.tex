@@ -38,12 +38,6 @@ Výsledkem této knihovny je struktura vyhledávání zadaným regulárním výr
 Na obrázku~\ref{fig:ARCH} je viditelná závislost mezi různými částmi aplikace. 
 Rovněž je zde patrná základní struktura těchto knihoven a jejich závislosti mezi sebou.
 Avšak jsou zakresleny jen ty komponenty, které lze považovat za důležité. 
-%Je dobré zdůraznit asynchronní komunikaci, kterou poskytuje knihovna vyhodnocující regexy.
-%Tuto komunikaci lze vidět mezi komponentou Regexer a RegexVisualizer s tím, že Regexer využívá vedlejší vlákno mimo vlákno hlavní. 
-%Knihovna pro vlákna Threads.js je blíže popsána v sekci~\ref{sec:USEDtech}.
-%Rozšíření VSCode v rámci webview, zobrazuje HTML soubor index.html z vizualizační knihovny.
-%Také rozšíření může komunikovat s touto knihovnou pomocí zpráv, pro předávání dat a pro vyvolávání událostí. 
-%RegexMatch je pak využívaný vizualizační knihovnou, pro zobrazování stavů vyhledávání.
 
 \begin{figure}[!h]
 	\centering
@@ -94,7 +88,7 @@ Avšak tato knihovna slouží převážně pro testování JavaScriptových kód
 To mi pak umožňuje psát testy, které mohou využívat TypeScriptové typy.
 
 Jednou z posledních knihoven, kterou jsem použil, je \textbf{Threads.js}\cite{Wermke_2019}. 
-JavaScript byl navržený jako single-threaded jazyk, tudíž využití vláken, jako je známe v jiných jazycích, zde v této podobě neexistuje.
+JavaScript byl navržený jako single-threaded (jednovláknový) jazyk, tudíž využití vláken, jako je známe v jiných jazycích, zde v této podobě neexistuje.
 Proto existují alespoň řešení, která se snaží tuto problematiku řešit, ale neexistuje jednotná implementace pro různé runtime.
 Browser má \textit{web workery} a NodeJS má \textit{worker thready}.
 Sice si jsou podobné, ale mají změny, které znemožňují univerzálního použití.

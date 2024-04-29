@@ -59,10 +59,10 @@ Jak již bylo zmíněno, pro parsování regulárních výrazu jsem použil bezk
 Jedná se o pokračování projektu PegJS, ale ten se již dlouho nevyvíjí. 
 Jelikož knihovna Peggy je stále aktualizována a má velkou podporu vývojářů, tak jsem zvolil její využití pro tuto práci.
 
-V ukázce~\ref{code:grammar1} se nachází vstupní neterminál bezkontextové gramatiky \textit{start}. 
-Ten obsahuje výběr mezi dvěma začátky \textit{moded\_start} a \textit{general\_start}.
-Výběr je pak dostupný pod názvem \textit{type}, podle toho který se zvolí.
-Před dokončením pravidla se na jeho konci může nacházet blok "\{\}", který může modifikovat výsledná data.
+V ukázce~\ref{code:grammar1} se nachází vstupní neterminál bezkontextové gramatiky \texttt{start}. 
+Ten obsahuje výběr mezi dvěma začátky \texttt{moded\_start} a \texttt{general\_start}.
+Výběr je pak dostupný pod názvem \texttt{type}, podle toho který se zvolí.
+Před dokončením pravidla se na jeho konci může nacházet blok \texttt{"\{\}"}, který může modifikovat výsledná data.
 Modifikace v rámci pravidla pro začátek probíhá zavoláním instance vlastní třídy \textbf{ParserHandler}, která je součástí gramatiky.
 Třída má za úkol zpracovávat příchozí data do struktury, která je ukázaná na obrázku~\ref{fig:JSONex}.
 
@@ -83,14 +83,14 @@ start
 Existuje několik různých vzorů regulárních výrazů.
 Každý ze vzorů má pravidla pro možné kombinování s ostatními vzory.
 Ukázka kódu~\ref{code:grammar2} obsahuje příklad možných výběrů pravidel, které lze společně kombinovat.
-Například možnosti pro iteraci, ve zmíněném kódu \textit{to\_iterate}, obsahují pouze následující vzory, které mohou být opakovány.
+Například možnosti pro iteraci, ve zmíněném kódu \texttt{to\_iterate}, obsahují pouze následující vzory, které mohou být opakovány.
 
 \begin{itemize}
-	\item Speciální znaky (\textit{escaped\_special}) --- "$\textbackslash s$", "$\textbackslash d$"
-	\item Základní znaky (\textit{primitive}) --- "$a$", "$b$", "$0$"
-	\item Výběr jakéhokoliv znaku (\textit{any\_character}) -- "$.$"
-	\item Skupina (\textit{group}) --- "$()$"
-	\item List znaků (\textit{list}) --- "$[a-z]$"
+	\item Speciální znaky (\textit{escaped\_special}) --- \texttt{"\textbackslash s", "\textbackslash d"}
+	\item Základní znaky (\textit{primitive}) --- \texttt{"a", "b", "0"}
+	\item Výběr jakéhokoliv znaku (\textit{any\_character}) -- \texttt{"."}
+	\item Skupina (\textit{group}) --- \texttt{"()"}
+	\item List znaků (\textit{list}) --- \texttt{"[a-z]"}
 \end{itemize}
 
 V mnoha případech záleží na pořadí výběru z dostupných vzorů, proto je potřeba určit, které možnosti upřednostnit.
@@ -98,8 +98,8 @@ Abych vysvětlil, proč je pořadí důležité, vybral jsem si jako příklad \
 Zjednodušeně výběr má vyšší přednost, jelikož může mít za potomka iteraci.
 Kdyby se neterminál iterace nacházel před neterminálem výběru, tak by došlo k tomu, že by iterace nebyla součástí výběru, v případě, že by se nacházela na pozici první možnosti výběru. 
 Neboli byla by dříve zpracována, nežli samotný výběr.
-Jako příklad může sloužit výraz $a*|b*$, při kterém by se první zpracovala iterace $a*$.
-Výsledkem výběru by byly dvě možnosti $\epsilon$ nebo $b*$, což je sice sám o sobě správný tvar výběru, ale ve zvoleném výrazu \textbf{musí} být výsledný výběr $a*$ nebo $b*$.
+Jako příklad může sloužit výraz \texttt{a*|b*}, při kterém by se první zpracovala iterace \texttt{a*}.
+Výsledkem výběru by byly dvě možnosti $\varepsilon$ nebo \texttt{b*}, což je sice sám o sobě správný tvar výběru, ale ve zvoleném výrazu \textbf{musí} být výsledný výběr \texttt{a*} nebo \texttt{b*}.
 
 \begin{code}[!ht]
 	\begin{minted}{peg}
@@ -125,7 +125,7 @@ Stav je identifikovaný na základě indexu v poli.
 Přesuny jsou pak implementovány tak, že každý stav si uchovává všechny své přesuny, které vedou z daného stavu do stavu jiného.
 Každý přesun pak má informaci, o jaký znak přesunu se jedná a o kolik pozic v poli je nutné se posunout na další stav. 
 
-Na obrázku~\ref{fig:JSONex} lze vidět výslednou strukturu pro výraz $a+$, která obsahuje dva atributy AST a NFA.
+Na obrázku~\ref{fig:JSONex} lze vidět výslednou strukturu pro výraz \texttt{a+}, která obsahuje dva atributy AST a NFA.
 Klíč NFA odkazuje na pole stavů přesunové tabulky. 
 AST má odkaz na počátek struktury, který signalizuje začátek regulárního výrazu.
 Je zde patrné, že každý stav v tabulce přesunů má odkaz na odpovídající prvek v AST. 
@@ -138,7 +138,7 @@ Typy stavů jsou číselné hodnoty, a ty které se nacházejí na obrázku jsou
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=1\textwidth]{Figures/BP-JSON.pdf}
-	\caption{Příklad výsledné struktury regulárního výrazu a+}
+	\caption{Příklad výsledné struktury regulárního výrazu \texttt{a+}}
 	\label{fig:JSONex}
 \end{figure}
 
@@ -161,7 +161,7 @@ Nejjednodušší řešení tohoto případu je použití rekurze.
 Pro představu, přechod značí rekurzivní volání funkce a pokud není možné přejít do dalšího stavu, tak se vrací do předchozího volání funkce.
 
 Rekurzi lze odstranit pomocí zásobníků, neboli program si uloží jen potřebné informace.
-Ve chvíli, kdy dojde k vrácení se (backtrackingu), tak se odstraní vrchol zásobníků.
+Ve chvíli, kdy dojde k vrácení se (backtrackingu), tak se odstraní vrchol zásobníku.
 Důležité tedy je správně řídit správu zásobníků, což může být lehce komplikované.
 
 Úryvek zdrojového kódu~\ref{code:matching1} obsahuje základní vkládání nově navštíveného stavu do zásobníku.
@@ -184,9 +184,9 @@ else
 
 Příklad kódu~\ref{code:matching2} souvisí s předchozí ukázkou. 
 Jestli nastane situace, kdy neexistuje žádný další přesun z aktuálního stavu, je vyvolán backtracking.
-Metoda \textit{handleBacktracking} se stará o správu backtrackingu.
+Metoda \texttt{handleBacktracking} se stará o správu backtrackingu.
 Převážně se jedná o odebírání vrchů zásobníků, jako je již zmíněný zásobník stavů.
-Pokud není vrácená hodnota \textbf{null}, znamená to ukončení nebo pozastavení vyhledání.
+Pokud není vrácená hodnota \texttt{\textbf{null}}, znamená to ukončení nebo pozastavení vyhledání.
 K neúspěšnému vyhledání a následnému ukončení dojde, pokud je zásobník stavů vyprázdněný a pozice v hledaném řetězci se nachází na jeho konci.
 
 % code poping state from stack
@@ -196,7 +196,8 @@ const transitions = (nfaState as NFAState).transitions;
 if(transitions.length <= <number>this.statesStack_.top()?.transition)
 {
 	const returned = this.handleBacktracking();
-	if(returned !== null) return returned;
+	if(returned !== null) 
+		return returned;
 	continue;
 }
 	\end{minted}
@@ -257,24 +258,24 @@ Další důležitou kontrolou, kterou je nutné splnit, je na konci iterace zkon
 Jelikož počítám jejich opakování, tak stačí tuto informaci porovnat s náležitými mezemi.
 
 V některých případech by mohlo dojít k nekonečnému cyklu.
-Například pro regulární výraz $()+$ by k tomu došlo tak, že by nenastalo k posunu v hledaném řetězci, tím pádem by iterace stále úspěšně procházela dále.
+Například pro regulární výraz \texttt{()+} by k tomu došlo tak, že by nenastalo k posunu v hledaném řetězci, tím pádem by iterace stále úspěšně procházela dále.
 Pro řešení toho problému slouží ukládání poslední pozice v hledaném řetězci při začátku nové iterace nebo zopakování.
 Jestli má dojít k zopakování, musí proběhnout kontrola, zdali došlo ke změně pozice v řetězci od posledního zopakování.
 V obrázku~\ref{fig:ITERCNT} se jedná o stav $k_i$ a přesun $3$.
 
 \subsection*{Využití vlákna pro vyhledávání}
 Nedílnou součástí této knihovny je \textbf{paralelní zpracování} v podobě balíčku Threads.js.
-Balíček byl již zmíněn v kapitole~\ref{sec:USEDtech}.
+Balíček byl již zmíněn v podkapitole~\ref{sec:USEDtech}.
 Paralelismus dovoluje složité operace přesunout do vedlejšího vlákna, aby hlavní vlákno nebylo zatěžováno.
 Vlákna sice umožňují efektivnější zpracování náročných programů, ale také mají svá úskalí.
 
 V původní formě této knihovny jsem pro samotné vyhledávání použil worker thready, ale později jsem tuto implementaci přepsal s využitím balíčku Threads.js.
 Motivací pro tuto změnu byla možnost flexibilnějšího použití, neboli možnost integrace knihovny pro různé runtime.
 Tato změna také přinesla značné urychlení vizualizační části aplikace, jelikož vlákno může být spouštěno přímo ve webovém prohlížeči.
-Původně toto nebylo možné, jelikož worker thready existují pouze v \textit{NodeJS} runtime.
-To znamenalo, že vizualizace závisela na komunikaci s \textit{NodeJS} aplikací, v tomto případě se jednalo o samotné \textit{VSCode} rozšíření.
+Původně toto nebylo možné, jelikož worker thready existují pouze v NodeJS runtime.
+To znamenalo, že vizualizace závisela na komunikaci s NodeJS aplikací, v tomto případě se jednalo o samotné VSCode rozšíření.
 
-S volbou vývojového prostředí \textit{VSCode} byla nutnost splnit podmínky stanovené pro práci s web workery, v souladu s jejich API \cite{Microsoft_2021}. 
+S volbou vývojového prostředí VSCode byla nutnost splnit podmínky stanovené pro práci s web workery, v souladu s jejich API \cite{Microsoft_2021}. 
 Podmínkou totiž je, mít zdrojový kód workeru přímo vložený ve zdrojovém kódu hlavního vlákna.
 To znamená, že worker nesmí být přímo načítaný z adresáře rozšíření.
 Avšak tato podmínka komplikuje samotnou implementaci a proto následovně vysvětlím, jak jsem tento problém řešil.

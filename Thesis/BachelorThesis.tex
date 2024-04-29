@@ -15,6 +15,7 @@
 \usepackage{caption}
 \usepackage{dirtree}
 \usepackage{mathtools}
+\usepackage{tabularx}
 
 % new enviroment for codes
 \DeclareFloatingEnvironment[
@@ -142,6 +143,7 @@
 \input{Chapters/Conclusion.tex}
 
 % Seznam literatury
+\sloppy
 \printbibliography[title={Literatura}, heading=bibintoc]
 
 % Prilohy
@@ -177,11 +179,11 @@ Tyto soubory slouží pro lokální instalaci rozšíření.
 Pro získání \textit{vsix} souboru slouží příkaz \textit{vsce}, který dokáže sjednotit všechny závislosti do jednoho výsledného souboru.
 
 Pro instalaci rozšíření lze použít příkazovou paletu od VSCode.
-Tu lze otevřít přímo ve vývojovém prostředí, pomocí zkratky \textbf{Shift + Command + P} pro Mac, nebo pomocí \textbf{Ctrl + Shift + P} pro Windows/Linux.
-Po otevření příkazové palety, stačí zadat příkaz \textit{Extensions: Install from VSIX}.
+Tu lze otevřít přímo ve vývojovém prostředí, pomocí zkratky \texttt{\textbf{Shift + Command + P}} pro Mac, nebo pomocí \texttt{\textbf{Ctrl + Shift + P}} pro Windows/Linux.
+Po otevření příkazové palety, stačí zadat příkaz \texttt{Extensions: Install from VSIX}.
 Poté se otevře průzkumník souborů, kde stačí otevřít zvolený \textit{vsix} soubor, který se nainstaluje.
 
-Po dokončení instalace si lze otevřít okno aplikace, a to napsáním \textit{RegexVisualizer: Open} do příkazové palety od VSCode.
+Po dokončení instalace si lze otevřít okno aplikace, a to napsáním \texttt{RegexVisualizer: Open} do příkazové palety od VSCode.
 
 \chapter{Adresářová struktura projektu}\label{sec:FileStructure}
 

@@ -17,7 +17,7 @@ Zjednodušeně se dá říct, že konečný automat je výpočetní model jednod
 
 Konečné automaty se dělí na \textbf{deterministické} a \textbf{nedeterministické}, zkráceně \textbf{DKA} (deterministický konečný automat) a \textbf{NKA} (nedeterministický konečný automat).
 DKA mohou mít v daném stavu pro každý znak abecedy \textbf{právě jeden} přechod, zatímco NKA umožňují více stejných přechodů z daného stavu. 
-NKA také mohou obsahovat tzv.\ prázdný znak často označovaný řeckým písmenem epsilon $\epsilon$. 
+NKA také mohou obsahovat tzv.\ prázdný znak často označovaný řeckým písmenem epsilon $\varepsilon$. 
 Prázdné znaky slouží pro změnu stavu bez změny aktuální pozice ve hledaném slově. 
 Také platí, že každý NKA je možné převést na ekvivalentní DKA.
 Formální definice těchto automatů následuje níže.
@@ -123,33 +123,33 @@ Dnes se ale často využívá kombinace DKA a NKA, kdy DKA se využije, pokud je
 Výsledný NKA po Thompsonově sestrojení má právě jeden vstupní a výstupní stav. 
 Thompsonovo sestrojení dále definuje několik následujících pravidel.
 
-Prázdný výraz \textit{$\epsilon$}, je převedený na vstupní stav, přechod \textit{$\epsilon$} a konečný stav.
+Prázdný výraz \textit{$\varepsilon$}, je převedený na vstupní stav, přechod \textit{$\varepsilon$} a konečný stav.
 Výsledný konečný automat je na obrázku~\ref{fig:NFAepsilon}.
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.45\textwidth]{Figures/NFA_epsilon.pdf}
-	\caption{Převedený prázdný výraz \textbf{$\epsilon$}}
+	\caption{Převedený prázdný výraz $\varepsilon$}
 	\label{fig:NFAepsilon}
 \end{figure}
 
-Výraz \textit{a}, je převedený podobně jako prázdný výraz, ale s rozdílem přechodu \textit{a} místo \textit{$\epsilon$}.
+Výraz \texttt{a}, je převedený podobně jako prázdný výraz, ale s rozdílem přechodu \textit{a} místo \textit{$\varepsilon$}.
 Konečný automat, který tímto převodem vznikne je ukázán na obrázku~\ref{fig:NFAa}.
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.45\textwidth]{Figures/NFA_a.pdf}
-	\caption{Převedený výraz \textbf{a}}
+	\caption{Převedený výraz \texttt{a}}
 	\label{fig:NFAa}
 \end{figure}
 
-Pro zadaný výraz \textbf{s|t} (varianta), kde \textit{s} je levá strana varianty a \textit{t} je pravá strana varianty, platí, že ze stavu \textit{q} (počáteční stav) vedou dva přechody
-\textit{$\epsilon$}, na počáteční stavy variant \textit{s} a \textit{t}. 
+Pro zadaný výraz \texttt{s|t} (varianta), kde \textit{s} je levá strana varianty a \textit{t} je pravá strana varianty, platí, že ze stavu \textit{q} (počáteční stav) vedou dva přechody
+\textit{$\varepsilon$}, na počáteční stavy variant \textit{s} a \textit{t}. 
 Z těchto počátečních stavů dále pokračuje sekvence stavů \textit{N(s)} pro \textit{s} a \textit{N(t)} pro \textit{t}.
-Konce variant \textit{s} a \textit{t} mají každé jediný přechod \textit{$\epsilon$} na konečný stav \textit{f}.
+Konce variant \textit{s} a \textit{t} mají každé jediný přechod \textit{$\varepsilon$} na konečný stav \textit{f}.
 Na obrázku~\ref{fig:NFAunion} je znázorněný výsledný NKA, kde skupina stavů v zelené části je \textit{s} a červená skupina je \textit{t}.
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.6\textwidth]{Figures/NFA_union.pdf}
-	\caption{Převedený výraz \textbf{s|t}}
+	\caption{Převedený výraz \texttt{s|t}}
 	\label{fig:NFAunion}
 \end{figure}
 
@@ -161,11 +161,11 @@ V předchozích sekcích již byly popsány základní konstrukce týkající se
 Tato sekce se zabývá jejich základními vzory, neboli jejich formou zápisu a syntaxí.
 Popis následujících vzorů vychází ze syntaxe regulárních výrazů pro jazyk JavaScript.
 
-Za nejjednodušší výraz lze považovat prázdný výraz, také označovaný jako $\epsilon$. 
+Za nejjednodušší výraz lze považovat prázdný výraz, také označovaný jako $\varepsilon$. 
 Tento výraz dokáže přijímat slova délky 0, resp. prázdná slova.
 Výrazy mohou obsahovat \textbf{téměř} libovolný znak, který bude přijímat slova s tímto znakem. 
 Avšak nemohou být použity znaky, které jsou rezervované, neboli jsou součástí syntaxe regulárních výrazů.
-Chceme-li použít tyto znaky, je potřeba použít zpětné lomítko \textbackslash. 
+Chceme-li použít tyto znaky, je potřeba použít zpětné lomítko \texttt{\textbackslash}. 
 Takové spojení znaku a zpětného lomítka se pak anglicky nazývá \textbf{escaped character}.
 Také existují znaky, které nejsou součástí rezervovaných znaků, ale lze před nimi použít zpětné lomítko.
 Funkcionalita těchto znaků se následně mění, např. pokud použijeme zpětné lomítko před znakem \textit{d}, tak to ve výrazu značí přijmutí čísla od 0 do 9.
@@ -173,14 +173,14 @@ Funkcionalita těchto znaků se následně mění, např. pokud použijeme zpět
 Iterace je možnost jak lze opakovaně provádět nějaký vzor.
 Například lze iterovat znak, skupinu a další konstrukce. 
 Nelze však opakovat jakýkoliv vzor.
-Prvním typem iterace je \textbf{*}, známa jako \textbf{Kleene star}.
+Prvním typem iterace je \texttt{\textbf{*}}, známa jako \textbf{Kleene star}.
 Tento druh iterace může mít počet opakování od \textbf{0} do \textbf{n}. 
-Dále existují další 2 typy iterací, a to je iterace v rozmezí $1-n$ označována znakem + a \textit{iterace v rozmezí}, která se značí \{od,do\}.
+Dále existují další 2 typy iterací, a to je iterace v rozmezí $1-n$ označována znakem \texttt{+} a \textit{iterace v rozmezí}, která se značí \{od,do\}.
 V regulárních výrazech se vždy vzor opakování vyskytuje za konstrukcí, které se má opakovaně provádět.
 
 Operace \textit{varianta} je dalším základním vzorem pro regulární výrazy. 
 Jedná se o výběr mezi pravou a levou stranou. 
-Oddělovacím znakem je typicky | podobně jako bitová operace \textit{OR} v mnoha programovacích jazycích.
+Oddělovacím znakem je typicky \texttt{|} podobně jako bitová operace \textit{OR} v mnoha programovacích jazycích.
 
 Dalšími základními konstrukty jsou například skupiny, které jsou obaleny v jednoduchých závorkách.
 Ty slouží k rozdělení částí regulárních výrazů, které jsou po dokončení vyhledávání přístupné jako oddělené části vyhledání.

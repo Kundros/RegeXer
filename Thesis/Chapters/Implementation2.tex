@@ -104,10 +104,10 @@ Oproti elementu jako je input lze zde vkládat HTML kód a tím upravovat formá
 To je vhodné pro regulární výrazy, jelikož samy o sobě nejsou moc přehledné.
 
 \textit{TextEditor} slouží jako vzorová třída pro realizaci textových editorů.
-Drží si referenci na HTML element, který obsluhuje, pod názvem \textit{textInput\_}. 
+Drží si referenci na HTML element, který obsluhuje, pod názvem \texttt{textInput\_}. 
 Pro lepší interaktivitu s tímto elementem je potřeba zaregistrovat různé události.
 Mezi ně patří např. psaní, mazání, undo (krok zpět v historii) a redo (krok vpřed v historii). 
-Pokud je zavolána chráněná metoda \textit{handleFormating}, tak dojde ke změně podoby textu na formátovanou.
+Pokud je zavolána chráněná metoda \texttt{handleFormating}, tak dojde ke změně podoby textu na formátovanou.
 Jedná se o grafické zobrazení bílých znaků, jako je nový řádek nebo tabulátor.
 
 \subsection*{Komunikace s třídou Regexer}
@@ -128,8 +128,8 @@ Pro zvýraznění slouží získaná AST struktura po dokončeném parsování.
 Algoritmus řešení tohoto problému funguje na principu rekurzivního zanoření ve stromové struktuře.
 Každý symbol, který má být zvýrazněný, je obalený v HTML bloku, s třídou identifikující o jaký symbol se jedná.
 U některých vzorů záleží na pořadí zpracování symbolů a rekurzivního zanoření.
-Například skupina se zpracovává tak, že první se zvýrazní otevírací závorka "(".
-Poté se algoritmus rekurzivně zanoří, neboli zpracuje potomky (vnitřní část) skupiny a nakonec zvýrazní ukončující závorku ")".
+Například skupina se zpracovává tak, že první se zvýrazní otevírací závorka \texttt{"("}.
+Poté se algoritmus rekurzivně zanoří, neboli zpracuje potomky (vnitřní část) skupiny a nakonec zvýrazní ukončující závorku \texttt{")"}.
 Výsledkem vznikne HTML struktura, která popisuje symboly a vzory regulárních výrazů.
 Tyto symboly jsou pak zvýrazněny pomocí různých barev definovaných v CSS. 
 Příklad zvýraznění lze vidět na obrázku \ref{fig:RegexHighlight}.
@@ -143,7 +143,7 @@ Příklad zvýraznění lze vidět na obrázku \ref{fig:RegexHighlight}.
 
 \subsection*{Historie}
 Historie textových editorů ukládá změny jejich obsahu.
-Tato vlastnost je již implementována součástí webových prohlížečů a slouží například pro operaci \textit{undo} vyvolanou klávesovou zkratkou \textit{ctrl+z}.
+Tato vlastnost je již implementována součástí webových prohlížečů a slouží například pro operaci \textit{undo} vyvolanou klávesovou zkratkou \texttt{ctrl+z}.
 Jelikož aplikace často přepisuje obsah textových editorů, například formátováním, tak se do výchozí historie ukládají změny, které neprovedl sám uživatel.
 Pokud by uživatel chtěl vyvolat operaci undo, tak by mohlo dojít k nesprávnému vrácení historie daného pole.
 Abych předešel zmíněnému problému, tak jsem se rozhodl naimplementovat vlastní řešení historie textových editorů.
@@ -230,7 +230,7 @@ Jediná věc, která se liší, je forma zobrazení.
 To je ve tvaru šipky, signalizující odkud a kam se přesouvá v regulárním výrazu.
 Na obrázku \ref{fig:backtrackingShowcase} lze vidět ukázku backtrackingu.
 Konkrétně se na zde nachází regulární výraz, který vyhodnocuje telefonní čísla.
-K backtrackingu došlo, jelikož znak + z předčíslí se nenachází v aktuálně zpracovávaném řetězci.
+K backtrackingu došlo, jelikož znak \texttt{+} z předčíslí se nenachází v aktuálně zpracovávaném řetězci.
 
 \begin{figure}[!h]
 	\centering

@@ -13,7 +13,9 @@ Dostupná paměť na použitém stroji je 32GB RAM.
 
 \begin{table}[!h]
 	\centering
-    \begin{tabular}{ |c|c|c|c|c|c|c|c|c| }
+    \newcolumntype{Y}{ >{\centering\arraybackslash} X}
+    \renewcommand{\tabularxcolumn}[1]{>{\small}m{#1}}
+    \begin{tabularx}{\linewidth}{ |Y|c|c|c|c|c|c|c|c| }
         \cline{2-9}
         \multicolumn{1}{c|}{} & \multicolumn{8}{c|}{\textbf{Regulární výraz a testovací řetězec}} \\
         \multicolumn{1}{c|}{} & \multicolumn{8}{c|}{Čas v ms} \\
@@ -26,26 +28,25 @@ Dostupná paměť na použitém stroji je 32GB RAM.
         \hline
         Funkce match & 0.037 & 0.024 & 0.028 & 0.034 & 0.032 & 0.035 & 0.035 & 0.025 \\
         \hline\hline
-        \rule{0pt}{14pt} \textbf{Nalezený výsledek} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{Red}{\XSolid} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{Red}{\XSolid} \\
+        \textbf{Nalezený výsledek} & \rule{0pt}{14pt} \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{Red}{\XSolid} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{OliveGreen}{\Checkmark} & \textcolor{Red}{\XSolid} \\
         \hline
         \textbf{Násobné zpomalení Regexeru} & 49x & 29x & 34x & 320x & 20x & 35x & 45x & 4000x \\
         \hline
-    \end{tabular}
+    \end{tabularx}
 	\caption{Výsledky testování výkonu zpracování regulárních výrazů}
 	\label{tab:DebuggerUI}
 \end{table}
 
-V tabulce \ref{tab:DebuggerUI} se nachází srovnání testovacích výsledků, vlastní implementace a standardních funkcí z jazyka JavaScript.
-V příloze \ref{sec:TestingData} se nacházejí regulární výrazy a testovací řetězce. 
-Testovací data v tabulce jsou označená číslem, které značí regulární výraz a písmenem, které odkazuje na vybraný testovací řetězec z listu \ref{sec:TestingData} pod daným výrazem.
+V tabulce \ref{tab:DebuggerUI} se nachází srovnání výsledků testování vlastní implementace a standardních funkcí z jazyka JavaScript.
+Testovací data v tabulce jsou označená číslem, které značí vybraný regulární výraz z přílohy \ref{sec:TestingData}, a písmenem, které odkazuje na vybraný testovací řetězec z listu pod daným výrazem.
 Nalezený výsledek značí, zda testovací řetězec byl úspěšně vyhledaný výrazem, či nikoliv. 
-Řádek \textit{násobné zpomalení Regexeru} v tabulce znamená porovnání oproti JavaScriptové implementaci \textit{RegExp}.
-Testování bylo spuštěno asi desetkrát a výsledky byly zprůměrovány.
+Řádek \textit{násobné zpomalení Regexeru} v tabulce porovnává vlastní implementaci s JavaScriptovou (RegExp).
+Testování bylo spuštěno přibližně desetkrát a výsledky byly zprůměrovány.
 
-Výsledky jsem porovnával s implementací, která je součástí V8 engine.
+Výsledky jsem konkrétně porovnával s implementací, která je součástí V8 engine.
 V8 je jeden z nejrozšířenějších enginů pro JavaScript používaných například v Chrome nebo NodeJS.
 Tento engine implementuje regulární výrazy v jazyce C++ \cite{Bidlingmaie_2021, Gruber_2017}.
-Z výsledků je patrné, že vlastní implementace je značně pomalejší a to hlavně v případě nenalezeného výsledku.
+Z výsledků je patrné, že vlastní implementace je značně pomalejší, a to hlavně v případě nenalezeného výsledku.
 Zpomalení, i ve větší míře, je očekávané, jelikož se jedná o implementaci psanou v jazyce TS resp. JS.
 Také vlastní implementace má za úkol vytvářet strukturu historie zpracování, což standardní implementace nemusí řešit.
 K velkému zpomalení při neúspěchu mohlo dojít, jelikož každé zpracování probíhá pomocí NKA, ale dnešní jazyky často implementují hybridní variantu DKA s NKA a jsou velice optimalizované.
