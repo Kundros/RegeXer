@@ -1,6 +1,7 @@
 import { RegexTypes } from "../core/RegexParser";
 import { MatchBatchData, MatchData, MatchFlags } from "./MatchTypes";
 
+/** @description all possible responses from worker. */
 export const MatchResponse = 
 {
     SUCCESS: 0x1,
@@ -12,9 +13,11 @@ export const MatchResponse =
 
 export type MatchResponse = typeof MatchResponse[keyof typeof MatchResponse];
 
+/* ----- Possible messages ----- */
 export type NewMessage = { type: MatchResponse, pid: number, data: unknown };
 export type MessageWorkerRecieve = { type: string, pid: number, data: unknown, batchSize?: number };
 
+/* ----- All possible returns from worker ----- */
 export type ReturnAborted = NewMessage & { data: undefined };
 export type ReturnMatch = NewMessage & { data: MatchData };
 export type ReturnErrorMessage = NewMessage & { data: string };

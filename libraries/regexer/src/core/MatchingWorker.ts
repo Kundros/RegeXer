@@ -24,7 +24,11 @@ class MatcherInternal
     constructor() 
     {}
 
-    public match(pid : number, matchString? : string, batchSize?: number)
+    /** 
+     * @description compute whole match or match in batches
+     * @returns {ReturnMatch | ReturnBatch | ReturnAborted | null} structure containing whole match history or just batch of data or aborted information or null
+     */
+    public match(pid : number, matchString? : string, batchSize?: number) : ReturnMatch | ReturnBatch | ReturnAborted | null
     {
         // init data
         if(matchString !== undefined)
@@ -250,6 +254,7 @@ class MatcherInternal
     }
 
     /**
+     * @description handle and process iteration related stuff
      * @returns {(boolean|ReturnBatch|ReturnMatch)} 
      * Match/Batch - when data is ready. \
      * false - can't continue in current loop (should invoke 'continue') \
@@ -335,6 +340,7 @@ class MatcherInternal
         return true;
     }
 
+    /** @description handle and process group related stuff */
     private handleGroup(nfaState : NFAtype, backtracking : boolean)
     {
         const ASTtype = nfaState?.ASTelement?.type ?? 0;
@@ -458,6 +464,7 @@ class MatcherInternal
         return groupsMap;
     }
 
+    /** @description handle and process option transitioning related stuff */
     private handleOptionTransitioning(nfaState : NFAtype)
     {
         const currentOption = nfaState?.ASTelement as ASTOption;
@@ -499,6 +506,7 @@ class MatcherInternal
         }
     }
 
+    /** @description handle and process different type of transition - Set() */
     private handleSetTransition() : ReturnMatch | ReturnBatch | null
     {
         const listState = this.statesStack_.top()?.state as NFAStateList;
@@ -527,6 +535,7 @@ class MatcherInternal
         return null;
     }
 
+    /** @description handle and process backtracking related stuff */
     private handleBacktracking() : ReturnMatch | ReturnBatch | null
     {
         let lastRegexPos = this.regexPosStack_.pop();
@@ -654,21 +663,15 @@ class MatcherInternal
 
     public pid_! : number;
 
-    /* Stacks for information for matching */
-    private stringPosStack_! : Stack<number>;
-    private regexPosStack_! : Stack<number>;
-    // holds information about current active iterations (non-completed loop): [which iterator it is in ast, current iteration count, last position in string]
-    private iterationCurrentStack_! : Stack<iterationState>; 
-    // holds information about history of iteration for backtracking: same data as current iterations
-    private iterationHistoryStack_! : Stack<iterationState>; 
-    private statesStack_! : Stack<matchingState>;
-
-    // holds information about [nfa position, str start, str end]
-    private groupCurrentStack_! : Stack<[number, number, number | null]>;
-    // same as above
-    private groupHistoryStack_! : Stack<[number, number, number]>;
-    // history of all groups in map (to easily retrieve current groups): Map<nfa position, Stack<[str start, str end]>>
-    private newestGroupsMapStack_! : Map<number, Stack<[number, number] | [null, number, number]>>;
+    /* ----- Stacks for information for matching ----- */
+    private stringPosStack_! : Stack<number>; // holds information about all positions in matching string (history)
+    private regexPosStack_! : Stack<number>; // holds information about all positions in regex (history)
+    private iterationCurrentStack_! : Stack<iterationState>; // holds information about current active iterations (non-completed loop): [which iterator it is in ast, current iteration count, last position in string]
+    private iterationHistoryStack_! : Stack<iterationState>; // holds information about history of iteration for backtracking: same data as current iterations
+    private statesStack_! : Stack<matchingState>; // holds information about states from NFA
+    private groupCurrentStack_! : Stack<[number, number, number | null]>; // holds information about [nfa position, str start, str end]
+    private groupHistoryStack_! : Stack<[number, number, number]>; // same as above except str end can be null
+    private newestGroupsMapStack_! : Map<number, Stack<[number, number] | [null, number, number]>>; // history of all groups in map (to easily retrieve current groups): Map<nfa position, Stack<[str start, str end]>>
 
     private matchBuilder_! : MatchBuilder;
     private batchSize_! : number;
@@ -681,6 +684,7 @@ class MatcherInternal
 
 const matcher = new MatcherInternal();
 
+/* ----- Visible interface from this worker file ----- */
 const Matcher = {
     match(pid : number, matchString : string, batchSize: number = -1) : ReturnMatch | ReturnBatch | ReturnAborted | null
     {
