@@ -22,6 +22,13 @@ Ikona může být zobrazena čtyřmi různými způsoby.
 První je ukázán na obrázku a jedná se o celkový úspěch vyhledání.
 Další tři ikony značí neúspěch, načítání resp. probíhající zpracovávání a poslední čekání na správně zadaný regulární výraz.
 
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{Figures/appWindow.png}
+	\caption{Úvodní uživatelské rozhraní}
+	\label{fig:GeneralUI}
+\end{figure}
+
 V levé spodní části aplikace je tlačítko pro otevření debuggeru. 
 Po kliknutí na toto tlačítko se zobrazí okno, které je ukázáno na obrázku~\ref{fig:DebuggerUI}.
 Na vrchu tohoto okna se nachází posuvník, který slouží pro průchod stavů.
@@ -37,13 +44,6 @@ Stavy jsou automaticky aktualizovány z historie procházení po změně hodnoty
 V regulárním výrazu v obrázku je také zrovna vyobrazen backtracking (červená šipka zpět).
 V hledaném řetězci je zvýrazněná pozice aktuálního stavu vyhledávání.
 Jeho součástí mohou být zobrazeny skupiny, tedy pokud již nějaké byly dokončeny.
-
-\begin{figure}[!h]
-	\centering
-	\includegraphics[width=0.85\textwidth]{Figures/appWindow.png}
-	\caption{Úvodní uživatelské rozhraní}
-	\label{fig:GeneralUI}
-\end{figure}
 
 \begin{figure}[!h]
 	\centering
@@ -69,7 +69,7 @@ Pro samotnou vizualizaci ve formě ladícího nástroje existuje třída \textit
 Má za úkol obsluhovat okno aplikace, kde se samotný debugger nachází.
 Obsahuje i vlastní posuvník (\textit{Slider}), který dokáže vyvolávat události obsahující informace o aktuální hodnotě posuvníku.
 Také například disponuje možností automatického přehrávání posuvníku a změnou rychlosti přehrávání.
-Popis částí aplikace podle tříd, které je obsluhují, se nachází v obrázku \ref{fig:ClassesGeneralUI}.
+Popis vizualizační částí aplikace podle tříd, které je obsluhují, se nachází v obrázku \ref{fig:ClassesGeneralUI}.
 
 \begin{figure}[!h]
 	\centering
@@ -235,7 +235,7 @@ K backtrackingu došlo, jelikož znak + z předčíslí se nenachází v aktuál
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.45\textwidth]{Figures/backtrackingShowcase.png}
-	\caption{Ukázka backtrackingu}
+	\caption{Ukázka zobrazení backtrackingu}
 	\label{fig:backtrackingShowcase}
 \end{figure} 
 
@@ -252,7 +252,7 @@ První skupina obaluje předčíslí a druhá obsahuje telefonní číslo bez p�
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.45\textwidth]{Figures/groupShowcase.png}
-	\caption{Ukázka skupin}
+	\caption{Ukázka zobrazení skupin}
 	\label{fig:groupShowcase}
 \end{figure} 
 

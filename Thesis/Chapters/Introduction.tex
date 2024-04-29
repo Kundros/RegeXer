@@ -3,7 +3,7 @@
 Vyhledávání v textu patří mezi základní problémy, se kterými se velmi pravděpodobně potká skoro každý programátor. 
 Tento problém se dá řešit mnoha způsoby, avšak ne všechna řešení lze použít univerzálně a každý ze způsobů má své výhody a nevýhody.
 Jedním ze přístupů je využití \textbf{regulárních výrazů}. 
-Jedná se o sekvenci znaků, která nám umožňuje popsat nějakou množinu slov.
+Jedná se o sekvenci znaků, která nám umožňuje popsat nějakou množinu textových řetězců\cite{article_Bhatia}.
 Nejčastěji je jejich výsledná forma v podobě \textbf{konečného automatu}. 
 Konečné automaty jsou blíže vysvětleny v sekci~\ref{sec:FiniteAutomaton}.
 Téměř každý programovací jazyk v dnešní době obsahuje regulární výrazy, ale jejich implementace se mohou lišit.
@@ -23,12 +23,13 @@ Tato situace je motivací zabývat se problémem a pokusit se nabídnout origin�
 Implementace těchto výrazů bývá nejčastěji formou konečných automatů, jedná se o poměrně výkonné řešení. 
 Aby bylo možné tohoto dosáhnout musí být převedena jejich textová forma na strukturu konečného automatu.
 Toho může být dosaženo například využitím bezkontextové gramatiky, nebo implementací vlastního parseru.
-Bezkontextová gramatika je formální jazyk, který pomocí pravidel definuje nějaký jazyk.
-Parser slouží pro analýzu a zpracování textového řetězce a je výsledkem překladu bezkontextové gramatiky do kódové reprezentace.
+Bezkontextová gramatika je formální gramatika, která definuje nějaký formální jazyk\cite{GeeksforGeeks_2023}. 
+Výsledkem jejího překladu je parser.
+Parser je program, který slouží pro analýzu a zpracování textového řetězce\cite{Lutkevich_2022}.
 Později v kapitole~\ref{sec:ApplicationTechnology} je vysvětleno, který ze způsobů byl zvolen a důvod této volby.
 
 Vizualizaci regulárních výrazů je možné chápat několika způsoby, lze si ji např. představit jako zobrazení ekvivalentního konečného automatu.
-Další možný přístup je mapování stavů automatu do původní textové podoby. 
+Dalším možným přístupem je vizualizace současného stavu regulárního výrazu přímo v jeho textové podobě a v hledaném řetězci. 
 Druhý přístup jsem zvolil pro tuto práci, a to ve smyslu \textbf{ladícího nástroje (debugger)}. 
 Debugger v tomto případě funguje jako historie jednotlivých kroků průchodu zadaným výrazem. 
 Tento průchod se také nazývá jako krokování.

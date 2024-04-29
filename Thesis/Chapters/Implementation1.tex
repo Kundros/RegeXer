@@ -27,13 +27,13 @@ Rozhraní této třídy umožňuje přidávání stavů, které mají v rámci v
 Dále třída \textit{MatcherInternal} má za úkol průchod zadaným řetězcem pro konkrétní výraz.
 Tato třída je izolována a není dostupná z vnější, jak její název \textit{internal} (česky vnitřní) napovídá.
 Obsahuje hlavní algoritmickou část průchodu nedeterministickým automatem.
-Naopak třídou, která poskytuje viditelné rozhraní a volá metody třídy MatcherInternal, je \textit{Matcher}.
+Naopak třídou, která poskytuje viditelné rozhraní a volá metody třídy \textit{MatcherInternal}, je \textit{Matcher}.
 Její rozhraní je poskytováno třídě Regexer.
 Pro parsování textové reprezentace regulárního výrazu na strukturu NKA a AST, slouží rozhraní \textit{RegexParser}.
 Jedná se o parser, který vzniká vždy po překladu bezkontextové gramatiky.
 Stack je jednoduchá struktura, která je ale velmi důležitou součástí vyhledávání.
 Zásobník programu umožňuje zbavit se rekurzivního volání funkce.
-Rekurze obecně vede k pomalejšímu chodu programu a nelze ji jednoduše pozastavit v jakémkoliv čase a stavu.
+Rekurze obecně může vést k pomalejšímu chodu programu a nelze ji jednoduše pozastavit v jakémkoliv čase a stavu.
 Také může jednoduše při složitějším zpracování dojít k přetečení zásobníku, který je často limitován, aby nedošlo k nekonečnému rekurzivnímu volání.
 Sice rozhraní pole v JS je připraveno na funkcionalitu zásobníku, ale nezaručuje programátorovi striktní pravidla pro zásobník. 
 Z tohoto důvodu jsem zvolil jednoduchou implementaci zásobníku, která omezuje manipulaci se základním polem, na operace určené pro zásobník.
@@ -117,13 +117,13 @@ to_iterate
 
 Pro zpracovaný regulární výraz jsem zvolil strukturu, která obsahuje \textbf{nedeterministický konečný automat} (NKA), zároveň s \textbf{abstraktním syntaktickým stromem} (AST).
 AST pak slouží k dohledání informací o původním regulárním výrazu. 
-Výsledná struktura je objektem, který obsahuje pouze data a má výchozí prototype\footnote{https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Object\_prototypes}.
+Výsledná struktura je objektem, který obsahuje pouze data.
 Tuto strukturu je možné vidět na obrázku~\ref{fig:JSONex}.
 NKA je ve formě \textbf{přesunové tabulky (transition table)}. 
 Ta má tvar pole, kde každá položka obsahuje informaci o konkrétním stavu a přesunech na další stavy.
 Stav je identifikovaný na základě indexu v poli. 
 Přesuny jsou pak implementovány tak, že každý stav si uchovává všechny své přesuny, které vedou z daného stavu do stavu jiného.
-Každý přesun pak má informaci, o jaký znak přesunu se jedná a na jaký index (stav) v poli odkazuje. 
+Každý přesun pak má informaci, o jaký znak přesunu se jedná a o kolik pozic v poli je nutné se posunout na další stav. 
 
 Na obrázku~\ref{fig:JSONex} lze vidět výslednou strukturu pro výraz $a+$, která obsahuje dva atributy AST a NFA.
 Klíč NFA odkazuje na pole stavů přesunové tabulky. 
@@ -204,7 +204,6 @@ if(transitions.length <= <number>this.statesStack_.top()?.transition)
 	\label{code:matching2}
 \end{code}
 
-\newpage
 
 \subsection*{Počítání iterací a prevence nekonečných cyklů}
 

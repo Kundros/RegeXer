@@ -1,4 +1,5 @@
 % Nejprve uvedeme tridu dokumentu s volbami
+\pdfminorversion=7
 \documentclass[czech,bachelor]{diploma}
 % Dalsi doplnujici baliky maker
 \usepackage[autostyle=true,czech=quotes]{csquotes} % korektni sazba uvozovek, podpora pro balik biblatex
@@ -13,6 +14,7 @@
 \usepackage{newfloat}
 \usepackage{caption}
 \usepackage{dirtree}
+\usepackage{mathtools}
 
 % new enviroment for codes
 \DeclareFloatingEnvironment[
@@ -159,9 +161,9 @@ V příloze~\ref{sec:FileStructure} je ukázaná částečná adresářová stru
 Instalace probíhá v následujících krocích:
 
 \begin{enumerate}
-	\item Pro instalaci všech externích závislostí, v kořenovém adresáři se použije příkaz \textbf{\textcolor{OliveGreen}{npm install}}.
-	\item K sestavení projektu slouží npm skript \textbf{\textcolor{OliveGreen}{npm run build}}.
-	\item Pro vytvoření instalačního souboru rozšíření se použije příkaz \textbf{\textcolor{OliveGreen}{npm run release}}.
+	\item Pro instalaci všech externích závislostí, v kořenovém adresáři se použije příkaz \texttt{\textbf{\textcolor{OliveGreen}{npm install}}}.
+	\item K sestavení projektu slouží npm skript \texttt{\textbf{\textcolor{OliveGreen}{npm run build}}}.
+	\item Pro vytvoření instalačního souboru rozšíření se použije příkaz \texttt{\textbf{\textcolor{OliveGreen}{npm run release}}}.
 	\item Výsledné instalační soubory se nachází v \textit{/libraries/regex-visualizer-extension/release}, podle přílohy \ref{sec:FileStructure}.
 \end{enumerate}
 
@@ -218,7 +220,7 @@ Za každým řetězcem se nachází signalizace, zda je řetězec přijímaný k
     \item
     \noindent\textbf{Regulární výraz:}
 
-    \textasciicircum (\textbackslash + ?\textbackslash d\{3\})?( ?\textbackslash d\{3\})\{3\}\$
+    \texttt{\textasciicircum (\textbackslash + ?\textbackslash d\{3\})?( ?\textbackslash d\{3\})\{3\}\$}
 
     \noindent\textbf{Testovací řetězce:}
 
@@ -234,7 +236,7 @@ Za každým řetězcem se nachází signalizace, zda je řetězec přijímaný k
     \item
     \noindent\textbf{Regulární výraz:} 
 
-    a*\_
+    \texttt{a*\_}
 
     \noindent\textbf{Testovací řetězce:}
 
@@ -247,7 +249,7 @@ Za každým řetězcem se nachází signalizace, zda je řetězec přijímaný k
     \item 
     \noindent\textbf{Regulární výraz:} 
 
-    (?:ab(?<name>c)*)+\_
+    \texttt{(?:ab(?<name>c)*)+\_}
 
     \noindent\textbf{Testovací řetězce:}
 
@@ -260,7 +262,7 @@ Za každým řetězcem se nachází signalizace, zda je řetězec přijímaný k
     \item 
     \noindent\textbf{Regulární výraz:} 
 
-    (a|b|c)+(?:ab)+[a-z]\_
+    \texttt{(a|b|c)+(?:ab)+[a-z]\_}
 
     \noindent\textbf{Testovací řetězce:}
 
@@ -273,7 +275,7 @@ Za každým řetězcem se nachází signalizace, zda je řetězec přijímaný k
     \item 
     \noindent\textbf{Regulární výraz:} 
 
-    \textasciicircum (a\{2,\}|b\{3\}|(x+))\{3,9\}\$
+    \texttt{\textasciicircum (a\{2,\}|b\{3\}|(x+))\{3,9\}\$}
 
     \noindent\textbf{Testovací řetězce:}
 
@@ -289,7 +291,7 @@ Za každým řetězcem se nachází signalizace, zda je řetězec přijímaný k
     \item 
     \noindent\textbf{Regulární výraz:} 
     
-    ((a|b|()+)*|a|b|)+
+    \texttt{((a|b|()+)*|a|b|)+}
 
     \noindent\textbf{Testovací řetězce:}
 
@@ -303,7 +305,7 @@ Za každým řetězcem se nachází signalizace, zda je řetězec přijímaný k
     \item 
     \noindent\textbf{Regulární výraz:} 
 
-    (ab(c)*)+\_
+    \texttt{(ab(c)*)+\_}
     
     \noindent\textbf{Testovací řetězce:}
 

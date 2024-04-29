@@ -15,13 +15,12 @@ S regulárními výrazy se často pojí konečné automaty, jedná se o další 
 Tato práce implementuje regulární výrazy právě ve formě konečných automatů.
 Zjednodušeně se dá říct, že konečný automat je výpočetní model jednoduchého počítače, který má určitý počet stavů a přechodů \cite{Havrlant}. 
 
-\subsection*{Definice}
-
 Konečné automaty se dělí na \textbf{deterministické} a \textbf{nedeterministické}, zkráceně \textbf{DKA} (deterministický konečný automat) a \textbf{NKA} (nedeterministický konečný automat).
 DKA mohou mít v daném stavu pro každý znak abecedy \textbf{právě jeden} přechod, zatímco NKA umožňují více stejných přechodů z daného stavu. 
 NKA také mohou obsahovat tzv.\ prázdný znak často označovaný řeckým písmenem epsilon $\epsilon$. 
 Prázdné znaky slouží pro změnu stavu bez změny aktuální pozice ve hledaném slově. 
-Na závěr lze podotknout, že každý NKA je možné převést na ekvivalentní DKA.
+Také platí, že každý NKA je možné převést na ekvivalentní DKA.
+Formální definice těchto automatů následuje níže.
 
 \newpage
 
@@ -71,7 +70,7 @@ Pro ukázku lze porovnat dva ekvivalentní konečné automaty, NKA na obrázku~\
 \section{Bezkontextová gramatika}
 Součástí této práce je i využití Bezkontextové gramatiky, pro nadefinování syntaxe regulárních výrazů.
 
-Bezkontextová gramatika je jedna další z možných definic formálních jazyků. 
+Bezkontextová gramatika je jedna z dalších formálních gramatik, kterými lze definovat formální jazyky. 
 Je určená konečnou množinou \textbf{neterminálních symbolů} (proměnných), konečnou množinou \textbf{terminálních symbolů}, která nesmí mít žádné prvky společné s předchozí množinou.
 Dále je součástí \textbf{počáteční neterminál}, s konečnou množinou \textbf{přepisových pravidel}\cite{MUNIFL}.
 
@@ -80,14 +79,32 @@ Dále šipka indikuje \textbf{přepsání} tzn. levá strana se přepisuje na st
 Konečný řetězec generovaný danou gramatikou, je pouze tvořen terminálními symboly.
 Aby mohl být řetězec přijímaný zadanou gramatikou, musí ho být schopná vygenerovat.
 
+Na obrázku \ref{fig:CFG} se nachází příklad bezkontextové gramatiky.
+Ta přijímá slova, které obsahují buď sekvenci písmen \textit{a} následující sekvenci písmen \textit{b}, anebo naopak.
+Vstupním neterminálem této gramatiky je symbol \texttt{S}.
+Příkladem vstupu může být řetězec \textit{aabb}, jehož zpracování je následující:
+
+\texttt{$S \rightarrow AB \rightarrow AaB \rightarrow aaB \rightarrow aaBb \rightarrow aabb$}
+
+Ve zpracování šipka signalizuje přepis jednoho z neterminálu na jeden z jeho možných výběrů.
+Pokud je výsledek shodný s hledaným řetězcem, tak vyhledání proběhlo úspěšně.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.17\textwidth]{Figures/CFG.pdf}
+	\caption{Příklad jednoduché bezkontextové gramatiky}
+	\label{fig:CFG}
+\end{figure}
+
+
 \section{Vznik, implementace a vzory}
-Regulární výrazy byly poprvé nadefinovány Americkým matematikem \textbf{Stephan Cole Kleenem}, jako regulární jazyky. 
-Dále se aplikovaly v teoretické informatice, jako podkategorie \textbf{teorie automatů} a součást \textbf{formálních jazyků}.
-Ačkoliv byly nadefinovány začátkem padesátých let, tak jeho využití v počítačích nastalo až na konci šedesátých let a to v jednom z nejznámějších operačních systémů UNIX.
+Regulární výrazy byly poprvé nadefinovány Americkým matematikem \textbf{Stephan Cole Kleenem}, jako regulární události (regular events)\cite{Leung_2010, Kleene_1951}. 
+Dále se staly součástí teoretické informatiky, jako podkategorie \textbf{teorie automatů}.
+Ačkoliv byly nadefinovány začátkem padesátých let, tak jejich využití v počítačích nastalo až na konci šedesátých let a to v jednom z nejznámějších operačních systémů UNIX.
 
 \subsection*{Thompsonovo sestrojení}
 
-První, kdo navrhl implementaci používanou v počítačích, byl \textbf{Ken Thompson}.
+První, kdo navrhl implementaci používanou v počítačích, byl \textbf{Ken Thompson}\cite{ScanToPDF}.
 Principem byl převod regulárního výrazu na NKA.
 Tato metoda se často používá doposud, v podobné či nezměněné podobě.
 Algoritmus se pojmenoval \textbf{Thompson's construction} (Thompsonovo sestrojení), který převádí textovou reprezentaci výrazu na ekvivalentní nedeterministický automat.
@@ -96,11 +113,11 @@ Toto sestrojení je využito v této práci a blíže jej popisuje následujíc�
 Převod na NKA se běžně využívá, jelikož je poměrně jednoduchý na implementaci.
 Thompsonovo sestrojení poskytuje řešení, jak tento převod uskutečnit.
 Konečné automaty jsou vhodnou formou reprezentace regulárních výrazů, protože mohou být na počítačích rychle vyhodnoceny.
-NKA jsou obecně pomalejší oproti DKA, ale jelikož dnešní formy výrazů umožňují složitější konstrukce, tak nelze vždy použít převod na DKA.
-Hlavním důvodem je, že NKA na rozdíl od DKA umožňuje backtracking (zpětné krokování), kterého může být využito pro složitější operace, jako je look-around (rozhlédnutí se kolem sebe).
-Backtracking je důležitý pro NKA, jelikož neexistuje jednoznačná cesta vyhodnocení.
-To znamená, že pokud je NKA ve stavu, ze kterého nelze pokračovat dále, tak je potřeba se vrátit do předchozího stavu.
-DKA mají výhodu, že jsou rychlejší, ale jsou typicky mnohem větší než jejich ekvivalentní NKA.
+NKA je sice obecně pomalejší oproti jeho ekvivalentního DKA, ale jelikož dnešní formy výrazů umožňují složitější konstrukce, tak nelze vždy použít převod na DKA.
+Hlavním důvodem je, že NKA na rozdíl od DKA umožňuje backtracking (zpětné sledování), kterého může být využito pro složitější operace, jako je look-around (rozhlédnutí se kolem sebe).
+Backtracking znamená, že pokud se NKA nachází ve stavu, ze kterého nelze pokračovat dále, tak je potřeba se vrátit do předchozího stavu.
+V NKA se tohoto využívá, jelikož neexistuje jednoznačná cesta vyhodnocení.
+DKA mají výhodu, že jsou rychlejší, ale také jsou typicky mnohem větší než jejich ekvivalentní NKA.
 Dnes se ale často využívá kombinace DKA a NKA, kdy DKA se využije, pokud je to možné, jinak se využije NKA.
 
 Výsledný NKA po Thompsonově sestrojení má právě jeden vstupní a výstupní stav. 
@@ -110,7 +127,7 @@ Prázdný výraz \textit{$\epsilon$}, je převedený na vstupní stav, přechod 
 Výsledný konečný automat je na obrázku~\ref{fig:NFAepsilon}.
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=0.5\textwidth]{Figures/NFA_epsilon.pdf}
+	\includegraphics[width=0.45\textwidth]{Figures/NFA_epsilon.pdf}
 	\caption{Převedený prázdný výraz \textbf{$\epsilon$}}
 	\label{fig:NFAepsilon}
 \end{figure}
@@ -119,7 +136,7 @@ Výraz \textit{a}, je převedený podobně jako prázdný výraz, ale s rozdíle
 Konečný automat, který tímto převodem vznikne je ukázán na obrázku~\ref{fig:NFAa}.
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=0.5\textwidth]{Figures/NFA_a.pdf}
+	\includegraphics[width=0.45\textwidth]{Figures/NFA_a.pdf}
 	\caption{Převedený výraz \textbf{a}}
 	\label{fig:NFAa}
 \end{figure}
@@ -138,8 +155,6 @@ Na obrázku~\ref{fig:NFAunion} je znázorněný výsledný NKA, kde skupina stav
 
 Další pravidla pro sestrojení lze například najít v následujících článcích \cite{Thompson1,Thompson2}.
 Některé pravidla jsou v této práci upravená, ale fungují na stejném principu.
-
-\newpage
 
 \subsection*{Základní vzory regulárních výrazů}
 V předchozích sekcích již byly popsány základní konstrukce týkající se regulárních výrazů.
@@ -170,6 +185,13 @@ Oddělovacím znakem je typicky | podobně jako bitová operace \textit{OR} v mn
 Dalšími základními konstrukty jsou například skupiny, které jsou obaleny v jednoduchých závorkách.
 Ty slouží k rozdělení částí regulárních výrazů, které jsou po dokončení vyhledávání přístupné jako oddělené části vyhledání.
 
+Příkladem regulárního výrazu z JavaScriptové syntaxe může být výraz \texttt{\textasciicircum \textbackslash d\{3\}(~?\textbackslash d\{3\})\{2\}\$}, který přijímá telefonní čísla.
+Znak \texttt{\textasciicircum} znamená, že se musí jednat o začátek textového řetězce a znak \texttt{\$} naopak znamená konec řetězce. 
+První část \texttt{\textasciicircum \textbackslash d\{3\}} přijímá první tři číslice telefonního čísla.
+Dále \texttt{(~?\textbackslash d\{3\})\{2\}\$} přijímá dalších šest číslic z telefonního čísla, kde jednotlivé trojčíslí mohou být odděleny mezerou.
+Příkladem přijímaného řetězce může být \textit{123 456 789}.
+Jak je patrné, tak tento konkrétní výraz nepokrývá telefonní čísla s předčíslím.
+
 Na obrázku \ref{fig:REGEXEXMP} lze vidět příklad regulárního výrazu, ve kterém jsou použity a popsány některé ze zmíněných vzorů.
 
 \begin{figure}[!h]
@@ -190,14 +212,13 @@ Někdy jazyky sice sdílí stejné konstrukce, ale mohou se lišit syntaxí.
 Look-around je již celkem pokročilá funkcionalita, jejímž principem je takzvané nezachytávání znaků při zpracovávání.
 Typicky je dělíme podle směru, a to na \textit{dopředné} a \textit{zpětné}.
 Pak je dělíme podle podmínění, a to na \textit{kladné} a \textit{negativní}.
-Pokud máme kladné podmínění, \textbf{musí} uzavřený výraz být splněný a pokud máme záporné, tak \textbf{nesmí} být splněný.
+Pokud máme kladné podmínění, \textbf{musí} být uzavřený výraz splněný a pokud máme záporné, tak \textbf{nesmí} být splněný.
 V původní formě regulárních výrazů tato funkce neexistovala.
 
 Mnohdy je potřeba nalezený řetězec rozdělit do skupin.
 Skupiny mohou být použity pro získání strukturovaných dat nebo pro obalení logického celku, na který lze aplikovat některé operátory, jako je třeba iterace.
 Příkladem strukturovaných dat může být vyhledání jména, které lze rozdělit na křestní jméno a příjmení.
 Za pomocí skupin lze získat tyto jednotlivé části po dokončeném vyhledání. 
-Tuto možnost dnešní implementace také umožňují.
 Chceme-li zdůraznit, že zadaný podvýraz je skupinou, obalíme ho do závorek.
 Tato vlastnost je důležitá, jelikož není potřeba v již nalezeném řetězci hledat další podřetězce pomocí dalšího výrazu.
 Skupiny se dělí na zachytávající (capturing), pojmenované (named) a nezachytávající (non-capturing).
