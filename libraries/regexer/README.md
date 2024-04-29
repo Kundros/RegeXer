@@ -3,17 +3,17 @@
 ## Introduction
 
 This library is part of thesis at VSB-TUO by Dominik Kundra.
-Main goal of this library is to implement executable regex (with integrated parser), that can be executed against string and returns history of matching. This tool can be used for example for debugging puproses, optimalisation purposes and/or visualisation purposes. 
+Main goal of this library is to implement executable regex (with integrated parser), that can be executed against string and returns history of matching. This tool can be used for example for debugging purposes, optimization purposes and/or visualization purposes. 
 
 *Note: this project might not be full-fledged.*
 
 <br>
 
-## Enviroment
+## Environment
 
-This library is made for browser-like and node enviroment. If you're planning using this library, in browser enviroments you may need embed the built file as a blob if you don't want to deal with cors, if you're using webpack you may use custom-worker-loader.js in src/loaders directory with folowing usage:
+This library is made for browser-like and node environment. If you're planning using this library, in browser environments you may need embed the built file as a blob if you don't want to deal with cors, if you're using webpack you may use custom-worker-loader.js in src/loaders directory with following usage:
 
-*add folowing code to your module: { rules: [] } section in webpack config*
+*add following code to your module: { rules: [] } section in webpack config*
 ```js
 {
     test: /\.(js|ts)$/,
@@ -81,7 +81,7 @@ regex notation.**
 ```
 *Note: iteration of one element* 
 
-("\*" - zero or more, "\+" - one or more, "\*?" - lazy quantifier **[match least characters]**)
+("\*" - zero or more, "\+" - one or more, "{from,to}" - range iterations)
 
 ### **List**
 
@@ -149,17 +149,17 @@ format in regex notation:
 
 > \\x[0-9a-fA-F]{2}
 
-*Note: matches character from ascii table of it's coresponding number position*
+*Note: matches character from ascii table of it's corresponding number position*
 
 <br>
 
 ## About matching
     
-Matching string to parsed regex is done by using threads.js which allows for both web worker and worker thread usage for browser-like and node enviroment respectivelly.
+Matching string to parsed regex is done by using threads.js which allows for both web worker and worker thread usage for browser-like and node environment respectively.
 
-Matching creates match structure (isn't fully done yet), which can be used for many applications, the structure should be sort of history how was match found and what operations regex had to do. The structure in now returned either as batch (small portion of final match), or as the final match with assigned prototype to it. The batch variant is usefull for async loading when the match structure could be potentionally too big.
+Matching creates match structure (all patterns are not implemented), which can be used for many applications, the structure should be sort of history how was match found and what operations regex had to do. The structure in now returned either as batch (small portion of final match), or as the final match with assigned prototype to it. The batch variant is useful for async loading when the match structure could be potentially too big.
 
-Matching is done agains't parsed NFA (non-deterministic finite automata), which is returned from parser (used peggy for context-free grammar), the aditional information to match is added from AST (abstract syntax tree), which is also part of parsed structure.
+Matching is done against parsed NFA (non-deterministic finite automata), which is returned from parser (used peggy for context-free grammar), the additional information to match is added from AST (abstract syntax tree), which is also part of parsed structure.
 
 
 

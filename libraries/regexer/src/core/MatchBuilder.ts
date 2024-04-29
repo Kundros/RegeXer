@@ -14,6 +14,7 @@ export class MatchBuilder
         this.batchSize_ = batchSize;
     }
 
+    /** @description process new incoming state */
     public addState(state : MatchState) : MatchBuilder
     {
         const top : MatchState | undefined = this.matchData.states[this.matchData.states.length-1];
@@ -55,22 +56,26 @@ export class MatchBuilder
         return this;
     }
 
+    /** @description set success information */
     public set success(value : boolean)
     {
         this.matchData.success = value;
     }
 
+    /** @description return information if batch is finished (batch size is full) */
     public isBatchReady() : boolean
     {
         return this.batchSize_ > 0 && this.batchPosition_[1] - this.batchPosition_[0] >= this.batchSize_;
     }
 
+    /** @description returns processed final batch */
     public getFinalBatch() : MatchBatchData
     {
         this.batchPosition_[1] = this.matchData.statesCount;
         return this.getBatch();
     }
 
+    /** @description process new incoming groups */
     public newGroups(groups : Map<number, MatchGroup>)
     {
         if(groups.size <= 0)
@@ -86,6 +91,7 @@ export class MatchBuilder
             top.groups = groups;
     }
 
+    /** @description returns all states of current processed batch */
     public getBatch() : MatchBatchData
     {
         const tmp = this.batchPosition_[0];
@@ -99,6 +105,7 @@ export class MatchBuilder
         };
     }
 
+    /** @description detection if the new state adds new information */
     public isNoEffectState(state1 : MatchState, state2 : MatchState) : boolean
     {
         if(state1.regAt[0] !== state2.regAt[0] || state1.regAt[1] !== state2.regAt[1])
@@ -112,6 +119,7 @@ export class MatchBuilder
         return true;
     }
 
+    /** @description process regex option */
     public updateOption(optionStart: number, optionEnd: number)
     {
         const states = this.matchData.states;
@@ -125,6 +133,7 @@ export class MatchBuilder
             states[states.length-1].regAt = [optionStart, optionStart];
     }
 
+    /** @description return final builded match */
     public finalize() : MatchData
     {
         if(this.batchSize_ > 0)
