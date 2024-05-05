@@ -1,7 +1,7 @@
 {
   "name": "regex-visualization-thesis",
-  "version": "0.0.4",
-  "description": "This package is source package for thesis on regex visualisation plugin for vs-code.",
+  "version": "0.0.5",
+  "description": "This package is source package for thesis on regex visualization plugin for vs-code.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,9 +19,6 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "@kundros/regex-visualizer-extension": "file:./libraries/regex-visualizer-extension"
   },
   "engines": {
     "node": ">= 14.17"
