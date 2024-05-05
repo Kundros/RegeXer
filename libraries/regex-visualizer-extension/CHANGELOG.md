@@ -60,3 +60,14 @@ All notable changes to the "Regex Visualizer" extension will be documented in th
 
 - list now correctly generates states and displays them
 - shortened backtracking (old pos > new pos)
+
+## [0.0.5] - 2024-05-05
+
+### Changed
+
+- removed help cursor on match info icon
+
+### Fixed
+
+- .js extension support hover (editor)
+- literal notation of regex display correct valid sign
