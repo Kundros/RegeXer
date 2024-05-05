@@ -87,7 +87,19 @@ export class RegexHover implements vscode.HoverProvider
             const startMatch = rfindRegex.lastIndex-match[0].length;
 
             if(lineCursorAt >= startMatch && lineCursorAt < rfindRegex.lastIndex) {
-                return this.createHover(lineText.slice(rfindRegex.lastIndex - match[0].length, rfindRegex.lastIndex), true, false);
+                const final = lineText.slice(rfindRegex.lastIndex - match[0].length, rfindRegex.lastIndex);
+
+                let valid = true;
+
+                try{
+                    RegExp(final).source;
+                }
+                catch(e)
+                {
+                    valid = false;
+                }
+                
+                return this.createHover(final, valid, false);
             }
         }
     }
@@ -108,7 +120,7 @@ export class RegexHover implements vscode.HoverProvider
         const markdown = new vscode.MarkdownString(`[Open with Regex visualizer & debugger](${commentCommandUri})`);
         const slash = addShlashed ? "/" : "";
         markdown.isTrusted = true;
-        markdown.appendCodeblock(slash + regex + slash + (valid ? "🟢": "🔴"), "typescript");
+        markdown.appendCodeblock(slash + regex + slash + " " + (valid ? "🟢": "🔴"), "typescript");
         return new vscode.Hover(markdown);
     }
 

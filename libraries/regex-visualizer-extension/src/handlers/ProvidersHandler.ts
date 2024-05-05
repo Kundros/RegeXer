@@ -14,7 +14,7 @@ export class ProvidersHandler extends Handler
     {
         if(vscode.workspace.getConfiguration().get('regexVisualizer.editor.hover.enable'))
         {
-            this.regexHoverRegister_ = vscode.languages.registerHoverProvider('typescript', new RegexHover());
+            this.regexHoverRegister_ = vscode.languages.registerHoverProvider(['typescript', 'javascript'], new RegexHover());
 
             this.context_.subscriptions.push(
                 this.regexHoverRegister_
