@@ -52,7 +52,7 @@ jobs:
 
     strategy:
       matrix:
-        nodeVersion: [ 14, 20, "latest" ]
+        nodeVersion: [ 20, "latest" ]
 
     steps:
       - uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
 
     strategy:
       matrix:
-        nodeVersion: [ 14, 20, "latest" ]
+        nodeVersion: [ 20, "latest" ]
 
     steps:
       - uses: actions/checkout@v4
@@ -96,7 +96,7 @@ jobs:
 
     strategy:
       matrix:
-        nodeVersion: [ 14, 20, "latest" ]
+        nodeVersion: [ 20, "latest" ]
 
     steps:
       - uses: actions/checkout@v4
