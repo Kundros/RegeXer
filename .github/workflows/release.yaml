@@ -1,53 +1,32 @@
-name: CI
+name: Release CI
 
 on:
-  push:
-    branches: [master, main]
-  pull_request:
-    branches: [master, main]
+  release
 
 jobs:
   # --- Linting process ---
-  lint-regexer:
+  lint:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-      - name: Install linter
-        working-directory: ./libraries/regexer
-        run: npm install --save-dev eslint @eslint/js @types/eslint__js typescript-eslint
-      - name: Run linter
-        working-directory: ./libraries/regexer
-        run: npm run lint
+    name: Linting ${{ matrix.library }}
+    
+    strategy:
+      matrix:
+        library: [regexer, regex-visualization, regex-visualizer-extension]
 
-  lint-regex-visualization:
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
       - name: Install linter
-        working-directory: ./libraries/regex-visualization
+        working-directory: ./libraries/${{ matrix.library }}
         run: npm install --save-dev eslint @eslint/js @types/eslint__js typescript-eslint
       - name: Run linter
-        working-directory: ./libraries/regex-visualization
-        run: npm run lint
-
-  lint-regex-visualizer-extension:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-      - name: Install linter
-        working-directory: ./libraries/regex-visualizer-extension
-        run: npm install --save-dev eslint @eslint/js @types/eslint__js typescript-eslint
-      - name: Run linter
-        working-directory: ./libraries/regex-visualizer-extension
+        working-directory: ./libraries/${{ matrix.library }}
         run: npm run lint
 
   # --- Test on different OS ---
   windows:
     runs-on: windows-latest
-    needs: [ lint-regexer, lint-regex-visualization, lint-regex-visualizer-extension ]
+    needs: [ lint ]
     name: windows-node-${{ matrix.nodeVersion }}
 
     strategy:
@@ -69,7 +48,7 @@ jobs:
 
   ubuntu:
     runs-on: ubuntu-latest
-    needs: [ lint-regexer, lint-regex-visualization, lint-regex-visualizer-extension ]
+    needs: [ lint ]
     name: ubuntu-node-${{ matrix.nodeVersion }}
 
     strategy:
@@ -91,7 +70,7 @@ jobs:
 
   macos:
     runs-on: macos-latest
-    needs: [ lint-regexer, lint-regex-visualization, lint-regex-visualizer-extension ]
+    needs: [ lint ]
     name: macos-node-${{ matrix.nodeVersion }}
 
     strategy:
