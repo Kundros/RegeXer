@@ -21,9 +21,6 @@ type iterationState = [RegexTypes.ASTIteration, number, number];
 
 class MatcherInternal
 {
-    constructor() 
-    {}
-
     /** 
      * @description compute whole match or match in batches
      * @returns {ReturnMatch | ReturnBatch | ReturnAborted | null} structure containing whole match history or just batch of data or aborted information or null
@@ -98,7 +95,7 @@ class MatcherInternal
                     + we add starting transition position at 0
                 otherwise we move transition position by 1
             */
-            let topState = this.statesStack_.top();
+            const topState = this.statesStack_.top();
             if(topState?.state !== nfaState)
                 this.statesStack_.push({transition: 0, state: nfaState});
             else
@@ -262,7 +259,7 @@ class MatcherInternal
      */
     private handleIteration(nfaState : NFAtype, transitions : RegexTypes.NFATransition[]) : boolean | ReturnBatch | ReturnMatch
     {
-        let topState = <matchingState>this.statesStack_.top();
+        const topState = <matchingState>this.statesStack_.top();
         let transition = transitions[topState?.transition];
         const ASTtype = nfaState?.ASTelement?.type ?? 0;
 
@@ -442,7 +439,7 @@ class MatcherInternal
      */
     private getGroups() : Map<number, MatchGroup>
     {
-        const groupsMap : Map<number, MatchGroup> = new Map();
+        const groupsMap = new Map<number, MatchGroup>();
         for(const groupStack of this.newestGroupsMapStack_)
         {
             const topGroupInfo = groupStack[1].top();
@@ -539,7 +536,7 @@ class MatcherInternal
     private handleBacktracking() : ReturnMatch | ReturnBatch | null
     {
         let lastRegexPos = this.regexPosStack_.pop();
-        let lastState = this.statesStack_.pop();
+        this.statesStack_.pop();
 
         const nfaState = NFA[<number>lastRegexPos];
 
@@ -557,7 +554,7 @@ class MatcherInternal
         ))
         {
             lastRegexPos = this.regexPosStack_.pop();
-            lastState = this.statesStack_.pop();
+            this.statesStack_.pop();
             this.stringPosStack_.pop();
         }
 
@@ -656,7 +653,7 @@ class MatcherInternal
 
         const optionElement = this.statesStack_.top()?.state?.ASTelement;
         if(optionElement?.type === RegexTypes.RegexStates.OPTION)
-            this.matchBuilder_.updateOption(optionElement.start, optionElement.end);
+            this.matchBuilder_.updateOption(optionElement.start);
 
         return null;
     }

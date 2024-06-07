@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 export class RegexHover implements vscode.HoverProvider
 {
-    public provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) : vscode.ProviderResult<vscode.Hover> 
+    public provideHover(document: vscode.TextDocument, position: vscode.Position) : vscode.ProviderResult<vscode.Hover> 
     {
         /* init regex finder regexes */
         const rIgnoreStartConstruct = /(?<=^RegExp\s*\(\s*)/;
@@ -43,17 +43,17 @@ export class RegexHover implements vscode.HoverProvider
 
             /* with literal notation */
             if((match = rfindRegexWConstructor.exec(searchInText)) !== null) {
-                let regex = match.groups?.regex ?? "";
+                const regex = match.groups?.regex ?? "";
                 return this.createHover(regex, true, false);
             }	
 
             /* with multiple */
             if((match = rfindRegexWConstructorMultiple.exec(searchInText)) !== null) {
-                let regex = match.groups?.regex ?? "";
+                const regex = match.groups?.regex ?? "";
                 let final = "";
                 let one : RegExpExecArray | null;
 
-                let findOne = new RegExp("(?<str>" + rfindString.source + ")|" + rfindRegex.source, "g");
+                const findOne = new RegExp("(?<str>" + rfindString.source + ")|" + rfindRegex.source, "g");
                 while((one = findOne.exec(regex)) !== null)
                 {
                     if(one.groups?.str)

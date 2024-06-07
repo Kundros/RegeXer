@@ -59,7 +59,7 @@ export class RegexDebugger {
 
     public setRegexText(node : HTMLElement, createClone : boolean = true){
         this.regexText_.innerHTML = "";
-        let nodeToInsert : HTMLElement = (createClone) ? (node.cloneNode(true) as HTMLElement) : (node);
+        const nodeToInsert : HTMLElement = (createClone) ? (node.cloneNode(true) as HTMLElement) : (node);
         const children = Array.prototype.slice.call(nodeToInsert.childNodes);
 
         for(let i = 0; i < children.length ;i++)
@@ -68,7 +68,7 @@ export class RegexDebugger {
 
     public setMatchStringText(node : HTMLElement, createClone : boolean = true){
         this.matchText_.innerHTML = "";
-        let nodeToInsert : HTMLElement = (createClone) ? (node.cloneNode(true) as HTMLElement) : (node);
+        const nodeToInsert : HTMLElement = (createClone) ? (node.cloneNode(true) as HTMLElement) : (node);
         const children = Array.prototype.slice.call(nodeToInsert.childNodes);
 
         for(let i = 0; i < children.length ;i++)
@@ -137,11 +137,11 @@ export class RegexDebugger {
                 const match = this.matches_[matchIndex];
                 const matchDone = match.moveTo(match.statesLength-1);
 
-                this.highlightPosition(matchDone.strAt[0] , matchDone.strAt[1], HighlightingTypes.DEFAULT, false, matchIndex);
+                this.highlightPosition(matchDone.strAt[0] , matchDone.strAt[1], HighlightingTypes.DEFAULT, false);
                 this.highlightGroups(matchDone);
             }
 
-            this.highlightPosition(state.strAt[0] , state.strAt[1], HighlightingTypes.DEFAULT, false, matchIndex);
+            this.highlightPosition(state.strAt[0] , state.strAt[1], HighlightingTypes.DEFAULT, false);
             this.highlightGroups(state);
         }
 
@@ -183,7 +183,7 @@ export class RegexDebugger {
         toHighlight();
     }
 
-    private highlightPosition(from : number, to: number, highlightingType : HighlightingTypes = HighlightingTypes.DEFAULT, inRegex : boolean = true, index : number = 0)
+    private highlightPosition(from : number, to: number, highlightingType : HighlightingTypes = HighlightingTypes.DEFAULT, inRegex : boolean = true)
     {
         const options = inRegex ? this.debuggerOptions_?.regexHighlighting : this.debuggerOptions_?.matchHighlighting;
         const context = inRegex ? this.regexContext_ : this.matchContext_;

@@ -1,4 +1,4 @@
-import { ElementHelper } from "./other/ElementHelper";
+import { wrapElement } from "./other/ElementHelper";
 
 import '../styles/slider.less';
 import beginSvg from '../assets/svgs/begin.svg';
@@ -75,7 +75,7 @@ export class Slider{
         this.context_.lineWidth = 1;
         
         let countSegments = 0;
-        let labelGap = segments?.labelGap ?? 1;
+        const labelGap = segments?.labelGap ?? 1;
 
         for(let i = 0; i - .01 <= allSteps ; i+=skipStep)
         {
@@ -110,6 +110,11 @@ export class Slider{
         this.context_.restore();
     }
 
+    public get parent()
+    {
+        return this.container_;
+    }
+
     public set value(val : number)
     {
         if(val <= this.min_) 
@@ -135,6 +140,11 @@ export class Slider{
         this.updateThumb();
     }
 
+    public get value()
+    {
+        return this.value_;
+    }
+
     public set max(val : number)
     {
         if(val < this.min_) 
@@ -148,6 +158,11 @@ export class Slider{
         this.updateSegments();
         this.updateProgress();
         this.updateThumb();
+    }
+
+    public get max()
+    {
+        return this.max_;
     }
 
     public set min(val : number)
@@ -165,12 +180,18 @@ export class Slider{
         this.updateThumb();
     }
 
+    public get min()
+    {
+        return this.min_;
+    }
+
     public set autoplaySpeed(val: number)
     {
         const speedOptions = this.options_?.editable?.speedOptions;
+        const max = speedOptions?.max ?? 1000;
         let min = speedOptions?.min ?? 1;
-        let max = speedOptions?.max ?? 1000;
         min = min < 0 ? 0 : min;
+
         if(val <= min) 
             val = min;
         else if(val >= max) 
@@ -178,26 +199,6 @@ export class Slider{
 
         this.autoplaySpeed_ = val;
         this.speedInput_.textContent = this.autoplaySpeed_.toString();
-    }
-
-    public get parent()
-    {
-        return this.container_;
-    }
-
-    public get value()
-    {
-        return this.value_;
-    }
-
-    public get min()
-    {
-        return this.min_;
-    }
-
-    public get max()
-    {
-        return this.max_;
     }
 
     public get autoplaySpeed()
@@ -208,19 +209,19 @@ export class Slider{
 
     private render()
     {
-        this.thumb_ = ElementHelper.wrapElement([], "div", ["cslider-thumb"]);
-        this.progress_ = ElementHelper.wrapElement([], "div", ["cslider-progress"]);
+        this.thumb_ = wrapElement([], "div", ["cslider-thumb"]);
+        this.progress_ = wrapElement([], "div", ["cslider-progress"]);
 
-        this.track_ = ElementHelper.wrapElement([
+        this.track_ = wrapElement([
             this.thumb_,
             this.progress_
         ], "div", ["cslider-track"]);
 
-        this.wrapper_ = ElementHelper.wrapElement([
+        this.wrapper_ = wrapElement([
             this.track_
         ], "div", ["cslider-wrapper"]);
 
-        this.editableContainer_ = ElementHelper.wrapElement([], "div", ["cslider-manipulation"]);
+        this.editableContainer_ = wrapElement([], "div", ["cslider-manipulation"]);
         
         this.renderSegmentsContainer();
         this.renderEditPositionBox();
@@ -317,12 +318,12 @@ export class Slider{
         const actionBtnsOptions = this.options_?.editable?.actionBtns;
         if(actionBtnsOptions === undefined || this.editableContainer_ === undefined) return;
 
-        this.actionBtnsContainer_ = ElementHelper.wrapElement([], "div", ["cslider-action-btns"]);
+        this.actionBtnsContainer_ = wrapElement([], "div", ["cslider-action-btns"]);
         this.editableContainer_.append(this.actionBtnsContainer_);
 
         if(actionBtnsOptions?.endBegin)
         {
-            const beginElement = ElementHelper.wrapElement([], "div", ["cslider-action-begin"]);
+            const beginElement = wrapElement([], "div", ["cslider-action-begin"]);
             beginElement.innerHTML = beginSvg;
             this.actionBtnsContainer_.append(beginElement);
             beginElement.addEventListener("click", () => {
@@ -332,7 +333,7 @@ export class Slider{
 
         if(actionBtnsOptions?.fwdBwd)
         {
-            const backwardElement = ElementHelper.wrapElement([], "div", ["cslider-action-backward"]);
+            const backwardElement = wrapElement([], "div", ["cslider-action-backward"]);
             backwardElement.innerHTML = arrowLeftSvg;
             this.actionBtnsContainer_.append(backwardElement);
             backwardElement.addEventListener("click", () => {
@@ -342,7 +343,7 @@ export class Slider{
 
         if(actionBtnsOptions?.autoplay)
         {
-            const autoplay = ElementHelper.wrapElement([], "div", ["cslider-action-autoplay"]);
+            const autoplay = wrapElement([], "div", ["cslider-action-autoplay"]);
             autoplay.innerHTML = playSvg + pauseSvg;
             autoplay.querySelector("svg:last-child").classList.add("cslider-hidden");
             this.actionBtnsContainer_.append(autoplay);
@@ -352,7 +353,7 @@ export class Slider{
 
         if(actionBtnsOptions?.fwdBwd)
         {
-            const forwardElement = ElementHelper.wrapElement([], "div", ["cslider-action-forward"]);
+            const forwardElement = wrapElement([], "div", ["cslider-action-forward"]);
             forwardElement.innerHTML = arrowLeftSvg;
             this.actionBtnsContainer_.append(forwardElement);
             forwardElement.addEventListener("click", () => {
@@ -362,7 +363,7 @@ export class Slider{
 
         if(actionBtnsOptions?.endBegin)
         {
-            const endElement = ElementHelper.wrapElement([], "div", ["cslider-action-end"]);
+            const endElement = wrapElement([], "div", ["cslider-action-end"]);
             endElement.innerHTML = beginSvg;
             this.actionBtnsContainer_.append(endElement);
             endElement.addEventListener("click", () => {
@@ -422,13 +423,13 @@ export class Slider{
             return;
         }
 
-        const arrows = ElementHelper.wrapElement([], "span", ["cslider-arrows-wrapper"]);
+        const arrows = wrapElement([], "span", ["cslider-arrows-wrapper"]);
         arrows.innerHTML = arrowUpSvg + arrowUpSvg;
 
 
-        this.speedInput_ = ElementHelper.wrapElement([], "span", ["cslider-editable-speed"], [["contenteditable", "true"]]);
+        this.speedInput_ = wrapElement([], "span", ["cslider-editable-speed"], [["contenteditable", "true"]]);
 
-        this.speedInputWrapper_ = ElementHelper.wrapElement([
+        this.speedInputWrapper_ = wrapElement([
             this.speedInput_,
             arrows
         ], "div", ["cslider-custom-speed"]);
@@ -447,9 +448,9 @@ export class Slider{
         if(speedOptions.info)
         {
             this.speedInputWrapper_.append(
-                ElementHelper.wrapElement([
+                wrapElement([
                     new Text("i"),
-                    ElementHelper.wrapElement(speedOptions?.customInfoText ?? "Autoplay speed as (1/speed) seconds per frame", "span", ["cslider-speed-info-text"])
+                    wrapElement(speedOptions?.customInfoText ?? "Autoplay speed as (1/speed) seconds per frame", "span", ["cslider-speed-info-text"])
                 ], "div", ["cslider-speed-info"])
             );
         }
@@ -493,8 +494,8 @@ export class Slider{
         const editPositionOptions = this.options_?.editable?.editPositionBox;
         if(editPositionOptions === undefined || this.editableContainer_ === undefined) return;
 
-        this.positionEditInput_ = ElementHelper.wrapElement(this.min_.toString(), "span", ["cslider-edit-position"], [["content-editable", "true"]]); 
-        this.positionEditInputWrapper_ = ElementHelper.wrapElement(
+        this.positionEditInput_ = wrapElement(this.min_.toString(), "span", ["cslider-edit-position"], [["content-editable", "true"]]); 
+        this.positionEditInputWrapper_ = wrapElement(
             [
                 this.positionEditInput_
             ], "div", ["cslider-edit-position-wrapper"]);
@@ -512,9 +513,9 @@ export class Slider{
         if(editPositionOptions.info)
         {
             this.positionEditInputWrapper_.append(
-                ElementHelper.wrapElement([
+                wrapElement([
                     new Text("i"),
-                    ElementHelper.wrapElement(editPositionOptions?.customInfoText ?? "Current value inside slider <min, max>", "span", ["cslider-edit-position-info-text"])
+                    wrapElement(editPositionOptions?.customInfoText ?? "Current value inside slider <min, max>", "span", ["cslider-edit-position-info-text"])
                 ], "div", ["cslider-edit-position-info"])
             );
         }
@@ -537,7 +538,7 @@ export class Slider{
     {
         if(this.options_?.segments === undefined) return;
 
-        this.canvas_ = ElementHelper.wrapElement([], "canvas", ["cslider-canvas"]) as HTMLCanvasElement;
+        this.canvas_ = wrapElement([], "canvas", ["cslider-canvas"]) as HTMLCanvasElement;
         this.context_ = this.canvas_.getContext("2d");
 
         this.wrapper_.append(this.canvas_);
@@ -588,7 +589,7 @@ export class Slider{
         this.updateProgress();
     }
 
-    private hadnleMouseup(event : MouseEvent)
+    private hadnleMouseup()
     {
         this.drag_ = false;
         document.body.style.cursor = "unset";
@@ -599,10 +600,10 @@ export class Slider{
         this.thumb_.addEventListener("mousedown", (event : MouseEvent) => this.hadnleMousedown(event));
         this.track_.addEventListener("mousedown", (event : MouseEvent) => this.hadnleMousedown(event));
         document.addEventListener("mousemove", (event : MouseEvent) => this.hadnleMousemove(event));
-        document.addEventListener("mouseup", (event : MouseEvent) => this.hadnleMouseup(event));
+        document.addEventListener("mouseup", () => this.hadnleMouseup());
         
         const observer = new ResizeObserver((entries) => {
-            entries.forEach((entry) => {
+            entries.forEach(() => {
                 this.updateThumb();
                 this.updateProgress();
                 this.updateSegments();

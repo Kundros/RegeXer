@@ -50,7 +50,7 @@ export function getCursorPosition(parent : HTMLElement | ChildNode) {
       sel.removeAllRanges();
     }
     
-    let stat = typeof pos === "number" ? { pos, done: false, doneEnd: true } : {pos: pos[0], endPos: pos[1], done: false, doneEnd: false};
+    const stat = typeof pos === "number" ? { pos, done: false, doneEnd: true } : {pos: pos[0], endPos: pos[1], done: false, doneEnd: false};
     const range = internalSetCursor(parent, document.createRange(), stat);
 
     if(!stat.done && !newRange)
@@ -130,7 +130,7 @@ function internalSetCursor(parent : HTMLElement | ChildNode, range : Range, stat
       if(stat.done && stat.doneEnd)
         break;
 
-      let currentNode = parent.childNodes[i];
+      const currentNode = parent.childNodes[i];
       internalSetCursor(currentNode, range, stat);
     }
   }

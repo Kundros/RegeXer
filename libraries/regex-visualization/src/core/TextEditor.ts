@@ -1,4 +1,4 @@
-import { ElementHelper } from "./other/ElementHelper";
+import { wrapElement } from "./other/ElementHelper";
 import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
 
 export type TextEditorOptions = {
@@ -25,7 +25,7 @@ export class TextEditor{
     }
     
     /** @description if text is updated this function should be called */
-    public updateText(event? : InputEvent)
+    public updateText()
     {
         if(this.textInput_.textContent === '\r')
             this.textInput_.textContent = "";
@@ -140,13 +140,13 @@ export class TextEditor{
     /** @description handles formatting such as tab/new line */
     protected handleFormatting()
     {
-        let chars = this.textInput_.textContent;
+        const chars = this.textInput_.textContent;
 
         const pos = getCursorPosition(this.textInput_);
         this.textInput_.textContent = '';
 
-        const newLine = ElementHelper.wrapElement([document.createTextNode('\n')], "span", ["new-line-symbol"]);
-        const tab = ElementHelper.wrapElement('\t', "span", ["tab-symbol"]);
+        const newLine = wrapElement([document.createTextNode('\n')], "span", ["new-line-symbol"]);
+        const tab = wrapElement('\t', "span", ["tab-symbol"]);
 
         let lastAt = 0;
         const newLineReg = /\r\n|\n|\t/gm;
@@ -230,7 +230,7 @@ export class TextEditor{
         this.textInput_.addEventListener('keydown', (event : KeyboardEvent) => this.handleKeydown(event));
         this.textInput_.addEventListener('keydown', (event : KeyboardEvent) => this.handleUndoRedo(event));
         this.textInput_.addEventListener('input', () => this.handleFormatting());
-        this.textInput_.addEventListener('input', (event : InputEvent) => this.updateText(event));
+        this.textInput_.addEventListener('input', () => this.updateText());
         this.textInput_.addEventListener('input', (event : InputEvent) => this.handleHistory(event));
     }
 

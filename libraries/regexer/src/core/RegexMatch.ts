@@ -1,4 +1,4 @@
-import { MatchBatchData, MatchData, MatchFlags, MatchGroup, MatchState } from "@regexer/coreTypes/MatchTypes";
+import { MatchBatchData, MatchData, MatchGroup, MatchState } from "@regexer/coreTypes/MatchTypes";
 
 export class RegexMatch
 {

@@ -9,8 +9,8 @@ global.__filename = "dist/cjs/core/Regexer";
 test('empty', async () => {
     const regexer = new Regexer();
     await regexer.parse("");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
+    const astRoot = regexer["AST_"] as RegexTypes.ASTRoot;
 
     expect(astRoot?.type).toBe(RegexTypes.RegexStates.ROOT);
     expect(nfaStart[0].ASTelement).toBe(astRoot);
@@ -23,8 +23,8 @@ test('empty', async () => {
 test('string of characters', async () => {
     const regexer = new Regexer();
     await regexer.parse("abcd");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
+    const astRoot = regexer["AST_"] as RegexTypes.ASTRoot;
 
     expect(astRoot.children.length).toBe(4);
     expect(nfaStart.length).toBe(6); // root -> a -> b -> c -> d -> end
@@ -53,8 +53,7 @@ test('string of characters', async () => {
 test('string of characters and escaped characters', async () => {
     const regexer = new Regexer();
     await regexer.parse(String.raw`\[\]`);
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
 
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
     expect((nfaStart[1].ASTelement as RegexTypes.ASTPrimitive).chr).toBe("[");
@@ -70,8 +69,8 @@ test('string of characters and escaped characters', async () => {
 test('test simple option', async () => {
     const regexer = new Regexer();
     await regexer.parse("a|b|c");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
+    const astRoot = regexer["AST_"] as RegexTypes.ASTRoot;
 
 
     expect(nfaStart[1].ASTelement).toBe(astRoot.children[0]);
@@ -97,8 +96,7 @@ test('test simple option', async () => {
 test('test complex option', async () => {
     const regexer = new Regexer();
     await regexer.parse("a|a ||");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
 
     // root, option, a, a, " ", null, null, END
     // a|a" "|null|null
@@ -121,8 +119,8 @@ test('test complex option', async () => {
 test('capturing group (empty)', async () => {
     const regexer = new Regexer();
     await regexer.parse("()");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
+    const astRoot = regexer["AST_"] as RegexTypes.ASTRoot;
 
     expect(nfaStart[1].ASTelement).toBe(astRoot.children[0]);
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
@@ -145,8 +143,8 @@ test('capturing group (empty)', async () => {
 test('capturing group (nested)', async () => {
     const regexer = new Regexer();
     await regexer.parse("(ab(cd)e())");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
+    const astRoot = regexer["AST_"] as RegexTypes.ASTRoot;
 
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
     expect(nfaStart[1].transitions).toStrictEqual([
@@ -181,8 +179,8 @@ test('capturing group (nested)', async () => {
 test('capturing group (combining types)', async () => {
     const regexer = new Regexer();
     await regexer.parse("(?:a(?<myName>b))(c)");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
+    const astRoot = regexer["AST_"] as RegexTypes.ASTRoot;
 
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.GROUP);
     expect(nfaStart[1].transitions).toStrictEqual([
@@ -209,8 +207,7 @@ test('capturing group (combining types)', async () => {
 test('capturing group combined with option', async () => {
     const regexer = new Regexer();
     await regexer.parse("a|(?:b(c))|(?<name>de)aa");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
 
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.OPTION);
     expect(nfaStart[1].transitions).toStrictEqual([
@@ -245,8 +242,7 @@ test('capturing group combined with option', async () => {
 test('iteration zero or more', async () => {
     const regexer = new Regexer();
     await regexer.parse("a*");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
 
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.ITERATION_ZERO);
     expect(nfaStart[2].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
@@ -263,8 +259,7 @@ test('iteration zero or more', async () => {
 test('iteration one or more', async () => {
     const regexer = new Regexer();
     await regexer.parse("a+");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
 
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.ITERATION_ONE);
     expect(nfaStart[2].ASTelement?.type).toBe(RegexTypes.RegexStates.PRIMITIVE);
@@ -281,8 +276,7 @@ test('iteration one or more', async () => {
 test('complex regex (iteration, group, option)', async () => {
     const regexer = new Regexer();
     await regexer.parse("(a|b+)*");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
 
     // (...)*
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.ITERATION_ZERO);
@@ -326,8 +320,7 @@ test('complex regex (iteration, group, option)', async () => {
 test('start end end of string (^$)', async () => {
     const regexer = new Regexer();
     await regexer.parse("^$");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAState[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAState[];
 
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.START_STRING);
     expect(nfaStart[2].ASTelement?.type).toBe(RegexTypes.RegexStates.END_STRING);
@@ -342,8 +335,7 @@ test('start end end of string (^$)', async () => {
 test('. any symbol', async () => {
     const regexer = new Regexer();
     await regexer.parse(".");
-    const nfaStart = (regexer as any).NFA_ as RegexTypes.NFAtype[];
-    const astRoot = (regexer as any).AST_ as RegexTypes.ASTRoot;
+    const nfaStart = regexer["NFA_"] as RegexTypes.NFAtype[];
 
     expect(nfaStart[1].ASTelement?.type).toBe(RegexTypes.RegexStates.ANY);
     expect((nfaStart[1] as NFAStateList).transitions).toBeInstanceOf(Set);

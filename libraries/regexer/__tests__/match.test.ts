@@ -4,7 +4,6 @@ import { Regexer } from '../src/core/Regexer';
 import { RegexTypes } from '../src/core/RegexParser';
 import { MatchBatchData, MatchData, MatchFlags, MatchState } from '../src/coreTypes/MatchTypes';
 import { RegexMatch } from '../src/core/RegexMatch';
-import { MatchResponse } from '../src/coreTypes/MatchWorkerTypes';
 
 global.__filename = "dist/cjs/core/Regexer";
 
@@ -167,7 +166,7 @@ test("test correct batches 1", async () => {
 
     await regexer.parse("(a|b|c)+(?:ab)+[a-z]_");
 
-    let match1 = new RegexMatch();
+    const match1 = new RegexMatch();
     await regexer.matchInBatches("abcbbbcccbbccbbccbbababababgjgrehjb", {
         batchCallback: (batch: MatchBatchData) => {
             match1.addBatch(batch);
@@ -175,12 +174,10 @@ test("test correct batches 1", async () => {
         matchCallback: (matchFinal: MatchData) => {
             match1.changeMatchInformation(matchFinal);
         },
-        completeCallback: (flag: MatchResponse) => {
-        },
         batchSize: 7
     });
 
-    let match2 = (await regexer.match("abcbbbcccbbccbbccbbababababgjgrehjb"))[0];
+    const match2 = (await regexer.match("abcbbbcccbbccbbccbbababababgjgrehjb"))[0];
     
     expect(match1.statesCount).toStrictEqual(match2.statesCount);
 
@@ -212,7 +209,7 @@ test("test correct batches 2", async () => {
 
     await regexer.parse("(a|b|c)+(?:ab)+([a-z])*_");
 
-    let match1 = new RegexMatch();
+    const match1 = new RegexMatch();
     await regexer.matchInBatches("abcbbbcccbbccbbccbbababababgjgrehjb_", {
         batchCallback: (batch: MatchBatchData) => {
             match1.addBatch(batch);
@@ -220,12 +217,10 @@ test("test correct batches 2", async () => {
         matchCallback: (matchFinal: MatchData) => {
             match1.changeMatchInformation(matchFinal);
         },
-        completeCallback: (flag: MatchResponse) => {
-        },
         batchSize: 7
     });
 
-    let match2 = (await regexer.match("abcbbbcccbbccbbccbbababababgjgrehjb_"))[0];
+    const match2 = (await regexer.match("abcbbbcccbbccbbccbbababababgjgrehjb_"))[0];
     
     expect(match1.statesCount).toStrictEqual(match2.statesCount);
     expect(match1.success).toStrictEqual(match2.success);
@@ -263,7 +258,7 @@ test("test correct batches without one await (not terminating the job)", async (
 
     await regexer.parse("(a|b|c)+(?:ab)+([a-z])*_");
 
-    let match1 = new RegexMatch();
+    const match1 = new RegexMatch();
     regexer.matchInBatches("abcbbbcccbbccbbccbbababababgjgrehjb_", {
         batchCallback: (batch: MatchBatchData) => {
             match1.addBatch(batch);
@@ -271,12 +266,10 @@ test("test correct batches without one await (not terminating the job)", async (
         matchCallback: (matchFinal: MatchData) => {
             match1.changeMatchInformation(matchFinal);
         },
-        completeCallback: (flag: MatchResponse) => {
-        },
         batchSize: 7
     });
 
-    let match2 = (await regexer.match("abcbbbcccbbccbbccbbababababgjgrehjb_"))[0];
+    const match2 = (await regexer.match("abcbbbcccbbccbbccbbababababgjgrehjb_"))[0];
 
     let match1State : MatchState | null;
     while((match1State = match1.currentState) !== null)

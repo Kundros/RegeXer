@@ -43,8 +43,8 @@ export class RegexVisualizer {
 
     private registerEvents()
     {
-        this.regexEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.regexTextCallback(textElement, event));
-        this.stringMatchEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.matchTextCallback(textElement, event));
+        this.regexEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.regexTextCallback(textElement));
+        this.stringMatchEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.matchTextCallback(textElement));
         window.addEventListener('message', (event : MessageEvent) => this.messageRecieve(event));
 
         document.addEventListener("regexDebbugerVisible", () => {
@@ -68,7 +68,7 @@ export class RegexVisualizer {
         this.debuggerWindow_.resetSteps();
     }
 
-    private regexTextCallback(textElement : HTMLElement, event?: InputEvent) 
+    private regexTextCallback(textElement : HTMLElement) 
     {
         if(this.regexWait_ != undefined)
             clearTimeout(this.regexWait_);
@@ -85,7 +85,7 @@ export class RegexVisualizer {
         }
     }
 
-    private matchTextCallback(textElement : HTMLElement, event?: InputEvent)
+    private matchTextCallback(textElement : HTMLElement)
     {
         if(this.stringMatchEditor_.isIdle)
             return;

@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  # --- Linting process ---
+  lint-regexer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - name: Install linter
+        working-directory: ./libraries/regexer
+        run: npm install --save-dev eslint @eslint/js @types/eslint__js typescript-eslint
+      - name: Run linter
+        working-directory: ./libraries/regexer
+        run: npm run lint
+
+  lint-regex-visualization:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - name: Install linter
+        working-directory: ./libraries/regex-visualization
+        run: npm install --save-dev eslint @eslint/js @types/eslint__js typescript-eslint
+      - name: Run linter
+        working-directory: ./libraries/regex-visualization
+        run: npm run lint
+
+  lint-regex-visualizer-extension:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - name: Install linter
+        working-directory: ./libraries/regex-visualizer-extension
+        run: npm install --save-dev eslint @eslint/js @types/eslint__js typescript-eslint
+      - name: Run linter
+        working-directory: ./libraries/regex-visualizer-extension
+        run: npm run lint
+
+  # --- Test on different OS ---
+  windows:
+    runs-on: windows-latest
+    needs: [ lint-regexer, lint-regex-visualization, lint-regex-visualizer-extension ]
+    name: windows-node-${{ matrix.nodeVersion }}
+
+    strategy:
+      matrix:
+        nodeVersion: [ 14, 20, "latest" ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.nodeVersion }}
+      - name: Install packages
+        run: npm ci
+      - name: Build app
+        run: npm run build
+      - name: Run unit tests
+        working-directory: ./libraries/regexer
+        run: npm run test
+
+  ubuntu:
+    runs-on: ubuntu-latest
+    needs: [ lint-regexer, lint-regex-visualization, lint-regex-visualizer-extension ]
+    name: ubuntu-node-${{ matrix.nodeVersion }}
+
+    strategy:
+      matrix:
+        nodeVersion: [ 14, 20, "latest" ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.nodeVersion }}
+      - name: Install packages
+        run: npm ci
+      - name: Build app
+        run: npm run build
+      - name: Run unit tests
+        working-directory: ./libraries/regexer
+        run: npm run test
+
+  macos:
+    runs-on: macos-latest
+    needs: [ lint-regexer, lint-regex-visualization, lint-regex-visualizer-extension ]
+    name: macos-node-${{ matrix.nodeVersion }}
+
+    strategy:
+      matrix:
+        nodeVersion: [ 14, 20, "latest" ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.nodeVersion }}
+      - name: Install packages
+        run: npm ci
+      - name: Build app
+        run: npm run build
+      - name: Run unit tests
+        working-directory: ./libraries/regexer
+        run: npm run test

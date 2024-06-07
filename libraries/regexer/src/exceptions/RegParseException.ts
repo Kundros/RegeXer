@@ -2,7 +2,7 @@ import { RegexParserErrors } from "@regexer/coreTypes/parserTypes";
 
 export class RegParseException extends Error
 {
-    constructor(from: number, to: number, errorCode: RegexParserErrors, message: string = "Regex parsing Error") {
+    constructor(from: number, to: number, errorCode: RegexParserErrors, message = "Regex parsing Error") {
         super(message);
 
         this.from_ = from;

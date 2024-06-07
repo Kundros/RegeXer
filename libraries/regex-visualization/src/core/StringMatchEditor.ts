@@ -1,6 +1,6 @@
 import { RegexMatch } from "@kundros/regexer";
 import { TextEditor, TextEditorOptions } from "./TextEditor";
-import { ElementHelper } from "./other/ElementHelper";
+import { wrapElement } from "./other/ElementHelper";
 import { HighlighGroupsOptions, HighlighTextOptions, getGroupDimensions, getTextDimensions, highlightGroups, highlightPosition } from "./other/textRowsHighlightHelper";
 import { MatchHighlightingOptions } from "./coreTypes/MatchHighlightOptions";
 
@@ -105,10 +105,10 @@ export class StringMatchEditor extends TextEditor
     public updateMatchStatesMessage(steps: number, matches : number)
     {
         this.matchSteps_.replaceChildren(
-            ElementHelper.wrapElement(matches.toString(), "span", ['match-num-matches']),
-            ElementHelper.wrapElement(matches == 1 ? "match" : "matches", "span", ['match-label-matches']),
-            ElementHelper.wrapElement(steps.toString(), "span", ['match-num-steps']),
-            ElementHelper.wrapElement(steps == 1 ? "step" : "steps", "span", ['match-label-steps'])
+            wrapElement(matches.toString(), "span", ['match-num-matches']),
+            wrapElement(matches == 1 ? "match" : "matches", "span", ['match-label-matches']),
+            wrapElement(steps.toString(), "span", ['match-num-steps']),
+            wrapElement(steps == 1 ? "step" : "steps", "span", ['match-label-steps'])
         );
     }
 
@@ -162,12 +162,12 @@ export class StringMatchEditor extends TextEditor
 
         this.context_.clearRect(0, 0, boundingCanvas.width, boundingCanvas.height);
 
-        for(let match of this.matchesHighlightings_)
+        for(const match of this.matchesHighlightings_)
         {
             highlightPosition(match);
         }
         
-        for(let group of this.groupsHighlightings_)
+        for(const group of this.groupsHighlightings_)
         {
             highlightGroups(group);
         }

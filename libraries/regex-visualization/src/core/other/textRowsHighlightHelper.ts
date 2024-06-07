@@ -35,7 +35,7 @@ export type HighlighGroupsOptions = {
 
 export function getTextDimensions(options : BoundingOptions) : Dimensions // x, y, width, height
 {
-    let outputRows : Dimensions = [];
+    const outputRows : Dimensions = [];
 
     const textBounds = options.textElement.getBoundingClientRect();
     const scrollOffset = options.textElement.scrollTop;
@@ -120,10 +120,10 @@ export function highlightBacktracking(options : HighlighTextOptions)
 
 export function getGroupDimensions(options : GroupDimensionsOptions) : Dimensions[]
 {
-    let groups = [...options.groups.entries()].sort((a, b) => { return a[0] - b[0]});
-    let dimensions : Dimensions[] = [];
+    const groups = [...options.groups.entries()].sort((a, b) => { return a[0] - b[0]});
+    const dimensions : Dimensions[] = [];
 
-    for(let group of groups)
+    for(const group of groups)
     {
         dimensions.push(getTextDimensions({
             from: group[1].strAt[0],

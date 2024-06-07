@@ -4,11 +4,6 @@ import * as vscode from 'vscode';
 
 export class CommandHandler extends Handler
 {
-	constructor(context : vscode.ExtensionContext)
-	{
-		super(context);
-	}
-
 	public register(): void 
     {
 		this.visualizerWebview_ = new VisualizerWebview(this.context_);

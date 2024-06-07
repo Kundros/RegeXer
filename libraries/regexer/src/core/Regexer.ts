@@ -77,35 +77,35 @@ export class Regexer{
                 if(batchOrMatch?.type !== MatchResponse.BATCH)
                 {
                     if(<number>batchOrMatch?.type & (MatchResponse.SUCCESS | MatchResponse.NO_MATCH))
-                        await options.matchCallback((batchOrMatch as ReturnMatch).data);
+                        await options.matchCallback?.((batchOrMatch as ReturnMatch).data);
         
-                    await options.completeCallback(batchOrMatch?.type ?? MatchResponse.ERROR);
+                    await options.completeCallback?.(batchOrMatch?.type ?? MatchResponse.ERROR);
 
                     resolve(null);
                     return;
                 }
         
-                await options.batchCallback((batchOrMatch as ReturnBatch).data);
+                await options.batchCallback?.((batchOrMatch as ReturnBatch).data);
         
                 while((batchOrMatch = await this.worker_?.nextBatch(pid))?.type === MatchResponse.BATCH)
                 { 
-                    await options.batchCallback((batchOrMatch as ReturnBatch).data);
+                    await options.batchCallback?.((batchOrMatch as ReturnBatch).data);
                 }
 
                 if(batchOrMatch === null || batchOrMatch === undefined)
                 {
-                    await options.completeCallback(MatchResponse.ERROR);
+                    await options.completeCallback?.(MatchResponse.ERROR);
                     resolve(null);
                     return;
                 }
         
                 if(batchOrMatch.type & (MatchResponse.SUCCESS | MatchResponse.NO_MATCH))
-                    await options.matchCallback((batchOrMatch as ReturnMatch).data);
+                    await options.matchCallback?.((batchOrMatch as ReturnMatch).data);
         
-                await options.completeCallback(batchOrMatch.type);
+                await options.completeCallback?.(batchOrMatch.type);
             }
             catch(e) {
-                await options.completeCallback(MatchResponse.ERROR);
+                await options.completeCallback?.(MatchResponse.ERROR);
             }
 
             resolve(null);

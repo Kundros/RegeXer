@@ -5,11 +5,6 @@ import * as vscode from 'vscode';
 
 export class ProvidersHandler extends Handler
 {
-    constructor(context : vscode.ExtensionContext)
-    {
-        super(context);
-    }
-
     public register() : void 
     {
         if(vscode.workspace.getConfiguration().get('regexVisualizer.editor.hover.enable'))

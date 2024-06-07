@@ -18,17 +18,22 @@
     "test:matcher": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js matcher.test --detectOpenHandles",
     "test:match": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js match.test --detectOpenHandles",
     "build:webpack": "webpack --config webpackWorker.config.js",
-    "watch:webpack": "webpack --watch"
+    "watch:webpack": "webpack --watch",
+    "lint": "eslint ."
   },
   "author": "Dominik Kundra, KUN0161",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.4.0",
+    "@types/eslint__js": "^8.42.3",
     "@types/jest": "^29.5.7",
+    "eslint": "^8.57.0",
     "jest": "^29.7.0",
     "peggy": "^3.0.2",
     "ts-jest": "^29.1.1",
     "tsc-alias": "^1.8.8",
-    "tsconfig-paths-webpack-plugin": "^4.1.0"
+    "tsconfig-paths-webpack-plugin": "^4.1.0",
+    "typescript-eslint": "^7.12.0"
   },
   "exports": {
     ".": {

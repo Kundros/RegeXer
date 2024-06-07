@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
 		new ProvidersHandler(context)
 	];
 
-	for(let handler of handlers)
+	for(const handler of handlers)
 	{
 		handler.register();
 		
@@ -22,5 +22,4 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+// TODO: This method is called when your extension is deactivated

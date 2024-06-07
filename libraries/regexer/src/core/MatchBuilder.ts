@@ -120,7 +120,7 @@ export class MatchBuilder
     }
 
     /** @description process regex option */
-    public updateOption(optionStart: number, optionEnd: number)
+    public updateOption(optionStart: number)
     {
         const states = this.matchData.states;
 

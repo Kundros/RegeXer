@@ -3,6 +3,7 @@
   "version": "0.0.5",
   "description": "This package is source package for thesis on regex visualization plugin for vs-code.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "npm run install:regexer && npm run install:rv && npm run install:rvex",

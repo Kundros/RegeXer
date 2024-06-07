@@ -10,9 +10,9 @@ export type MatchBatchData = {
 
 export type BatchMatchOptions = 
 {
-    batchCallback: (matchBatch : MatchBatchData) => void | Promise<void>,
-    matchCallback: (matchData : MatchData) => void | Promise<void>,
-    completeCallback: (matchingCompleteResponse : MatchResponse) => void | Promise<void>,
+    batchCallback?: (matchBatch : MatchBatchData) => void | Promise<void>,
+    matchCallback?: (matchData : MatchData) => void | Promise<void>,
+    completeCallback?: (matchingCompleteResponse : MatchResponse) => void | Promise<void>,
     batchSize?: number,
     forceStopRunning?: boolean
 }
