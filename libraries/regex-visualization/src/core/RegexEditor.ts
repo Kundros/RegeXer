@@ -1,7 +1,7 @@
 import { AST, ASTGroup, ASTIteration, ASTOption, ASTOptional, ASTPrimitive, ASTtype, AstAnyCharacter, AstEscapedSpecial, GroupTypes, RegexStates } from "@kundros/regexer";
 import { TextEditor } from "./TextEditor";
 import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
-import { handleAddElement, wrapElement } from "./other/ElementHelper";
+import { handleAddElement, wrapElement } from "./other/elementHelper";
 
 export class RegexEditor extends TextEditor
 {

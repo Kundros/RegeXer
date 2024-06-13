@@ -11,7 +11,7 @@ export function handleAddElement(elements: Node[], element?: Node, specialBr: bo
     } 
 
     if(specialBr)
-        this.hangleBreakline(elements, element);
+        handleBreakLine(elements, element);
 
     elements.push(element);
 }
@@ -35,13 +35,13 @@ export function wrapElement(toWrap : string | Node[], elTag = "span", elClasses 
     return element;
 }
 
-export function hangleBreakline(elements: Node[], element: Node)
+export function handleBreakLine(elements: Node[], element: Node)
 {
     const lastNode = (elements.length > 0) ? elements[elements.length-1] : undefined;
 
     if(element instanceof HTMLElement && element.classList.contains('new-line-symbol'))
     {
-        this.removeLastBreakline(lastNode);
+        removeLastBreakLine(lastNode);
 
         element.appendChild(document.createElement("br"));
         elements.push(element);
@@ -49,10 +49,10 @@ export function hangleBreakline(elements: Node[], element: Node)
         return;
     }
 
-    this.removeLastBreakline(lastNode);
+    removeLastBreakLine(lastNode);
 }
 
-export function removeLastBreakline(lastNode : Node)
+export function removeLastBreakLine(lastNode : Node)
 {
     if(lastNode instanceof HTMLElement && lastNode.classList.contains('new-line-symbol'))
     {
