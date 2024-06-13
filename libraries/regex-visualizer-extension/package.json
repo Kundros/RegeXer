@@ -2,9 +2,9 @@
   "version": "0.0.5",
   "publisher": "Kundros",
   "description": "Regex Visualizer & Debugger",
-  "displayName": "Regex Visualizer / Debugger",
+  "displayName": "Regex Visualizer & Debugger",
   "name": "regex-visualizer-extension",
-  "icon": "logo.png",
+  "icon": "RX.png",
   "author": {
     "name": "Dominik Kundra"
   },
@@ -30,7 +30,7 @@
       },
       {
         "command": "regex-visualizer-extension.updateRegRegexVisualizer",
-        "title": "Update Reg Regex Visualizer & Debuger"
+        "title": "Update Regex Visualizer & Debugger"
       }
     ],
     "configuration": {
@@ -48,7 +48,7 @@
           "default": false,
           "scope": "machine-overridable",
           "editPresentation": "singlelineText",
-          "description": "Retain window for visualisation, if you load new regex from vscode."
+          "description": "Retain window for visualization, if you load new regex from vscode."
         },
         "regexVisualizer.webview.autoSave.enable": {
           "type": "boolean",
