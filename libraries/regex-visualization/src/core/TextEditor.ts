@@ -1,4 +1,4 @@
-import { wrapElement } from "./other/ElementHelper";
+import { wrapElement } from "./other/elementHelper";
 import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
 
 export type TextEditorOptions = {

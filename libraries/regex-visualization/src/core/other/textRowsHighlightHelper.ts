@@ -43,7 +43,7 @@ export function getTextDimensions(options : BoundingOptions) : Dimensions // x, 
     const paddingLeftText = Number.parseInt(computedStyle.paddingLeft);
     const spacingWidth = Number.parseInt(computedStyle.letterSpacing);
 
-    const range = setCursorPosition(options.textElement, [options.from, options.to], true);
+    const range = setCursorPosition(options.textElement, options.from, options.to);
     const clientRects = range.getClientRects();
     const clientRectsLength = clientRects.length;
 

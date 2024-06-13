@@ -1,4 +1,4 @@
-import { wrapElement } from "./other/ElementHelper";
+import { wrapElement } from "./other/elementHelper";
 
 import '../styles/slider.less';
 import beginSvg from '../assets/svgs/begin.svg';
