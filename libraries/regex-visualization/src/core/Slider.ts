@@ -7,7 +7,7 @@ import playSvg from '../assets/svgs/play.svg';
 import pauseSvg from '../assets/svgs/pause.svg';
 import arrowUpSvg from '../assets/svgs/up.svg';
 
-import { SliderOptions } from "./coreTypes/SliderOptions";
+import { SliderOptions } from "./coreTypes/sliderOptions";
 
 export type SliderEvent = Event & {
     readonly detail : {
