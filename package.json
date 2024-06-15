@@ -8,14 +8,11 @@
     "install:regex-engine": "cd ./libraries/regex-engine/ && npm i",
     "install:regex-visualization": "cd ./libraries/regex-visualization/ && npm i",
     "install:vscode-extension": "cd ./libraries/vscode-extension/ && npm i",
-    
     "build": "npm run build:regex-engine && npm run build:regex-visualization && npm run build:vscode-extension",
     "build:regex-engine": "npm run build --prefix ./libraries/regex-engine/",
     "build:regex-visualization": "npm run build:webpack --prefix ./libraries/regex-visualization/",
     "build:vscode-extension": "npm run build:webpack --prefix ./libraries/vscode-extension/",
-
     "release": "npm run vsce --prefix ./libraries/regex-visualizer-extension/",
-
     "lint": "npm run lint:regex-engine && npm run lint:regex-visualization && npm run lint:vscode-extension",
     "lint:regex-engine": "npm run lint --prefix ./libraries/regex-engine/",
     "lint:regex-visualization": "npm run lint --prefix ./libraries/regex-visualization/",
@@ -23,7 +20,11 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^5.3.3"
+    "@eslint/js": "^9.5.0",
+    "@types/eslint__js": "^8.42.3",
+    "eslint": "^8.57.0",
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^7.13.0"
   },
   "engines": {
     "node": ">= 14.17"
