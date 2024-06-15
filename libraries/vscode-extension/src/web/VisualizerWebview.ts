@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import visualizerHtml from "@regexer/regex-visualization";
 
 export class VisualizerWebview
 {
@@ -10,10 +11,6 @@ export class VisualizerWebview
 
     public async show(regex? : string)
     {
-        const visualizerHtml = require(
-            "@kundros/regex-visualization"
-        ).default;
-        
         const panel = vscode.window.createWebviewPanel(
             'regexVisualization', 
             'Regex Visualization & Debugging', 

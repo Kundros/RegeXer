@@ -1,15 +1,14 @@
 {
   "version": "0.0.5",
   "publisher": "Kundros",
+  "name": "regexer-extension",
   "description": "Regex Visualizer & Debugger",
-  "displayName": "Regex Visualizer & Debugger",
-  "name": "regex-visualizer-extension",
+  "displayName": "RegeXer",
+  "author": "Dominik Kundra",
+  "license": "MIT",
   "icon": "RX.png",
-  "author": {
-    "name": "Dominik Kundra"
-  },
   "repository": {
-    "url": "https://github.com/Kundros/regex-visualization-thesis/tree/master/libraries/regex-visualizer-extension"
+    "url": "https://github.com/Kundros/RegeXer"
   },
   "engines": {
     "vscode": "^1.84.0",
@@ -55,7 +54,8 @@
           "default": true,
           "scope": "machine-overridable",
           "editPresentation": "singlelineText",
-          "description": "Auto save webview data."
+          "description": "Auto save webview data.",
+          "deprecationMessage": "Not implemented yet"
         },
         "regexVisualizer.webview.autoSave.delay": {
           "type": "number",
@@ -64,7 +64,8 @@
           "maximum": 100000,
           "scope": "machine-overridable",
           "editPresentation": "multilineText",
-          "description": "Delay in ms (miliseconds) before saving webview while typing"
+          "description": "Delay in ms (miliseconds) before saving webview while typing",
+          "deprecationMessage": "Not implemented yet"
         }
       }
     },
@@ -109,9 +110,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@kundros/regex-visualization": "file:../regex-visualization",
-    "@kundros/regexer": "file:../regexer",
-    "html-loader": "^4.2.0",
-    "threads": "^1.7.0"
+    "@regexer/regex-visualization": "file:../regex-visualization",
+    "html-loader": "^4.2.0"
   }
 }

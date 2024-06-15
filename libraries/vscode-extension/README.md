@@ -1,8 +1,8 @@
-# Regex Visualizer / Debugger
+# RegeXer - Regex Visualizer & Debugger
 
 This extension allows you to debug your regular expressions directly from vscode.
 
-### supports 
+## supports 
 - **ECMAScript (JavaScript) regular expressions only**
 - Basic syntax (groups, options, escaped characters, any character, list etc.)
 - Separate webview to display regex and matched string
