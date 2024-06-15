@@ -4,8 +4,7 @@
     </p>
     <h1>RegeXer - Regex Visualizer & Debugger</h1>
     <img src="https://img.shields.io/badge/typescript-v5.3.3-3178c6.svg" alt="typescript">
-    <img src="https://img.shields.io/github/v/release/Kundros/RegeXer
-    ">
+    <img src="https://img.shields.io/github/v/release/Kundros/RegeXer">
     <img src="https://img.shields.io/github/actions/workflow/status/Kundros/RegeXer/Release%20CI?logo=github&label=Release CI">
 </div>
 
