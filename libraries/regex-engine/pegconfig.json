@@ -1,0 +1,18 @@
+{
+    "tspegjs": {
+        "customHeader": "import * as RegexTypes from \"../coreTypes/parserTypes\"\nexport * as RegexTypes from \"../coreTypes/parserTypes\""
+    },
+    "returnTypes": {
+        "Start": "RegexTypes.RootState",
+        "Primitive": "RegexTypes.PrimitiveState",
+        "Group": "RegexTypes.GroupState",
+        "Option": "RegexTypes.OptionState",
+        "Optional": "RegexTypes.OptionalState",
+        "Iteration": "RegexTypes.IterationState",
+        "List": "RegexTypes.ListState",
+        "EscapedSpecial": "RegexTypes.EscapedSpecialState",
+        "SOS": "RegexTypes.SOSState",
+        "EOS": "RegexTypes.EOSState",
+        "AnyCharacter": "RegexTypes.AnyState"
+    }
+}

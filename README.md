@@ -1,14 +1,16 @@
 <div align="center">
-    <h1>Regex visualisation extension for vscode</h1>
-    <div align="center">
-        <img src="https://img.shields.io/badge/npm-v0.0.4-0172b3.svg" alt="npm">
-        <img src="https://img.shields.io/badge/typescript-v5.2.2-3178c6.svg" alt="typescript">
-    </div>
+    <p align="center">
+        <img src="./images/RX.png" alt="open command" width="150">
+    </p>
+    <h1>RegeXer - Regex Visualizer & Debugger</h1>
+    <img src="https://img.shields.io/badge/typescript-v5.3.3-3178c6.svg" alt="typescript">
+    <img src="https://img.shields.io/github/v/release/Kundros/RegeXer">
+    <img src="https://img.shields.io/github/actions/workflow/status/Kundros/RegeXer/Release%20CI?logo=github&label=Release CI">
 </div>
 
 ## Introduction
 
-This project is root of **regex visualization extension** for **Visual Studio Code**. Purpose of this project is to give programers tool built in VSCode to debug regular expressions in real time. This extension is still mostly work in progress and many features are not implemented, so please take that in consideration. Now this extension can only recognize some regular expressions, and only regexes for ECMAScript (JavaScript) specification. Parts that are not implemented yet, might be in future.
+This is root of **RegeXer - Regex Visualizer & Debugger** extension for **Visual Studio Code**. Purpose of this project is to give programers tool built in VSCode to debug regular expressions in real time. This extension is still mostly work in progress and many features are not implemented, so please take that in consideration. Now this extension can only recognize some regular expressions, and only regexes for ECMAScript (JavaScript) specification. Parts that are not implemented yet, might be in future.
 
 ## Setup
 
