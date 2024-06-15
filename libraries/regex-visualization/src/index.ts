@@ -5,7 +5,7 @@ import { StringMatchEditor } from "./core/StringMatchEditor";
 import './styles/main.less';
 import './styles/debugger.less';
 import { RegexDebugger } from "./core/RegexDebugger";
-import { MatchHighlightingOptions } from "./core/coreTypes/MatchHighlightOptions";
+import { MatchHighlightingOptions } from "./core/coreTypes/matchHighlightOptions";
 
 /** private scope vscode api variable according to: https://code.visualstudio.com/api/extension-guides/webview#passing-messages-from-a-webview-to-an-extension */
 (async function() {

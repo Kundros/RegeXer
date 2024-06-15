@@ -1,4 +1,4 @@
-import { MatchGroup } from "@kundros/regexer"
+import { MatchGroup } from "@regexer/regex-engine"
 import { setCursorPosition } from "./caretHelper"
 
 export type BoundingOptions = {
@@ -43,8 +43,19 @@ export function getTextDimensions(options : BoundingOptions) : Dimensions // x, 
     const paddingLeftText = Number.parseInt(computedStyle.paddingLeft);
     const spacingWidth = Number.parseInt(computedStyle.letterSpacing);
 
-    const range = setCursorPosition(options.textElement, options.from, options.to);
-    const clientRects = range.getClientRects();
+    const range = setCursorPosition(options.textElement, options.from, options.to, true);
+
+    let clientRects = range.getClientRects();
+
+    // HACK: when there is no text, to still get bounding add invisible char and delete it
+    if(clientRects.length <= 0)
+    {
+        const tmpNode = document.createTextNode('\ufeff');
+        range.insertNode(tmpNode);
+        clientRects = range.getClientRects();
+        tmpNode.remove();
+    }
+
     const clientRectsLength = clientRects.length;
 
     for(let i = 0 ; i < clientRectsLength ; i++)

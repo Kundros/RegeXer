@@ -3,7 +3,8 @@
 	https://stackoverflow.com/questions/69956977/html-contenteditable-keep-caret-position-when-inner-html-changes
 */
 
-export type CursorStat = { position: number, endPosition?: number, done: boolean, doneEnd?: boolean };
+type CursorStatGet = { startPosition: number, done: boolean, doneEnd: boolean };
+type CursorStatSet = CursorStatGet & { endPosition: number };
 
 // get the cursor position from .editor start
 export function getCursorPosition(parent: HTMLElement | ChildNode) 
@@ -12,12 +13,12 @@ export function getCursorPosition(parent: HTMLElement | ChildNode)
 	const node = selection.focusNode;
 	const offset = selection.focusOffset;
 
-	const { position } = internalGetCursor(parent, node, offset, { position: 0, done: false });
+	const { startPosition: position } = internalGetCursor(parent, node, offset, { startPosition: 0, done: false, doneEnd: true });
 
 	return position;
 }
 
-function internalGetCursor(parent: HTMLElement | ChildNode, node: Node, offset: number, stat: CursorStat) 
+function internalGetCursor(parent: HTMLElement | ChildNode, node: Node, offset: number, stat: CursorStatGet) 
 {
 	if (stat.done) return stat;
 
@@ -25,7 +26,7 @@ function internalGetCursor(parent: HTMLElement | ChildNode, node: Node, offset: 
 
 	if (parent.childNodes.length == 0) 
 	{
-		stat.position += parent.textContent.length;
+		stat.startPosition += parent.textContent.length;
 	} 
 	else 
 	{
@@ -34,7 +35,7 @@ function internalGetCursor(parent: HTMLElement | ChildNode, node: Node, offset: 
 			currentNode = parent.childNodes[i];
 			if (currentNode === node) 
 			{
-				stat.position += offset;
+				stat.startPosition += offset;
 				stat.done = true;
 				return stat;
 			} 
@@ -47,83 +48,79 @@ function internalGetCursor(parent: HTMLElement | ChildNode, node: Node, offset: 
 }
 
 //find the child node and relative position and set it on range
-export function setCursorPosition(parent: HTMLElement | ChildNode, position: number, endPosition?: number) 
+export function setCursorPosition(parent: HTMLElement | ChildNode, startPosition: number, endPosition = startPosition, isVirtualRange = false) 
 {
-	const sel = window.getSelection();
+	const selection = window.getSelection();
+	const length = endPosition - startPosition;
+
+	if(isVirtualRange)
+	{
+		const stat = { startPosition: startPosition, endPosition: endPosition, done: false, doneEnd: length <= 0};
+		return internalSetCursor(parent, document.createRange(), stat);
+	}
 
 	let saveRange: Range | undefined;
 
-	if (!endPosition) 
-	{
-		if (sel.rangeCount > 0)
-			saveRange = sel.getRangeAt(0).cloneRange();
+	if (selection.rangeCount > 0)
+		saveRange = selection.getRangeAt(0).cloneRange();
 
-		sel.removeAllRanges();
-	}
-
-	console.log(!endPosition);
-
-	const stat = { position: position, endPosition: endPosition, done: false, doneEnd: !endPosition };
+	const stat = { startPosition: startPosition, endPosition: endPosition, done: false, doneEnd: length <= 0};
 	const range = internalSetCursor(parent, document.createRange(), stat);
 
-	if (!stat.done && !endPosition) 
+	if (length <= 0)
+		range.collapse(true);
+
+	selection.removeAllRanges();
+
+	if (!stat.done) 
 	{
 		if (saveRange !== undefined)
-			sel.addRange(saveRange);
+			selection.addRange(saveRange);
 		return saveRange;
 	}
 
-	if (!endPosition)
-		range.collapse(true);
+	selection.addRange(range);
 
-	if (!endPosition) 
+	const tempElement = document.createElement('br');
+
+	const caretBound = range.getBoundingClientRect();
+	const parentBound = document.activeElement.getBoundingClientRect();
+
+	if (caretBound.y - parentBound.y > parentBound.height - caretBound.height * 2 || caretBound.y - parentBound.y < 0) 
 	{
-		sel.addRange(range);
+		range.cloneRange().insertNode(tempElement);
 
-		const tempElement = document.createElement('br');
-
-		const caretBound = range.getBoundingClientRect();
-		const parentBound = document.activeElement.getBoundingClientRect();
-
-		if (caretBound.y - parentBound.y > parentBound.height - caretBound.height * 2 || caretBound.y - parentBound.y < 0) 
+		if (caretBound.y - parentBound.y - caretBound.height < 0) 
 		{
-			range.cloneRange().insertNode(tempElement);
-
-			if (caretBound.y - parentBound.y - caretBound.height < 0) 
-			{
-				tempElement.scrollIntoView({
-					block: 'start',
-				});
-				document.activeElement.scrollBy(0, caretBound.height);
-			}
-			else
-				tempElement.scrollIntoView({
-					block: 'end',
-				});
-
-			tempElement.remove();
+			tempElement.scrollIntoView({
+				block: 'start',
+			});
+			document.activeElement.scrollBy(0, caretBound.height);
 		}
+		else
+			tempElement.scrollIntoView({
+				block: 'end',
+			});
+
+		tempElement.remove();
 	}
 
 	return range;
 }
 
-function internalSetCursor(parent: HTMLElement | ChildNode, range: Range, stat: CursorStat) 
+function internalSetCursor(parent: HTMLElement | ChildNode, range: Range, stat: CursorStatSet) 
 {
 	if (stat.done && stat.doneEnd) return range;
 
 	if (parent.childNodes.length == 0) {
-		if (parent.textContent.length >= stat.position && !stat.done) 
+		if (parent.textContent.length >= stat.startPosition && !stat.done) 
 		{
-			range.setStart(parent, stat.position);
+			range.setStart(parent, stat.startPosition);
 			stat.done = true;
-
-			if (!stat.endPosition)
-				stat.doneEnd = true;
 		}
 		else 
 		{
-			stat.position -= parent.textContent.length;
+			stat.startPosition -= parent.textContent.length;
 		}
 
 		if (parent.textContent.length >= stat.endPosition && !stat.doneEnd) 
@@ -157,19 +154,19 @@ export function getPositionInNode(parent: HTMLElement | ChildNode)
 	const node = sel.focusNode;
 	const offset = sel.focusOffset;
 
-	const { position } = internalGetPositionInNode(parent, node, offset, { position: 0, done: false, doneEnd: true });
+	const { startPosition: position } = internalGetPositionInNode(parent, node, offset, { startPosition: 0, done: false, doneEnd: true });
 
 	return position;
 }
 
-function internalGetPositionInNode(parent: HTMLElement | ChildNode, node: Node, offset: number, stat: CursorStat) 
+function internalGetPositionInNode(parent: HTMLElement | ChildNode, node: Node, offset: number, stat: CursorStatGet) 
 {
 	if (stat.done) return stat;
 
 	let currentNode = null;
 	if (parent.childNodes.length == 0) 
 	{
-		stat.position += parent.textContent.length;
+		stat.startPosition += parent.textContent.length;
 	} 
 	else 
 	{
@@ -179,7 +176,7 @@ function internalGetPositionInNode(parent: HTMLElement | ChildNode, node: Node, 
 
 			if (currentNode === node) 
 			{
-				stat.position += offset;
+				stat.startPosition += offset;
 				stat.done = true;
 				return stat;
 			} 

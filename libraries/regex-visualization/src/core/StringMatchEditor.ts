@@ -1,8 +1,8 @@
-import { RegexMatch } from "@kundros/regexer";
+import { RegexMatch } from "@regexer/regex-engine";
 import { TextEditor, TextEditorOptions } from "./TextEditor";
 import { wrapElement } from "./other/elementHelper";
 import { HighlighGroupsOptions, HighlighTextOptions, getGroupDimensions, getTextDimensions, highlightGroups, highlightPosition } from "./other/textRowsHighlightHelper";
-import { MatchHighlightingOptions } from "./coreTypes/MatchHighlightOptions";
+import { MatchHighlightingOptions } from "./coreTypes/matchHighlightOptions";
 
 export type MatchEditorOptions = 
     TextEditorOptions & 

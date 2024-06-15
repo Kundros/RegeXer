@@ -1,10 +1,10 @@
 import { WebviewApi } from "vscode-webview";
 import { Message, MessageRegex } from "customTypes";
 import { RegexEditor } from "./RegexEditor";
-import { MatchBatchData, MatchData, MatchFlags, MatchResponse, RegParseException, RegexMatch, Regexer } from "@kundros/regexer";
+import { MatchBatchData, MatchData, MatchFlags, MatchResponse, RegParseException, RegexMatch, Regexer } from "@regexer/regex-engine";
 import { StringMatchEditor } from "./StringMatchEditor";
 import { RegexDebugger } from "./RegexDebugger";
-import { RegexVisualizerOptions } from "./coreTypes/RegexVisualizerOptions";
+import { RegexVisualizerOptions } from "./coreTypes/regexVisualizerOptions";
 
 export class RegexVisualizer {
     constructor(regexEditor : RegexEditor, stringMatchEditor : StringMatchEditor, debuggerWindow: RegexDebugger, vscode : WebviewApi<unknown> | undefined, options? : RegexVisualizerOptions)
