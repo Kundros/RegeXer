@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
       - name: Install linter
-        run: npm install --save-dev eslint @eslint/js @types/eslint__js typescript-eslint
+        run: npm install --save-dev eslint @eslint/js @types/eslint__js typescript-eslint eslint-plugin-import
       - name: Run linter
         run: npm run lint
 
