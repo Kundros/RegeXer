@@ -1,9 +1,9 @@
-import { MatchAction, MatchState, RegexMatch } from "@kundros/regexer";
+import { MatchAction, MatchState, RegexMatch } from "@regexer/regex-engine";
 import { Slider, SliderEvent } from "./Slider";
 import { sliderSettings } from "./settings/SliderSettings";
 import { getGroupDimensions, getTextDimensions, highlightBacktracking, highlightGroups, highlightPosition } from "./other/textRowsHighlightHelper";
-import { MatchHighlightingOptions } from "./coreTypes/MatchHighlightOptions";
-import { RegexHighlightingOptions } from "./coreTypes/RegexHighlightOptions";
+import { MatchHighlightingOptions } from "./coreTypes/matchHighlightOptions";
+import { RegexHighlightingOptions } from "./coreTypes/regexHighlightOptions";
 
 export type DebuggerOptions = {
     regexHighlighting?: RegexHighlightingOptions,

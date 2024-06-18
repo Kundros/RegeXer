@@ -10,20 +10,14 @@ jobs:
   # --- Linting process ---
   lint:
     runs-on: ubuntu-latest
-    name: Linting ${{ matrix.library }}
-    
-    strategy:
-      matrix:
-        library: [regexer, regex-visualization, regex-visualizer-extension]
+    name: Linting libraries
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
       - name: Install linter
-        working-directory: ./libraries/${{ matrix.library }}
         run: npm install --save-dev eslint @eslint/js @types/eslint__js typescript-eslint
       - name: Run linter
-        working-directory: ./libraries/${{ matrix.library }}
         run: npm run lint
 
   ubuntu:
@@ -40,5 +34,5 @@ jobs:
       - name: Build app
         run: npm run build
       - name: Run unit tests
-        working-directory: ./libraries/regexer
+        working-directory: ./libraries/regex-engine
         run: npm run test
