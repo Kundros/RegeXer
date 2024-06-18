@@ -12,18 +12,14 @@
     "build:main": "npm run build:webpack && npm run build:main_esm && npm run build:main_common",
     "build:main_esm": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "build:main_common": "tsc --project tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json",
-
     "start": "node --trace-warnings dist/cjs/index.js",
     "dev": "node --trace-warnings dist/cjs/index.js",
-
     "test": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js --detectOpenHandles",
     "test:parser": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js parser.test --detectOpenHandles",
     "test:matcher": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js matcher.test --detectOpenHandles",
     "test:match": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/jest/bin/jest.js match.test --detectOpenHandles",
-
     "build:webpack": "webpack --config webpackWorker.config.js",
     "watch:webpack": "webpack --watch",
-
     "lint": "eslint ."
   },
   "license": "MIT",
@@ -32,14 +28,15 @@
     "@types/eslint__js": "^8.42.3",
     "@types/jest": "^29.5.7",
     "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.29.1",
     "jest": "^29.7.0",
     "peggy": "^3.0.2",
     "ts-jest": "^29.1.1",
+    "ts-loader": "^9.5.1",
+    "ts-pegjs": "^4.2.1",
     "tsc-alias": "^1.8.8",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
-    "ts-pegjs": "^4.2.1",
     "typescript-eslint": "^7.12.0",
-    "ts-loader": "^9.5.1",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   },

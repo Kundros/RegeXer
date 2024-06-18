@@ -1,16 +1,27 @@
-import * as RegexTypes from "./parserTypes";
-import { MatchResponse } from "./MatchWorkerTypes";
+import { RegexStates } from "./parserTypes";
 
-export type MatchBatchData = {
+/** @description all possible responses from worker. */
+export const MatchResponse = 
+{
+    SUCCESS: 0x1,
+    NO_MATCH: 0x2,
+    ERROR: 0x4,
+    ABORTED: 0x8,
+    BATCH: 0x10
+} as const;
+
+export type MatchResponse = typeof MatchResponse[keyof typeof MatchResponse];
+
+export type BatchData = {
     batchSize: number,
     matchCurrentSize: number,
     batchSpan : [number, number],
     matchStates : MatchState[]
 }
 
-export type BatchMatchOptions = 
+export type BatchOptions = 
 {
-    batchCallback?: (matchBatch : MatchBatchData) => void | Promise<void>,
+    batchCallback?: (matchBatch : BatchData) => void | Promise<void>,
     matchCallback?: (matchData : MatchData) => void | Promise<void>,
     completeCallback?: (matchingCompleteResponse : MatchResponse) => void | Promise<void>,
     batchSize?: number,
@@ -29,7 +40,7 @@ export type MatchData =
 
 export type MatchState =
 {
-     type: RegexTypes.RegexStates,
+     type: RegexStates,
      regAt: [number, number],
      strAt: [number, number],
      groups?: Map<number, MatchGroup>,

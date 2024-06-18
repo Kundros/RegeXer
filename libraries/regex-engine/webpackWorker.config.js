@@ -12,7 +12,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 /** @type WebpackConfig */
 const webConfig = {
   target: 'webworker',
-	mode: 'none',
+	mode: 'production',
 
   resolve: {
     fallback: {
@@ -60,7 +60,8 @@ const webConfig = {
     ]
   },
   optimization: {
-    splitChunks: false
+    splitChunks: false,
+    usedExports: "global"
   },
   watchOptions: {
     ignored: ['**/node_modules', path.resolve(__dirname, './dist')],
@@ -72,9 +73,10 @@ const webConfig = {
   ]
 };
 
+/** @type WebpackConfig */
 const nodeConfig = {
   target: ['node16', "es22"],
-	mode: 'none',
+	mode: 'production',
 
   resolve: {
     // @ts-ignore
@@ -119,7 +121,8 @@ const nodeConfig = {
     ]
   },
   optimization: {
-    splitChunks: false
+    splitChunks: false,
+    usedExports: "global"
   },
   watchOptions: {
     ignored: ['**/node_modules', path.resolve(__dirname, './dist')],

@@ -3,12 +3,32 @@ import { parse } from "@core/RegexParser";
 import { Matcher } from "@core/MatchingWorker";
 import { RegParseException } from "@exceptions/RegParseException";
 import { RegMatchException } from "@exceptions/RegMatchException";
-import { BatchMatchOptions, MatchData, MatchFlags } from "@coreTypes/MatchTypes";
-import { MatchResponse, NewData, NewMessage, ReturnAborted, ReturnBatch, ReturnMatch } from "@coreTypes/MatchWorkerTypes";
 import * as RegexTypes from "@regexer/coreTypes/parserTypes";
 
+import { 
+    type BatchOptions, 
+    type MatchData, 
+    MatchFlags, 
+    MatchResponse 
+} from "@coreTypes/MatchTypes";
+
+import type { 
+    NewData, 
+    NewMessage, 
+    ReturnAborted, 
+    ReturnBatch, 
+    ReturnMatch 
+} from "@coreTypes/MatchWorkerTypes";
+
+// packages
 import * as peggy from "peggy";
-import { ModuleThread, spawn, Thread, Worker } from 'threads';
+
+import { 
+    type ModuleThread, 
+    spawn, 
+    Thread, 
+    Worker 
+} from 'threads';
 
 /**
  * @classdesc 
@@ -61,7 +81,7 @@ export class Regexer
      * each completed match will be sent to matchCallback (without states those were sent in batches) \
      * finished by calling completeCallback
      */
-    public async matchInBatches(matchString : string, options: BatchMatchOptions)
+    public async matchInBatches(matchString : string, options: BatchOptions)
     {
         if(options?.forceStopRunning ?? false)
             await this.renewWorker();

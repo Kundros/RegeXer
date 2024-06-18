@@ -1,4 +1,11 @@
-import { MatchAction, MatchBatchData, MatchData, MatchFlags, MatchGroup, MatchState } from "@coreTypes/MatchTypes";
+import { 
+    MatchAction, 
+    BatchData, 
+    MatchData, 
+    MatchFlags, 
+    MatchGroup, 
+    MatchState 
+} from "@coreTypes/MatchTypes";
 
 export class MatchBuilder
 {
@@ -69,7 +76,7 @@ export class MatchBuilder
     }
 
     /** @description returns processed final batch */
-    public getFinalBatch() : MatchBatchData
+    public getFinalBatch() : BatchData
     {
         this.batchPosition_[1] = this.matchData.statesCount;
         return this.getBatch();
@@ -92,7 +99,7 @@ export class MatchBuilder
     }
 
     /** @description returns all states of current processed batch */
-    public getBatch() : MatchBatchData
+    public getBatch() : BatchData
     {
         const tmp = this.batchPosition_[0];
         this.batchPosition_[0] = this.batchPosition_[1];

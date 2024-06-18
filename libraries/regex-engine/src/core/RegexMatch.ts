@@ -1,4 +1,4 @@
-import { MatchBatchData, MatchData, MatchGroup, MatchState } from "@coreTypes/MatchTypes";
+import { BatchData, MatchData, MatchGroup, MatchState } from "@coreTypes/MatchTypes";
 
 export class RegexMatch
 {
@@ -12,7 +12,7 @@ export class RegexMatch
      }
 
      /** @description ability to add new batch to Match structure */
-     public addBatch(batch : MatchBatchData)
+     public addBatch(batch : BatchData)
      {
           this.matchData_.statesCount = batch.matchCurrentSize;
           this.matchData_.states.push(...batch.matchStates);

@@ -1,4 +1,5 @@
 const tsEslint = require('typescript-eslint');
+const eslintImport = require("eslint-plugin-import");
 
 module.exports = tsEslint.config(
     ...tsEslint.configs.strict,
@@ -11,6 +12,16 @@ module.exports = tsEslint.config(
             "**/*.d.ts",
             "**/*.js"
         ]
+    },
+    {
+        plugins: {
+            eslintImport
+        },
+        rules: {
+            "eslintImport/no-cycle": [
+                "error"
+            ]
+        }
     },
     {
         rules: {
