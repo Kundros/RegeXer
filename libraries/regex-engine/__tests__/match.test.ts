@@ -1,7 +1,7 @@
 import { test, expect } from '@jest/globals';
 
 import { Regexer } from '../src/core/Regexer';
-import { MatchBatchData, MatchData, MatchFlags, MatchState } from '../src/coreTypes/MatchTypes';
+import { BatchData, MatchData, MatchFlags, MatchState } from '../src/coreTypes/MatchTypes';
 import { RegexMatch } from '../src/core/RegexMatch';
 import * as RegexTypes from "../src/coreTypes/parserTypes";
 
@@ -168,7 +168,7 @@ test("test correct batches 1", async () => {
 
     const match1 = new RegexMatch();
     await regexer.matchInBatches("abcbbbcccbbccbbccbbababababgjgrehjb", {
-        batchCallback: (batch: MatchBatchData) => {
+        batchCallback: (batch: BatchData) => {
             match1.addBatch(batch);
         },
         matchCallback: (matchFinal: MatchData) => {
@@ -211,7 +211,7 @@ test("test correct batches 2", async () => {
 
     const match1 = new RegexMatch();
     await regexer.matchInBatches("abcbbbcccbbccbbccbbababababgjgrehjb_", {
-        batchCallback: (batch: MatchBatchData) => {
+        batchCallback: (batch: BatchData) => {
             match1.addBatch(batch);
         },
         matchCallback: (matchFinal: MatchData) => {
@@ -260,7 +260,7 @@ test("test correct batches without one await (not terminating the job)", async (
 
     const match1 = new RegexMatch();
     regexer.matchInBatches("abcbbbcccbbccbbccbbababababgjgrehjb_", {
-        batchCallback: (batch: MatchBatchData) => {
+        batchCallback: (batch: BatchData) => {
             match1.addBatch(batch);
         },
         matchCallback: (matchFinal: MatchData) => {
