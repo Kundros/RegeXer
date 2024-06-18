@@ -1,7 +1,7 @@
 import { WebviewApi } from "vscode-webview";
 import { Message, MessageRegex } from "customTypes";
 import { RegexEditor } from "./RegexEditor";
-import { MatchBatchData, MatchData, MatchFlags, MatchResponse, RegParseException, RegexMatch, Regexer } from "@regexer/regex-engine";
+import { BatchData, MatchData, MatchFlags, MatchResponse, RegParseException, RegexMatch, Regexer } from "@regexer/regex-engine";
 import { StringMatchEditor } from "./StringMatchEditor";
 import { RegexDebugger } from "./RegexDebugger";
 import { RegexVisualizerOptions } from "./coreTypes/regexVisualizerOptions";
@@ -155,7 +155,7 @@ export class RegexVisualizer {
         });
     }
 
-    private batchCallback(batchData : MatchBatchData)
+    private batchCallback(batchData : BatchData)
     {
         const lastMatch = this.matches_[this.matches_.length-1];
 
