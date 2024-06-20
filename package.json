@@ -12,7 +12,7 @@
     "build:regex-engine": "npm run build --prefix ./libraries/regex-engine/",
     "build:regex-visualization": "npm run build:webpack --prefix ./libraries/regex-visualization/",
     "build:vscode-extension": "npm run build:webpack --prefix ./libraries/vscode-extension/",
-    "release": "npm run vsce --prefix ./libraries/regex-visualizer-extension/",
+    "release": "npm run vsce --prefix ./libraries/vscode-extension/",
     "lint": "npm run lint:regex-engine && npm run lint:regex-visualization && npm run lint:vscode-extension",
     "lint:regex-engine": "npm run lint --prefix ./libraries/regex-engine/",
     "lint:regex-visualization": "npm run lint --prefix ./libraries/regex-visualization/",
