@@ -1,6 +1,6 @@
 <div align="center">
     <p align="center">
-        <img src="./images/RX.png" alt="open command" width="150">
+        <img src="./images/RegeXer_logo.png" alt="open command" width="350">
     </p>
     <h1>RegeXer - Regex Visualizer & Debugger</h1>
     <img src="https://img.shields.io/badge/typescript-v5.3.3-3178c6.svg" alt="typescript">
