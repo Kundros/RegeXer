@@ -22,10 +22,10 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}/libraries/regex-visualizer-extension"
+				"--extensionDevelopmentPath=${workspaceFolder}/libraries/vscode-extension"
 			],
 			"outFiles": [
-				"${workspaceFolder}/libraries/regex-visualizer-extension/dist/**/*.js"
+				"${workspaceFolder}/libraries/vscode-extension/dist/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}"
 		}

@@ -174,8 +174,26 @@
     }
 }
 
+
 body.vscode-light {
-    & .regex-debugger-window{
-        background: rgb(204, 207, 209);
+
+    & #regex-debugger-overlay{
+
+        & .regex-debugger-window{
+            background: rgb(241, 241, 241);
+
+            & .regex-debugger-header{
+                & h2{
+                    color: #444444;
+                }
+            }
+
+            & .regex-debugger-visualisation{
+    
+                & .regex-debugger-regex, & .regex-debugger-string{
+                    background: #00000022;
+                }
+            }
+        }
     }
 }

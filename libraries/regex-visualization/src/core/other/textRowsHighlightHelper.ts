@@ -33,7 +33,7 @@ export type HighlighGroupsOptions = {
     offsetY?: number
 }
 
-export function getTextDimensions(options : BoundingOptions) : Dimensions // x, y, width, height
+export function getTextDimensions(options : BoundingOptions) : Dimensions // [x, y, width, height][]
 {
     const outputRows : Dimensions = [];
 
@@ -47,7 +47,7 @@ export function getTextDimensions(options : BoundingOptions) : Dimensions // x, 
 
     let clientRects = range.getClientRects();
 
-    // HACK: when there is no text, to still get bounding add invisible char and delete it
+    // HACK: when there is no text, to still get bounding (add's invisible char and delete it)
     if(clientRects.length <= 0)
     {
         const tmpNode = document.createTextNode('\ufeff');
@@ -63,9 +63,9 @@ export function getTextDimensions(options : BoundingOptions) : Dimensions // x, 
         const oneRect = clientRects.item(i);
 
         outputRows.push([
-            oneRect.x - textBounds.x - paddingLeftText + spacingWidth - .5,
+            oneRect.x - textBounds.x - paddingLeftText,
             oneRect.y - textBounds.y + scrollOffset,
-            (oneRect.width === 0 ? spacingWidth : oneRect.width + 1),
+            (oneRect.width <= spacingWidth ? spacingWidth : oneRect.width + spacingWidth),
             oneRect.height
         ]);
     }
