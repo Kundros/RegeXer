@@ -7,16 +7,18 @@
   "author": "Dominik Kundra",
   "license": "MIT",
   "icon": "RX.png",
+  "tags": ["Regex", "Regex visualization", "JavaScript", "Regex Debugger", "Regular Expression"],
+  "categories": ["Debuggers", "Education", "Visualization"],
   "repository": {
     "url": "https://github.com/Kundros/RegeXer"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/kundros"
   },
   "engines": {
     "vscode": "^1.84.0",
     "node": ">= 14.17"
   },
-  "categories": [
-    "Other"
-  ],
   "activationEvents": [
     "onStartupFinished"
   ],
