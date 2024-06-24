@@ -8,6 +8,10 @@
     <img src="https://img.shields.io/github/actions/workflow/status/Kundros/RegeXer/push.yaml?label=CI">
 </div>
 
+## Visual Studio Code
+
+**[Get from VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=Kundros.regexer-extension)**
+
 ## Introduction
 
 This is root of **RegeXer - Regex Visualizer & Debugger** extension for **Visual Studio Code**. Purpose of this project is to give programers tool built in VSCode to debug regular expressions in real time. This extension is still mostly work in progress and many features are not implemented, so please take that in consideration. Now this extension can only recognize some regular expressions, and only regexes for ECMAScript (JavaScript) specification. Parts that are not implemented yet, might be in future.
