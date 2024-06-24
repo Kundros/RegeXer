@@ -2,7 +2,7 @@
 
 This extension allows you to debug your regular expressions directly from vscode.
 
-## supports 
+## Supports 
 - **ECMAScript (JavaScript) regular expressions only**
 - Basic syntax (groups, options, escaped characters, any character, list etc.)
 - Separate webview to display regex and matched string
@@ -16,4 +16,4 @@ You should have basic knowledge about the regular expressions, but this extensio
 
 ## Future
 
-This extension has many limitations, and isn't finished product, but there are plans for the future, updating this plugin.
+This extension has many limitations, and isn't finished product, but there are plans for the future, updating this extension.
