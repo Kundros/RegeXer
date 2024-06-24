@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: Enhancement, Question
+labels: Enhancement
 assignees: Kundros
 
 ---
