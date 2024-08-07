@@ -1,6 +1,6 @@
 {
     "tspegjs": {
-        "customHeader": "import * as RegexTypes from \"../coreTypes/parserTypes\"\nexport * as RegexTypes from \"../coreTypes/parserTypes\""
+        "customHeader": "import * as RegexTypes from \"../types/parserTypes\"\nexport * as RegexTypes from \"../types/parserTypes\""
     },
     "returnTypes": {
         "Start": "RegexTypes.RootState",

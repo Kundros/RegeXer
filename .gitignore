@@ -9,3 +9,5 @@ types/*
 .env
 out
 out/*
+!**/src/types/
+!**/src/types/*

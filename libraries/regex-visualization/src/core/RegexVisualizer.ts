@@ -1,10 +1,12 @@
 import { WebviewApi } from "vscode-webview";
 import { Message, MessageRegex } from "customTypes";
-import { RegexEditor } from "./RegexEditor";
+
 import { BatchData, MatchData, MatchFlags, MatchResponse, RegParseException, RegexMatch, Regexer } from "@regexer/regex-engine";
+
+import { RegexEditor } from "./RegexEditor";
 import { StringMatchEditor } from "./StringMatchEditor";
-import { RegexDebugger } from "./RegexDebugger";
-import { RegexVisualizerOptions } from "./coreTypes/regexVisualizerOptions";
+import { eventRegexDebbugerVisible, RegexDebugger } from "./RegexDebugger";
+import { RegexVisualizerOptions } from "../types/regexVisualizerOptions";
 
 export class RegexVisualizer {
     constructor(regexEditor : RegexEditor, stringMatchEditor : StringMatchEditor, debuggerWindow: RegexDebugger, vscode : WebviewApi<unknown> | undefined, options? : RegexVisualizerOptions)
@@ -47,7 +49,7 @@ export class RegexVisualizer {
         this.stringMatchEditor_.bindEvent('input', (event: InputEvent, textElement: HTMLElement) => this.matchTextCallback(textElement));
         window.addEventListener('message', (event : MessageEvent) => this.messageRecieve(event));
 
-        document.addEventListener("regexDebbugerVisible", () => {
+        document.addEventListener(eventRegexDebbugerVisible, () => {
             this.debuggerWindow_.setRegexText(this.regexEditor_.textInput);
             this.debuggerWindow_.setMatchStringText(this.stringMatchEditor_.textInput);
         });
@@ -196,8 +198,10 @@ export class RegexVisualizer {
     {
         const message = event.data as Message;
 
-        switch(message.type){
-            case 'send_regex': {
+        switch(message.type)
+        {
+            case 'send_regex': 
+            {
                 const regexMessage = message as MessageRegex;
                 this.regexEditor_.text = regexMessage.data;
                 this.updateRegex(regexMessage.data);

@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "Kundros",
   "name": "regexer-extension",
   "description": "Regex Visualizer & Debugger",
@@ -7,8 +7,18 @@
   "author": "Dominik Kundra",
   "license": "MIT",
   "icon": "RX.png",
-  "tags": ["Regex", "Regex visualization", "JavaScript", "Regex Debugger", "Regular Expression"],
-  "categories": ["Debuggers", "Education", "Visualization"],
+  "tags": [
+    "Regex",
+    "Regex visualization",
+    "JavaScript",
+    "Regex Debugger",
+    "Regular Expression"
+  ],
+  "categories": [
+    "Debuggers",
+    "Education",
+    "Visualization"
+  ],
   "repository": {
     "url": "https://github.com/Kundros/RegeXer"
   },
@@ -102,7 +112,7 @@
     "@typescript-eslint/parser": "^6.13.1",
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8",
-    "@vscode/vsce": "^2.27.0",
+    "@vscode/vsce": "^2.31.1",
     "eslint": "^8.57.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",

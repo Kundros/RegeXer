@@ -1,9 +1,9 @@
 import { test, expect } from '@jest/globals';
 
 import { Regexer } from '../src/core/Regexer';
-import { BatchData, MatchData, MatchFlags, MatchState } from '../src/coreTypes/MatchTypes';
+import { BatchData, MatchData, MatchFlags, MatchState } from '../src/types/MatchTypes';
 import { RegexMatch } from '../src/core/RegexMatch';
-import * as RegexTypes from "../src/coreTypes/parserTypes";
+import * as RegexTypes from "../src/types/parserTypes";
 
 global.__filename = "dist/cjs/core/Regexer";
 
