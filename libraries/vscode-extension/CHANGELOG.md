@@ -86,3 +86,9 @@ All notable changes to the "Regex Visualizer" extension will be documented in th
 ### Fixed
 
 - White mode displaying
+
+## [0.1.2] - 2024-08-08
+
+### Fixed
+
+- Bad image embeding in readme
