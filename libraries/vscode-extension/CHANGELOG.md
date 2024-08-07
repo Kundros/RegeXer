@@ -71,3 +71,18 @@ All notable changes to the "Regex Visualizer" extension will be documented in th
 
 - .js extension support hover (editor)
 - literal notation of regex display correct valid sign
+
+## [0.1.0] - 2024-06-24
+
+- Release
+
+## [0.1.1] - 2024-08-08
+
+### Changed
+
+- Refactored code
+- Updated description
+
+### Fixed
+
+- White mode displaying
