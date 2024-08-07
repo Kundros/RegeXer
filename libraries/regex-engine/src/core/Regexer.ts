@@ -3,7 +3,7 @@ import { parse } from "@core/RegexParser";
 import { Matcher } from "@core/MatchingWorker";
 import { RegParseException } from "@exceptions/RegParseException";
 import { RegMatchException } from "@exceptions/RegMatchException";
-import * as RegexTypes from "@regexer/coreTypes/parserTypes";
+import * as RegexTypes from "@coreTypes/parserTypes";
 
 import { 
     type BatchOptions, 

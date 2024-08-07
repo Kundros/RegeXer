@@ -1,5 +1,5 @@
-import { wrapElement } from "./other/elementHelper";
-import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
+import { wrapElement } from "../helpers/elementHelper";
+import { getCursorPosition, setCursorPosition } from "../helpers/caretHelper";
 
 export type TextEditorOptions = {
     historyLimit?: number,

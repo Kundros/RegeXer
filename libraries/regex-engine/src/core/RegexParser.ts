@@ -1,7 +1,7 @@
 /* eslint-disable */
 
-import * as RegexTypes from "../coreTypes/parserTypes"
-export * as RegexTypes from "../coreTypes/parserTypes"
+import * as RegexTypes from "../types/parserTypes"
+export * as RegexTypes from "../types/parserTypes"
 
 
 

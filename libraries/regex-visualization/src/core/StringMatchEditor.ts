@@ -1,22 +1,21 @@
 import { RegexMatch } from "@regexer/regex-engine";
+
 import { TextEditor, TextEditorOptions } from "./TextEditor";
-import { wrapElement } from "./other/elementHelper";
-import { HighlighGroupsOptions, HighlighTextOptions, getGroupDimensions, getTextDimensions, highlightGroups, highlightPosition } from "./other/textRowsHighlightHelper";
-import { MatchHighlightingOptions } from "./coreTypes/matchHighlightOptions";
+import { wrapElement } from "../helpers/elementHelper";
+import { getGroupDimensions, getPositionHighlightColor, getTextDimensions, highlightGroups, highlightPosition } from "../helpers/highlightHelper";
+import { AppTheme } from "../helpers/themeHelper";
+import { HighlighGroupsOptions, HighlighTextOptions, HighlightTypes } from "../types/highlightTypes";
+import { Themed } from "../types/themeTypes";
+import { clearCanvas } from "../helpers/canvasHelper";
+import { ExtendedBindedFunction } from "../types/bindTypes";
+import { extendedBind } from "../helpers/bindHelper";
 
-export type MatchEditorOptions = 
-    TextEditorOptions & 
-    MatchHighlightingOptions & 
-    {
-        highlightColor?: string
-    };
-
-export class StringMatchEditor extends TextEditor
+export class StringMatchEditor extends TextEditor implements Themed
 {
-    constructor(textInput : HTMLElement, canvasElement : HTMLCanvasElement, options?: MatchEditorOptions)
+    constructor(textInput : HTMLElement, canvasElement : HTMLCanvasElement, theme: AppTheme, options?: TextEditorOptions)
     {
-        super(textInput);
-        this.matchOptions_ = options;
+        super(textInput, options);
+        this.theme_ = theme;
 
         this.matchSign_ = textInput.parentNode.querySelector(".match-sign");
         this.matchSteps_ = textInput.parentNode.querySelector(".match-steps");
@@ -26,32 +25,55 @@ export class StringMatchEditor extends TextEditor
         const boundingCanvas = this.canvas_.getBoundingClientRect();
         this.canvas_.width = boundingCanvas.width;
         this.canvas_.height = boundingCanvas.height;
-        this.matchesHighlightings_ = [];
-        this.groupsHighlightings_ = [];
+
+        this.highlightsMatch_ = [];
+        this.highlightsGroup_ = [];
 
         this.registerMatchEvents();
+    }
+
+    public changeTheme(theme : AppTheme)
+    {
+        this.theme_ = theme;
+
+        clearCanvas(this.context_, this.canvas_);
+
+        for(const matchHighlight of this.highlightsMatch_)
+        {
+            matchHighlight.__boundArguments__[0].highlightColor = getPositionHighlightColor(theme, false, matchHighlight.__boundThis__.type);
+            matchHighlight();
+        }
+        
+        for(const groupHighlight of this.highlightsGroup_)
+        {
+            groupHighlight.__boundArguments__[0].colors = theme.matchHighlighting.groupColors;
+            groupHighlight.__boundArguments__[0].fallbackColor = theme.matchHighlighting.groupFallbackColor;
+            groupHighlight();
+        }
     }
 
     /** @description highlights match position (from,to) */
     public highlightMatch(from: number, to: number)
     {
+        const highlightMatch = extendedBind(
+            highlightPosition, 
+            { type: HighlightTypes.DEFAULT }, 
+            {
+                context: this.context_, 
+                textElement: this.textInput_, 
+                dimensions: getTextDimensions({textElement: this.textInput_, from, to}),
+                highlightColor: getPositionHighlightColor(this.theme_, false, HighlightTypes.DEFAULT)
+            }
+        );
         
-        this.matchesHighlightings_.push({
-            context: this.context_, 
-            textElement: this.textInput_, 
-            dimensions: getTextDimensions({textElement: this.textInput_, from, to}),
-            highlightColor: this.matchOptions_?.highlightColor ?? "#2b85c2"
-        });
-        highlightPosition(this.matchesHighlightings_[this.matchesHighlightings_.length-1]);
+        this.highlightsMatch_.push(highlightMatch);
+
+        highlightMatch();
     }
 
     public clearMatchesCanvas()
     {
-        const boundingCanvas = this.canvas_.getBoundingClientRect();
-        this.canvas_.width = boundingCanvas.width;
-        this.canvas_.height = boundingCanvas.height;
-
-        this.context_.clearRect(0, 0, boundingCanvas.width, boundingCanvas.height);
+        clearCanvas(this.context_, this.canvas_);
     }
 
     public highlightMatchesFromRegExp(regexText: string, flags?: string)
@@ -63,9 +85,9 @@ export class StringMatchEditor extends TextEditor
         let match : RegExpExecArray;
         let lastIndex = 0;
 
-        this.matchesHighlightings_ = [];
+        this.highlightsMatch_ = [];
 
-        this.clearMatchesCanvas();
+        clearCanvas(this.context_, this.canvas_);
 
         while((match = regex.exec(textToMatch)) !== null)
         {
@@ -83,20 +105,31 @@ export class StringMatchEditor extends TextEditor
     /** @description highlights all groups from all matches */
     public highlightGroups(matches : RegexMatch[])
     {
-        this.groupsHighlightings_ = [];
+        this.highlightsGroup_ = [];
 
         for(const match of matches)
         {
             if(match.groups)
             {
-                this.groupsHighlightings_.push({
-                    context: this.context_, 
-                    textElement: this.textInput_, 
-                    groupsDimensions: getGroupDimensions({context: this.context_, textElement: this.textInput_, groups: match.groups}),
-                    colors: this.matchOptions_.groupColors,
-                    fallbackColor: this.matchOptions_.groupFallbackColor,
-                });
-                highlightGroups(this.groupsHighlightings_[this.groupsHighlightings_.length - 1]);
+                const highlightGroup = extendedBind(
+                    highlightGroups, 
+                    undefined, 
+                    {
+                        context: this.context_, 
+                        textElement: this.textInput_, 
+                        groupsDimensions: getGroupDimensions({
+                            context: this.context_, 
+                            textElement: this.textInput_, 
+                            groups: match.groups
+                        }),
+                        colors: this.theme_.matchHighlighting.groupColors,
+                        fallbackColor: this.theme_.matchHighlighting.groupFallbackColor,
+                    }
+                );
+
+                this.highlightsGroup_.push(highlightGroup);
+
+                highlightGroup();
             }
         }
     }
@@ -156,24 +189,20 @@ export class StringMatchEditor extends TextEditor
 
     private reRenderHighlights()
     {
-        const boundingCanvas = this.canvas_.getBoundingClientRect();
-        this.canvas_.width = boundingCanvas.width;
-        this.canvas_.height = boundingCanvas.height;
+        clearCanvas(this.context_, this.canvas_);
 
-        this.context_.clearRect(0, 0, boundingCanvas.width, boundingCanvas.height);
-
-        for(const match of this.matchesHighlightings_)
+        for(const highlightMatch of this.highlightsMatch_)
         {
-            highlightPosition(match);
+            highlightMatch();
         }
         
-        for(const group of this.groupsHighlightings_)
+        for(const highlightGroup of this.highlightsGroup_)
         {
-            highlightGroups(group);
+            highlightGroup();
         }
     }
 
-    private matchOptions_ ?: MatchEditorOptions;
+    private theme_ ?: AppTheme;
 
     private matchSign_ : Element;
     private matchSteps_ : Element;
@@ -182,6 +211,6 @@ export class StringMatchEditor extends TextEditor
 
     
     // Holding information about highlighting
-    private matchesHighlightings_ : HighlighTextOptions[];
-    private groupsHighlightings_ : HighlighGroupsOptions[];
+    private highlightsMatch_ : ExtendedBindedFunction<(options: HighlighTextOptions) => void, { type : HighlightTypes }>[];
+    private highlightsGroup_ : ExtendedBindedFunction<(options?: HighlighGroupsOptions) => void, undefined>[];
 }

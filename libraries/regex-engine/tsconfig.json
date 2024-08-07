@@ -13,7 +13,7 @@
     "paths": {
       "@regexer/*": ["./src/*"],
       "@core/*": ["./src/core/*"],
-      "@coreTypes/*": ["./src/coreTypes/*"],
+      "@coreTypes/*": ["./src/types/*"],
       "@exceptions/*": ["./src/exceptions/*"],
       "@structures/*": ["./src/structures/*"],
       "@helpers/*": ["./src/helpers/*"],

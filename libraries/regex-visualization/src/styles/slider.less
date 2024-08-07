@@ -11,6 +11,8 @@
     display: flex;
     flex-direction: column;
 
+    margin-top: 10px;
+
     & .cslider-track{
         width: calc(100% - 10px);
         position: relative;
@@ -22,6 +24,11 @@
         -webkit-user-select: none;
         -ms-user-select: none;
         user-select: none;
+
+        background-color: var(--rgx-secondary-widget-color);
+        height: 9px;
+        width: calc(100% - 10px);
+        border-radius: 5px;
     
         & .cslider-thumb{
             cursor: pointer;
@@ -32,6 +39,11 @@
             -ms-user-select: none;
             user-select: none;
             z-index: 2;
+
+            width: 14px;
+            height: 14px;
+            border-radius: 7px;
+            background-color: #b04beb;
         }
         
         & .cslider-progress{
@@ -41,6 +53,11 @@
             -webkit-user-select: none;
             -ms-user-select: none;
             user-select: none;
+
+            height: 3px;
+            left: 3px;
+            background-color: #c370d4;
+            border-radius: 5px;
         }
     }
 
@@ -51,6 +68,10 @@
 
     & .cslider-manipulation{
         display: grid;
+
+        margin: 18px 0 25px 0;
+        grid-template-columns: 1fr fit-content(45%) 1fr;
+        column-gap: 10px;
 
         & .cslider-hidden{
             display: none;
@@ -65,6 +86,11 @@
             margin: auto;
             box-sizing: border-box;
 
+            background: var(--rgx-secondary-widget-color);
+            padding: 5px 15px;
+            border-radius: 40px;
+            max-width: 220px;
+
             & > div{
                 width: 100%;
                 display: flex;
@@ -76,14 +102,16 @@
                 user-select: none;
                 cursor: pointer;
 
+                size: 80%;
+
                 &:hover{
                     & > svg{
-                        fill: white !important;
+                        fill: var(--rgx-main-text-color) !important;
                     }
                 }
 
                 & > svg {
-                    fill: black;
+                    fill: var(--rgx-secondary-text-color);
                     width: 100%;
                 }
 
@@ -121,12 +149,36 @@
             grid-column: 3 / 3;
             justify-self: left;
             z-index: 4;
+
+            background: var(--rgx-secondary-widget-color);
+            border-radius: 40px;
+            padding: 5px 0;
+            max-width: 150px;
+
+            & .cslider-editable-speed {
+                color: var(--rgx-main-text-color);
+                font-size: min(1.3rem, 60cqh);
+            }
+
+            & svg {
+                fill: var(--rgx-secondary-text-color);
+            }
         }
 
         & .cslider-edit-position-wrapper{
             grid-column: 1 / 1;
             justify-self: right;
             z-index: 5;
+
+            background: var(--rgx-secondary-widget-color);
+            border-radius: 40px;
+            padding: 5px 0;
+            max-width: 150px;
+
+            & .cslider-edit-position{
+                color: var(--rgx-main-text-color);
+                font-size: min(1.3rem, 60cqh);
+            }
         }
 
         & .cslider-custom-speed, & .cslider-edit-position-wrapper
@@ -165,7 +217,7 @@
                 &::after{
                     content: "x";
                     pointer-events: none;
-                    color: #999999;
+                    color: var(--rgx-secondary-text-color);
                 }
             }
 
@@ -186,7 +238,7 @@
                     user-select: none;
 
                     &:hover{
-                        fill: white !important;
+                        fill: var(--rgx-main-text-color) !important;
                     }
                 }
 
@@ -200,14 +252,14 @@
             }
 
             & .cslider-edit-position-info{
-                right: 5%;    
+                right: 5%;
             }
 
             & .cslider-speed-info, & .cslider-edit-position-info{
                 position: absolute;
                 width: min(1.3rem, 60cqh);
                 height: min(1.3rem, 60cqh);
-                background-color: #00000044;
+                background-color: var(--rgx-primary-widget-color);
                 border-radius: 10px;
                 bottom: calc(50% - min(0.65rem, 30cqh));
                 font-size: min(1.15rem, 50cqh);
@@ -222,7 +274,7 @@
                 & .cslider-speed-info-text, & .cslider-edit-position-info-text{
                     top: 100cqh;
                     position: absolute;
-                    color: white;
+                    color: var(--rgx-main-text-color);
                     padding: 10px;
                     font-size: 1rem;
                     border-radius: 10px;

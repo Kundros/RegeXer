@@ -1,10 +1,3 @@
-@base-color: #352F44;
-@darker-color: #5C5470;
-@light-color: #B9B4C7;
-@lighter-color: #FAF0E6;
-
-@gray-color: #1f1f1f;
-
 #regex-debugger-overlay {
     &.hidden{
         display: none;
@@ -27,7 +20,7 @@
         font-size: 16px;
         margin: 0 1px;
         display: inline-block;
-        background-color: #525666;
+        background-color: var(--rgx-terciary-text-color);
     }
 
     & .new-line-symbol{
@@ -39,7 +32,7 @@
     & .new-line-symbol::before {
         content: "↲";
         font-weight: 600;
-        color: #525666;
+        color: var(--rgx-terciary-text-color);
         pointer-events: none;
         position: absolute;
     }
@@ -49,13 +42,12 @@
         max-width: 900px;
         height: 80%;
         border-radius: 10px;
-        background: #1d1e20;
+        background: var(--rgx-primary-widget-color);
         padding: 10px;  
 
         & .regex-debugger-header{
             width: 100%;
             height: 25px;
-            border-bottom: 1px solid #ffffff22;
             padding-bottom: 5px;
             margin-top: -5px;
             position: relative;
@@ -65,7 +57,7 @@
                 font-weight: 300;
                 font-size: 18px;
                 margin: 5px 0;
-                color: #999999;
+                color: var(--rgx-secondary-text-color);
             }
 
             & .exit-debug{
@@ -83,7 +75,7 @@
                     top: 50%;
                     height: 2px;
                     transition: all .3s;
-                    background-color: #999999;
+                    background-color: var(--rgx-secondary-text-color);
                 }
 
                 & > div:first-child{
@@ -97,7 +89,7 @@
 
             & .exit-debug:hover{
                 & > div{
-                    background-color: white;
+                    background-color: var(--rgx-main-text-color);
                 }
 
                 & > div:first-child{
@@ -175,25 +167,8 @@
 }
 
 
-body.vscode-light {
-
-    & #regex-debugger-overlay{
-
-        & .regex-debugger-window{
-            background: rgb(241, 241, 241);
-
-            & .regex-debugger-header{
-                & h2{
-                    color: #444444;
-                }
-            }
-
-            & .regex-debugger-visualisation{
-    
-                & .regex-debugger-regex, & .regex-debugger-string{
-                    background: #00000022;
-                }
-            }
-        }
+body.vscode-light #regex-debugger-overlay .regex-debugger-window .regex-debugger-visualisation{
+    & .regex-debugger-regex, & .regex-debugger-string{
+        background: #00000022;
     }
 }

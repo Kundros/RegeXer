@@ -1,10 +1,3 @@
-@base-color: #24292e;
-@light-color: #B9B4C7;
-@lighter-color: #FAF0E6;
-@selection-color: #403566;
-
-@gray-color: #1f1f1f;
-
 @font-face {
     font-family: 'Roboto';
     src:
@@ -21,9 +14,20 @@
         url('../assets//fonts/RobotoMono-Thin.ttf');
 }
 
+body
+{
+    --rgx-selection-background: #7fa8e7;
+    --rgx-body-background-color: #24292e;
+    --rgx-main-text-color: #faf0e6;
+    --rgx-secondary-text-color: #999999;
+    --rgx-terciary-text-color: #525666;
+    --rgx-primary-widget-color: #16191c;
+    --rgx-secondary-widget-color: #323941;
+}
+
 body {
-    background: var(--vscode-editor-background, @base-color);
-    color: var(--vscode-editor-foreground, @lighter-color);
+    background: var(--vscode-editor-background, var(--rgx-body-background-color));
+    color: var(--vscode-editor-foreground, var(--rgx-main-text-color));
     font-family: var(--vscode-editor-font-family, 'Roboto Mono'), monospace;
     font-size: 16px;
 }
@@ -52,7 +56,7 @@ body {
 
 ::selection {
     color: var(--vscode-editor-selectionForeground);
-    background: var(--vscode-editor-selectionBackground, @selection-color);
+    background: var(--vscode-editor-selectionBackground, var(--rgx-selection-background));
 }
 
 #main-wrapper {
@@ -83,7 +87,7 @@ body {
         }
 
         &[data-text]::after {
-            color: #999999;
+            color: var(--rgx-secondary-text-color);
             pointer-events: none;
         }
     }
@@ -94,7 +98,7 @@ body {
         display: flex;
         max-width: 100%;
         padding: 10px 10px 10px 0px;
-        background: #00000066;
+        background: var(--rgx-primary-widget-color);
         border-radius: 10px;
     }
 
@@ -140,7 +144,7 @@ body {
     }
 
     & .tab-symbol{
-        background-color: #525666;
+        background-color: var(--rgx-terciary-text-color);
     }
 
     & .new-line-symbol{
@@ -153,43 +157,20 @@ body {
     & .new-line-symbol::before {
         content: "↲";
         font-weight: 600;
-        color: #525666;
+        color: var(--rgx-terciary-text-color);
         pointer-events: none;
         position: absolute;
     }
 
     & .debug-icon{
         cursor: pointer;
-        fill: #999999;
+        fill: var(--rgx-secondary-text-color);
         transition: all 1s;
     }
 
     & .debug-icon:hover{
         transform: scale(1.1);
         fill: #35a314;
-    }
-}
-
-body.vscode-light {
-    & #main-wrapper {
-        caret-color: var(--vscode-editorCursor-foreground, #000);
-        color: var(--vscode-editor-foreground, #000);
-
-        & #regex-wrapper, #match-wrapper{
-            background: #00000015;
-        }
-    }
-
-    & .tab-symbol{
-        background-color: #b1aca7;
-    }
-
-    & .new-line-symbol::before {
-        color: #B9B4C7;
-    }
-
-    & .debug-icon{
-        fill: black;
     }
 }
 
@@ -251,7 +232,7 @@ body.vscode-light {
 
 .tab-symbol{
     clip-path: polygon(0% 47%, 63.46% 47%, 51.46% 32.5%, 100% 50.27%, 51.46% 68.04%, 63.46% 54.04%, 0% 54.04%);
-    background-color: #5C5470;
+    background-color: var(--rgx-terciary-text-color);
 }
 
 .special-char, .group-name, .escaped-char, .any-symbol{
@@ -322,7 +303,7 @@ body.vscode-light {
     }
 
     .match-info > .match-steps{
-        color: #666060;
+        color: var(--rgx-secondary-text-color);
     }
 }
 
@@ -354,7 +335,7 @@ body.vscode-light {
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        color: #999999;
+        color: var(--rgx-secondary-text-color);
         font-size: 13px;
         font-family: var(--vscode-font-family, 'Roboto');
         font-weight: var(--vscode-editor-font-weight, 400);
@@ -377,7 +358,7 @@ body.vscode-light {
         transition: background .2s;
 
         & > div {
-            background: white;
+            background: var(--rgx-main-text-color);
             position: absolute;
             transition: all .2s;
         }
@@ -439,7 +420,7 @@ body.vscode-light {
 
             @keyframes loading-dot1 {
                 0%, 6% {
-                transform: translate(8px, 8px) rotate(90deg) translate(5px); 
+                    transform: translate(8px, 8px) rotate(90deg) translate(5px); 
                 }
 
                 66%, 100% {

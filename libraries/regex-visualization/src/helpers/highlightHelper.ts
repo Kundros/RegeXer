@@ -1,37 +1,6 @@
-import { MatchGroup } from "@regexer/regex-engine"
-import { setCursorPosition } from "./caretHelper"
-
-export type BoundingOptions = {
-    textElement : HTMLElement, 
-    from: number,
-    to: number
-}
-
-export type Dimensions = [number, number, number, number][];
-
-export type HighlighTextOptions = 
-{ 
-    dimensions: Dimensions,
-    context : CanvasRenderingContext2D, 
-    textElement : HTMLElement
-    highlightColor ?: string,
-    offsetY?: number
-}
-
-export type GroupDimensionsOptions = {
-    context : CanvasRenderingContext2D, 
-    textElement : HTMLElement,
-    groups: Map<number, MatchGroup>
-}
-
-export type HighlighGroupsOptions = {
-    context : CanvasRenderingContext2D, 
-    textElement : HTMLElement,
-    groupsDimensions: Dimensions[],
-    colors?: string[],
-    fallbackColor?: string,
-    offsetY?: number
-}
+import { setCursorPosition } from "./caretHelper";
+import { AppTheme } from "../types/themeTypes";
+import { BoundingOptions, Dimensions, GroupDimensionsOptions, HighlighGroupsOptions, HighlighTextOptions, HighlightTypes, RegexHighlightingOptions } from "../types/highlightTypes";
 
 export function getTextDimensions(options : BoundingOptions) : Dimensions // [x, y, width, height][]
 {
@@ -169,4 +138,29 @@ export function highlightGroups(options?: HighlighGroupsOptions)
             offsetY: options.offsetY
         });
     }
+}
+
+export function getPositionHighlightColor(theme : AppTheme, inRegex : boolean, highlightingType : HighlightTypes)
+{
+    const options = inRegex ? theme?.regexHighlighting : theme?.matchHighlighting;
+    let color : string;
+
+    if(highlightingType === HighlightTypes.ERROR)
+    {
+        color = options?.backtrackingPositionColor ?? "#FF0000";
+    }
+    else if(highlightingType === HighlightTypes.INFORMATIVE)
+    {
+        color = (options as RegexHighlightingOptions)?.informativeColor ?? options?.backtrackingPositionColor ?? "#00FF00";
+    }
+    else if(highlightingType === HighlightTypes.BACKTRACKING)
+    {
+        color = options?.backtrackingDirectionColor ?? "#FF0000";
+    }
+    else
+    {
+        color = options?.positionColor ?? "#00FF00";
+    }
+
+    return color;
 }

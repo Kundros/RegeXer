@@ -44,7 +44,7 @@ npm run release
 In command palette type "Regex Visualizer: Open", to open visualization window.
 
 <p align="center">
-    <img src="./images/usage0.png" alt="open command">
+    <img src="./libraries/vscode-extension/images/usage0.png" alt="open command">
 </p>
 
 \
@@ -52,7 +52,7 @@ Alternatively you can hover over regular expression in code.
 This will trigger hover pop-up with link to open regex visualization window.
 
 <p align="center">
-    <img src="./images/usage_hover.gif" alt="hover command">
+    <img src="./libraries/vscode-extension/images/usage_hover.gif" alt="hover command">
 </p>
 
 ### Application window
@@ -66,7 +66,7 @@ Application window is the main page of regex visualization. You can interact wit
 * Debugger button, at the bottom left of matching input. This will trigger opening the debugger window, for the current input values. 
 
 <p align="center">
-    <img src="./images/showcase_usage1.gif" alt="app window">
+    <img src="./libraries/vscode-extension/images/showcase_usage1.gif" alt="app window">
 </p>
 
 ### Debugger window
@@ -82,5 +82,5 @@ Debugger window can be opened by clicking at the gray debug button, at bottom of
 * Matching string text with position highlighting. 
 
 <p align="center">
-    <img src="./images/showcase_usage2.gif" alt="app window">
+    <img src="./libraries/vscode-extension/images/showcase_usage2.gif" alt="app window">
 </p>

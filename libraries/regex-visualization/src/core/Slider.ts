@@ -1,4 +1,4 @@
-import { wrapElement } from "./other/elementHelper";
+import { wrapElement } from "../helpers/elementHelper";
 
 import '../styles/slider.less';
 import beginSvg from '../assets/svgs/begin.svg';
@@ -7,7 +7,7 @@ import playSvg from '../assets/svgs/play.svg';
 import pauseSvg from '../assets/svgs/pause.svg';
 import arrowUpSvg from '../assets/svgs/up.svg';
 
-import { SliderOptions } from "./coreTypes/sliderOptions";
+import { SliderOptions } from "../types/sliderOptions";
 
 export type SliderEvent = Event & {
     readonly detail : {
@@ -35,79 +35,10 @@ export class Slider{
 
         this.value_ = this.min_;
 
-        if(this.options_?.segments?.step != undefined && this.options_?.segments?.step <= 0)
+        if(this.options_?.segments?.step !== undefined && this.options_?.segments?.step <= 0)
             this.options_.segments.step = 1;
 
         this.registerEvents();
-    }
-
-    public updateSegments()
-    {
-        const segments = this.options_?.segments;
-        if(segments === undefined || this.canvas_ === undefined || this.context_ === undefined) return;
-
-        const bounding = this.canvas_.getBoundingClientRect();
-        const allSteps = this.max_ - this.min_;
-        const step = (this.track_.getBoundingClientRect().width) / allSteps;
-        const offset = (bounding.width - this.track_.getBoundingClientRect().width)/2;
-
-        let pos = 0;
-
-        let skipStep = segments?.step ?? segments?.devideNumber ?? 10;
-        const labels = segments?.labels ?? false;
-
-        if(segments?.devideNumber > 0)
-            skipStep = allSteps / (skipStep - 1);
-
-        this.canvas_.width = bounding.width;
-        this.canvas_.height = bounding.height;
-
-        const linesHeight = labels ? bounding.height - 12 : bounding.height;
-
-        if(skipStep < 1)
-            skipStep = 1;
-
-        this.context_.clearRect(0, 0, bounding.width, bounding.height);
-        this.context_.save();
-        this.context_.strokeStyle = segments?.color ?? "#000000";
-        this.context_.fillStyle = segments?.color ?? "#000000";
-        this.context_.font = "12px var(--vscode-editor-font-family, 'Roboto Mono'), monospace";
-        this.context_.lineWidth = 1;
-        
-        let countSegments = 0;
-        const labelGap = segments?.labelGap ?? 1;
-
-        for(let i = 0; i - .01 <= allSteps ; i+=skipStep)
-        {
-            pos = step * Math.round(i);
-
-            const integer = Math.round(pos + offset);
-            this.context_.beginPath();
-            this.context_.moveTo(integer + .5, 0);
-            this.context_.lineTo(integer + .5, linesHeight);
-
-            if(labels)
-            {
-                const label = Math.round(i + this.min_).toString();
-                const textWidth = this.context_.measureText(label).width;
-
-                if(countSegments%labelGap === 0 || Math.round(i) === this.max_)
-                {
-                    let computePos = integer - textWidth/2;
-                    if(integer - textWidth/2 < 0)
-                        computePos = 0;
-                    else if(integer + textWidth/2 > bounding.width)
-                        computePos = bounding.width - textWidth;
-    
-                    this.context_.fillText(label, computePos, bounding.height);
-                }
-            }
-
-            this.context_.stroke(); 
-            countSegments++;
-        }
-
-        this.context_.restore();
     }
 
     public get parent()
@@ -206,6 +137,74 @@ export class Slider{
         return this.autoplaySpeed_;
     }
 
+    private updateSegments()
+    {
+        const segments = this.options_?.segments;
+        if(segments === undefined || this.canvas_ === undefined || this.context_ === undefined) return;
+
+        const bounding = this.canvas_.getBoundingClientRect();
+        const allSteps = this.max_ - this.min_;
+        const step = (this.track_.getBoundingClientRect().width) / allSteps;
+        const offset = (bounding.width - this.track_.getBoundingClientRect().width)/2;
+
+        let pos = 0;
+
+        let skipStep = segments?.step ?? segments?.devideNumber ?? 10;
+        const labels = segments?.labels ?? false;
+
+        if(segments?.devideNumber > 0)
+            skipStep = allSteps / (skipStep - 1);
+
+        this.canvas_.width = bounding.width;
+        this.canvas_.height = bounding.height;
+
+        const linesHeight = labels ? bounding.height - 12 : bounding.height;
+
+        if(skipStep < 1)
+            skipStep = 1;
+
+        this.context_.clearRect(0, 0, bounding.width, bounding.height);
+        this.context_.save();
+        this.context_.strokeStyle = segments?.color ?? "#000000";
+        this.context_.fillStyle = segments?.color ?? "#000000";
+        this.context_.font = "12px var(--vscode-editor-font-family, 'Roboto Mono'), monospace";
+        this.context_.lineWidth = 1;
+        
+        let countSegments = 0;
+        const labelGap = segments?.labelGap ?? 1;
+
+        for(let i = 0; i - .01 <= allSteps ; i+=skipStep)
+        {
+            pos = step * Math.round(i);
+
+            const integer = Math.round(pos + offset);
+            this.context_.beginPath();
+            this.context_.moveTo(integer + .5, 0);
+            this.context_.lineTo(integer + .5, linesHeight);
+
+            if(labels)
+            {
+                const label = Math.round(i + this.min_).toString();
+                const textWidth = this.context_.measureText(label).width;
+
+                if(countSegments%labelGap === 0 || Math.round(i) === this.max_)
+                {
+                    let computePos = integer - textWidth/2;
+                    if(integer - textWidth/2 < 0)
+                        computePos = 0;
+                    else if(integer + textWidth/2 > bounding.width)
+                        computePos = bounding.width - textWidth;
+    
+                    this.context_.fillText(label, computePos, bounding.height);
+                }
+            }
+
+            this.context_.stroke(); 
+            countSegments++;
+        }
+
+        this.context_.restore();
+    }
 
     private render()
     {
@@ -230,31 +229,6 @@ export class Slider{
 
         this.container_.append(this.wrapper_);
         this.wrapper_.append(this.editableContainer_);
-
-        this.thumb_.style.width = this.options_?.thumb?.width ?? "10px";
-        this.thumb_.style.height = this.options_?.thumb?.height ?? "10px";
-        this.thumb_.style.borderRadius = this.options_?.thumb?.borderRadius ?? "5px";
-        this.thumb_.style.backgroundColor = this.options_?.thumb?.color ?? "#34c6eb";
-
-        this.track_.style.backgroundColor = this.options_?.track?.color ?? "#d9d9d9";
-        this.track_.style.width = this.options_?.track?.width ?? "calc(100% - 10px)";
-        this.track_.style.height = this.options_?.track?.height ?? "5px";
-        this.track_.style.borderRadius = this.options_?.track?.borderRadius ?? "5px";
-
-        this.progress_.style.backgroundColor = this.options_?.progress?.color ?? this.options_?.thumb?.color ?? "#34c6eb";
-        this.progress_.style.height = this.options_?.progress?.height ?? this.options_?.track?.height ?? "5px";
-        this.progress_.style.left = this.options_?.progress?.left ?? "0px";
-        this.progress_.style.borderRadius = this.options_?.progress?.borderRadius ?? this.options_?.track?.borderRadius ?? "5px";
-
-        this.wrapper_.style.marginTop = this.options_?.marginTop ?? "0px";
-        this.wrapper_.style.marginBottom = this.options_?.marginTop ?? "0px";
-
-        this.editableContainer_.style.gridTemplateColumns = 
-            (this.options_?.editable?.grid[0] ?? "1fr") + " " + 
-            (this.options_?.editable?.grid[1] ?? "40%") + " " +
-            (this.options_?.editable?.grid[2] ?? "1fr");
-        this.editableContainer_.style.margin = this.options_?.editable?.margin ?? "5px 0";
-        this.editableContainer_.style.gap = this.options_?.editable?.gap ?? "0";
 
         const labels = this.options_?.segments?.labels ?? false;
         const canvasHeight = this.options_?.segments?.height ?? "5px"
@@ -370,48 +344,6 @@ export class Slider{
                 this.value = this.max_;
             });
         }
-
-        const iconOptions = actionBtnsOptions?.icon;
-
-        if(iconOptions)
-        {
-            const icons = this.actionBtnsContainer_.querySelectorAll("div svg");
-            const wrappers = this.actionBtnsContainer_.querySelectorAll("div");
-
-            const color = iconOptions?.color ?? "black";
-            const radius = iconOptions?.radius ?? "0px";
-            const size = iconOptions?.size ?? "100%";
-            const background = iconOptions?.background ?? "none";
-            const padding = iconOptions?.padding ?? "0";
-
-            icons.forEach((icon : HTMLElement) => {
-                icon.style.fill = color;
-            });
-
-            wrappers.forEach((wrapper : HTMLElement) => {
-                wrapper.style.background = background;
-                wrapper.style.width = size;
-                wrapper.style.borderRadius = radius;
-                wrapper.style.padding = padding;
-            });
-        }
-
-        const wrapperOptions = actionBtnsOptions?.wrapper;
-
-        if(wrapperOptions?.background || wrapperOptions?.radius || wrapperOptions?.width || wrapperOptions?.padding)
-        {
-            const radius = wrapperOptions?.radius ?? "0px";
-            const width = wrapperOptions?.width ?? "100%";
-            const background = wrapperOptions?.background ?? "none";
-            const padding = wrapperOptions?.padding ?? "0";
-            const maxWidth = wrapperOptions?.maxWidth ?? "100%";
-
-            this.actionBtnsContainer_.style.borderRadius = radius;
-            this.actionBtnsContainer_.style.width = width;
-            this.actionBtnsContainer_.style.background = background;
-            this.actionBtnsContainer_.style.padding = padding;
-            this.actionBtnsContainer_.style.maxWidth = maxWidth;
-        }
     }
 
     private renderSpeed()
@@ -436,13 +368,6 @@ export class Slider{
 
         this.editableContainer_.append(this.speedInputWrapper_);
 
-        this.speedInputWrapper_.style.background = speedOptions.background ?? "none";
-        this.speedInputWrapper_.style.borderRadius = speedOptions.radius ?? "0px";
-        this.speedInputWrapper_.style.padding = speedOptions.padding ?? "0";
-        this.speedInputWrapper_.style.maxWidth = speedOptions.maxWidth ?? "100%";
-
-        this.speedInput_.style.color = speedOptions.textColor ?? "black";
-        this.speedInput_.style.fontSize = speedOptions.fontSize ?? "min(1.3rem, 60cqh)";
         this.speedInput_.textContent = speedOptions.defaultSpeed.toString();
 
         if(speedOptions.info)
@@ -455,24 +380,17 @@ export class Slider{
             );
         }
 
-        if(speedOptions.iconColor)
-        {
-            this.speedInputWrapper_.querySelectorAll("svg").forEach(icon => {
-                icon.style.fill = speedOptions.iconColor;
-            });
-        }
-
         this.autoplaySpeed = speedOptions.defaultSpeed;
 
         const up = arrows.querySelector("svg:first-child");
         const down = arrows.querySelector("svg:last-child");
 
         up.addEventListener("click", () => {
-            this.autoplaySpeed = this.autoplaySpeed_ + (.1 * (10 ** Math.floor(this.autoplaySpeed_ / 1).toString().length));
+            this.autoplaySpeed = this.autoplaySpeed_ + (.1 * (10 ** Math.floor(this.autoplaySpeed_).toString().length));
         });
 
         down.addEventListener("click", () => {
-            this.autoplaySpeed = this.autoplaySpeed_ - (.1 * (10 ** Math.floor(this.autoplaySpeed_ / 2).toString().length));
+            this.autoplaySpeed = this.autoplaySpeed_ - (.1 * (10 ** Math.floor(this.autoplaySpeed_ * .5).toString().length));
         });
 
         this.speedInput_.addEventListener("input", () => {
@@ -501,14 +419,6 @@ export class Slider{
             ], "div", ["cslider-edit-position-wrapper"]);
 
         this.editableContainer_.append(this.positionEditInputWrapper_);
-
-        this.positionEditInputWrapper_.style.borderRadius = editPositionOptions?.radius ?? "0px";
-        this.positionEditInputWrapper_.style.padding = editPositionOptions?.padding ?? "0";
-        this.positionEditInputWrapper_.style.maxWidth = editPositionOptions?.maxWidth ?? "100%";
-        this.positionEditInputWrapper_.style.background = editPositionOptions?.background ?? "none";
-
-        this.positionEditInput_.style.color = editPositionOptions?.textColor ?? "white";
-        this.positionEditInput_.style.fontSize = editPositionOptions?.fontSize ?? "min(1.3rem, 60cqh)";
 
         if(editPositionOptions.info)
         {
@@ -553,7 +463,7 @@ export class Slider{
 
     private updateThumb()
     {
-        const halfThumb = this.thumb_.offsetWidth/2;
+        const halfThumb = this.thumb_.offsetWidth * .5;
         const allSteps = this.max_ - this.min_;
         const progressPercent = ((this.value_ - this.min_) / allSteps) * 100;
 
@@ -565,12 +475,7 @@ export class Slider{
         const allSteps = this.max_ - this.min_;
         const progressPercent = ((this.value_ - this.min_) / allSteps) * 100;
 
-        const options = this.options_?.progress;
-
-        if(options?.left !== undefined)
-            this.progress_.style.width = "calc(" + progressPercent + "% - " + options?.left + ")";
-        else
-            this.progress_.style.width = progressPercent + "%";
+        this.progress_.style.width = progressPercent + "%";
     }
 
     private hadnleMousemove(event : MouseEvent)
@@ -602,12 +507,10 @@ export class Slider{
         document.addEventListener("mousemove", (event : MouseEvent) => this.hadnleMousemove(event));
         document.addEventListener("mouseup", () => this.hadnleMouseup());
         
-        const observer = new ResizeObserver((entries) => {
-            entries.forEach(() => {
-                this.updateThumb();
-                this.updateProgress();
-                this.updateSegments();
-            });    
+        const observer = new ResizeObserver(() => {
+            this.updateThumb();
+            this.updateProgress();
+            this.updateSegments();
         });
         
         observer.observe(this.container_);

@@ -12,8 +12,8 @@ import {
     RegexStates 
 } from "@regexer/regex-engine";
 import { TextEditor } from "./TextEditor";
-import { getCursorPosition, setCursorPosition } from "./other/caretHelper";
-import { handleAddElement, wrapElement } from "./other/elementHelper";
+import { getCursorPosition, setCursorPosition } from "../helpers/caretHelper";
+import { handleAddElement, wrapElement } from "../helpers/elementHelper";
 
 export class RegexEditor extends TextEditor
 {
